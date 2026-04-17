@@ -28,7 +28,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   1. 用户打开小程序后自动完成微信静默登录，无需手动操作即可获得身份标识
   2. 用户在首页看到化妆师姓名、头像、简介文字、从业经验等完整个人资料
   3. 应用显示底部 TabBar 导航结构，未建设的模块显示空状态引导
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 01-01-PLAN.md — 项目架构搭建与认证系统（云开发、静默登录、隐私协议）
+- [ ] 01-02-PLAN.md — 化妆师资料展示与 TabBar 空状态页面
 
 ### Phase 2: Portfolio System
 **Goal**: 用户可以浏览化妆师完整作品集，化妆师可以在后台管理作品
@@ -84,7 +87,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Profile | 0/? | Not started | - |
+| 1. Foundation & Profile | 0/2 | Planned | - |
 | 2. Portfolio System | 0/? | Not started | - |
 | 3. Service Catalog | 0/? | Not started | - |
 | 4. Booking System | 0/? | Not started | - |
