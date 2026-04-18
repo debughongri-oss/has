@@ -1,0 +1,82 @@
+<view class="page">
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <block wx:if="{{!loading && booking}}">
+    <view class="status-bar status-bar--{{booking.status}}">
+      <text class="status-text">{{statusLabel}}</text>
+    </view>
+
+    <view class="group">
+      <view class="row">
+        <text class="key">服务</text>
+        <text class="val">{{booking.service_name}}</text>
+      </view>
+      <view class="row">
+        <text class="key">日期</text>
+        <text class="val">{{booking.booking_date}}</text>
+      </view>
+      <view class="row">
+        <text class="key">时间</text>
+        <text class="val">{{booking.booking_time}}</text>
+      </view>
+      <view class="row">
+        <text class="key">客户</text>
+        <text class="val">{{booking.user_info.nickname || '微信用户'}}</text>
+      </view>
+      <view class="row" wx:if="{{booking.notes}}">
+        <text class="key">留言</text>
+        <text class="val val--wrap">{{booking.notes}}</text>
+      </view>
+    </view>
+
+    <view class="group">
+      <view class="row row--col">
+        <text class="label">内部备注</text>
+        <textarea
+          class="textarea"
+          placeholder="添加备注..."
+          value="{{artistNotes}}"
+          bindinput="onNotesInput"
+          maxlength="500"
+        />
+        <text class="save-link" bindtap="saveNotes">保存备注</text>
+      </view>
+    </view>
+
+    <view class="group" wx:if="{{booking.reject_reason}}">
+      <view class="row">
+        <text class="key">拒绝原因</text>
+        <text class="val val--red">{{booking.reject_reason}}</text>
+      </view>
+    </view>
+
+    <view class="action-bar" wx:if="{{booking.status === 'pending'}}">
+      <button class="act-btn act-btn--reject" bindtap="onReject">拒绝</button>
+      <button class="act-btn act-btn--accept" bindtap="onAccept">接受</button>
+    </view>
+
+    <view class="action-bar" wx:if="{{booking.status === 'accepted'}}">
+      <button class="act-btn act-btn--done" bindtap="onComplete">标记完成</button>
+    </view>
+  </block>
+
+  <t-dialog
+    visible="{{showRejectDialog}}"
+    title="拒绝预约"
+    content="请输入拒绝原因"
+    confirm-btn="确认拒绝"
+    cancel-btn="取消"
+    bind:confirm="onRejectConfirm"
+    bind:cancel="onRejectCancel"
+  >
+    <textarea
+      slot="content"
+      class="dialog-textarea"
+      placeholder="输入拒绝原因..."
+      value="{{rejectReason}}"
+      bindinput="onRejectReasonInput"
+    />
+  </t-dialog>
+</view>

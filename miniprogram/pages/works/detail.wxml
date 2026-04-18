@@ -1,0 +1,66 @@
+<view class="page-detail">
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <block wx:if="{{!loading && work}}">
+    <view class="gallery">
+      <swiper
+        class="gallery-swiper"
+        indicator-dots="{{false}}"
+        autoplay="{{false}}"
+        circular="{{true}}"
+        current="{{currentImage}}"
+        bindchange="onSwiperChange"
+      >
+        <swiper-item wx:for="{{work.images}}" wx:key="index">
+          <image
+            class="gallery-img"
+            src="{{item}}"
+            mode="aspectFill"
+            show-menu-by-longpress
+            bindtap="onPreviewImage"
+            data-index="{{index}}"
+          />
+        </swiper-item>
+      </swiper>
+
+      <view class="gallery-counter" wx:if="{{work.images.length > 1}}">
+        <text class="counter-current">{{currentImage + 1}}</text>
+        <text class="counter-sep">/</text>
+        <text class="counter-total">{{work.images.length}}</text>
+      </view>
+
+      <view class="gallery-share">
+        <button class="share-btn" open-type="share">
+          <text class="share-icon">↗</text>
+        </button>
+      </view>
+    </view>
+
+    <view class="detail-body">
+      <view class="detail-head">
+        <view class="detail-title-group">
+          <text class="detail-cat" wx:if="{{work.categoryLabel || work.category}}">{{work.categoryLabel || work.category}}</text>
+          <text class="detail-title">{{work.title}}</text>
+        </view>
+        <text class="detail-date">{{work.created_at}}</text>
+      </view>
+
+      <view class="detail-desc" wx:if="{{work.description}}">
+        <text>{{work.description}}</text>
+      </view>
+
+      <view class="detail-action">
+        <button class="action-book" bindtap="goToBooking">预约此妆容</button>
+        <button class="action-chat tappable" open-type="contact">
+          <text class="action-chat-text">咨询</text>
+        </button>
+      </view>
+    </view>
+  </block>
+
+  <view class="empty-container" wx:if="{{!loading && !work}}">
+    <t-empty icon="image" description="作品不存在或已被删除" />
+  </view>
+</view>

@@ -1,0 +1,10 @@
+{
+  "name": "makeup-artist-booking",
+  "version": "1.0.0",
+  "private": true,
+  "description": "化妆师个人作品展示与预约小程序",
+  "main": "app.js",
+  "dependencies": {
+    "tdesign-miniprogram": "~1.13.2"
+  }
+}

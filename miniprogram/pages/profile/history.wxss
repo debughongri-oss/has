@@ -1,0 +1,104 @@
+.page-history {
+  min-height: 100vh;
+  background-color: var(--bg);
+}
+
+.list {
+  padding: 32rpx var(--page-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.card {
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--page-pad);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.card-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-svc {
+  display: block;
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.card-time {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  margin-top: 8rpx;
+}
+
+.badge {
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}
+
+.badge--pending {
+  background-color: var(--orange-bg);
+  color: var(--orange);
+}
+
+.badge--accepted {
+  background-color: var(--green-bg);
+  color: var(--green);
+}
+
+.badge--completed {
+  background-color: var(--purple-bg);
+  color: var(--purple);
+}
+
+.badge--cancelled,
+.badge--rejected {
+  background-color: var(--fill-primary);
+  color: var(--text-secondary);
+}
+
+.card-note {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-top: 20rpx;
+  padding-top: 20rpx;
+  border-top: 1rpx solid var(--separator);
+}
+
+.card-reason {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--red);
+  margin-top: 16rpx;
+  padding: 12rpx 20rpx;
+  background-color: var(--red-bg);
+  border-radius: var(--radius-sm);
+}
+
+.card-action {
+  margin-top: 20rpx;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cancel {
+  color: var(--red);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}

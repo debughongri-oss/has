@@ -1,0 +1,42 @@
+<view class="admin-bookings">
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <block wx:if="{{!loading}}">
+    <view class="filter-bar">
+      <scroll-view scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="seg-track">
+          <view
+            class="seg tappable {{currentStatus === item.key ? 'seg--on' : ''}}"
+            wx:for="{{statusFilters}}"
+            wx:key="key"
+            bindtap="onFilterChange"
+            data-key="{{item.key}}"
+          >
+            <text>{{item.label}}</text>
+            <text class="seg-count" wx:if="{{item.count}}">{{item.count}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="list" wx:if="{{bookings.length}}">
+      <view class="card tappable" wx:for="{{bookings}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
+        <view class="card-top">
+          <text class="card-svc">{{item.service_name}}</text>
+          <text class="badge badge--{{item.status}}">{{item.statusLabel}}</text>
+        </view>
+        <view class="card-info">
+          <text>{{item.booking_date}} {{item.booking_time}}</text>
+          <text wx:if="{{item.user_info.nickname}}"> · {{item.user_info.nickname}}</text>
+        </view>
+        <text class="card-note" wx:if="{{item.notes}}">{{item.notes}}</text>
+      </view>
+    </view>
+
+    <view class="empty-container" wx:if="{{!bookings.length}}">
+      <t-empty icon="calendar" description="暂无预约" />
+    </view>
+  </block>
+</view>

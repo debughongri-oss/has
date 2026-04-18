@@ -1,0 +1,81 @@
+<view class="page-works">
+  <view class="nav">
+    <scroll-view scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="nav-track">
+        <view
+          class="nav-item tappable {{currentCategory === item.key ? 'nav-item--active' : ''}}"
+          wx:for="{{categories}}"
+          wx:key="key"
+          bindtap="onCategoryChange"
+          data-key="{{item.key}}"
+        >
+          <text class="nav-label">{{item.label}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="loading-container" wx:if="{{loading && !works.length}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <view class="waterfall" wx:if="{{works.length}}">
+    <view class="waterfall-col">
+      <view
+        class="item tappable {{index % 4 === 0 ? 'item--large' : ''}}"
+        wx:for="{{works}}"
+        wx:key="_id"
+        wx:if="{{index % 2 === 0}}"
+        bindtap="goToDetail"
+        data-id="{{item._id}}"
+      >
+        <view class="item-cover">
+          <image
+            class="item-cover-img"
+            src="{{item.images[0]}}"
+            mode="aspectFill"
+            lazy-load
+          />
+        </view>
+        <view class="item-info">
+          <text class="item-title text-ellipsis">{{item.title}}</text>
+          <text class="item-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="waterfall-col">
+      <view
+        class="item tappable {{index % 4 === 1 ? 'item--large' : ''}}"
+        wx:for="{{works}}"
+        wx:key="_id"
+        wx:if="{{index % 2 === 1}}"
+        bindtap="goToDetail"
+        data-id="{{item._id}}"
+      >
+        <view class="item-cover">
+          <image
+            class="item-cover-img"
+            src="{{item.images[0]}}"
+            mode="aspectFill"
+            lazy-load
+          />
+        </view>
+        <view class="item-info">
+          <text class="item-title text-ellipsis">{{item.title}}</text>
+          <text class="item-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-container" wx:if="{{!loading && !works.length}}">
+    <t-empty icon="image" description="暂无作品" />
+  </view>
+
+  <view class="load-more" wx:if="{{works.length && hasMore}}">
+    <t-loading wx:if="{{loadingMore}}" theme="circular" size="48rpx" />
+    <view wx:else class="load-more-btn tappable" bindtap="loadMore">
+      <text class="load-more-text">查看更多</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,36 @@
+<view class="edit-service">
+  <view class="group">
+    <view class="row">
+      <text class="key">名称</text>
+      <input class="val" placeholder="如：新娘妆" value="{{name}}" bindinput="onNameInput" />
+    </view>
+    <view class="row">
+      <text class="key">价格</text>
+      <input class="val" placeholder="¥500-800" value="{{price}}" bindinput="onPriceInput" />
+    </view>
+    <view class="row">
+      <text class="key">时长</text>
+      <input class="val" type="number" placeholder="分钟" value="{{duration}}" bindinput="onDurationInput" />
+    </view>
+    <view class="row">
+      <text class="key">排序</text>
+      <input class="val" type="number" placeholder="0" value="{{sortOrder}}" bindinput="onSortInput" />
+    </view>
+  </view>
+
+  <view class="form-title">分类</view>
+  <view class="chips-wrap">
+    <view class="chip tappable {{category === item.key ? 'chip--on' : ''}}" wx:for="{{categories}}" wx:key="key" bindtap="onCategoryPick" data-key="{{item.key}}">{{item.label}}</view>
+  </view>
+
+  <view class="form-title">描述</view>
+  <view class="group">
+    <view class="row row--textarea">
+      <textarea class="textarea" placeholder="描述服务内容..." value="{{description}}" bindinput="onDescInput" maxlength="500" />
+    </view>
+  </view>
+
+  <view class="save-bar">
+    <button class="save-btn" bindtap="saveService" disabled="{{saving}}">{{saving ? '保存中...' : '保存'}}</button>
+  </view>
+</view>

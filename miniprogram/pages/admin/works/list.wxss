@@ -1,0 +1,88 @@
+.admin-works {
+  min-height: 100vh;
+  background-color: var(--bg);
+}
+
+.top-bar {
+  padding: var(--page-pad) var(--page-pad) 0;
+}
+
+.add-btn {
+  text-align: center;
+  padding: 24rpx;
+  background-color: var(--accent);
+  color: #FDFBF8;
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+
+.list {
+  padding: 24rpx var(--page-pad);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: 20rpx;
+  margin-bottom: 12rpx;
+}
+
+.item-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.item-body {
+  flex: 1;
+  padding: 0 24rpx;
+  min-width: 0;
+}
+
+.item-title {
+  display: block;
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.item-meta {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  margin-top: 4rpx;
+}
+
+.item-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  flex-shrink: 0;
+}
+
+.item-edit {
+  font-size: var(--fs-xs);
+  color: var(--accent);
+  font-weight: 500;
+  padding: 8rpx 20rpx;
+  text-align: center;
+}
+
+.item-del {
+  font-size: var(--fs-xs);
+  color: var(--red);
+  font-weight: 500;
+  padding: 8rpx 20rpx;
+  text-align: center;
+}
+
+.empty-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40vh;
+}

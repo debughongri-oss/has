@@ -1,0 +1,95 @@
+<view class="page-home">
+  <privacy-popup bind:agree="onPrivacyAgree" />
+
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <block wx:if="{{!loading && artist}}">
+    <view class="hero">
+      <view class="hero-top">
+        <view class="hero-avatar">
+          <t-image
+            wx:if="{{artist.avatar}}"
+            src="{{artist.avatar}}"
+            mode="circle"
+            width="120rpx"
+            height="120rpx"
+            shape="circle"
+          />
+          <view class="avatar-fallback" wx:else>
+            <text>{{artist.name[0] || '妆'}}</text>
+          </view>
+        </view>
+        <view class="hero-info">
+          <text class="hero-name">{{artist.name}}</text>
+          <view class="hero-meta">
+            <text class="hero-sub" wx:if="{{artist.experience}}">{{artist.experience}}</text>
+            <text class="hero-sep" wx:if="{{artist.experience && artist.contact_info.location}}">·</text>
+            <text class="hero-sub" wx:if="{{artist.contact_info.location}}">{{artist.contact_info.location}}</text>
+          </view>
+        </view>
+      </view>
+      <text class="hero-bio" wx:if="{{artist.bio}}">{{artist.bio}}</text>
+      <view class="hero-tags" wx:if="{{artist.specialties.length}}">
+        <text class="tag" wx:for="{{artist.specialties}}" wx:key="index">{{item}}</text>
+      </view>
+    </view>
+
+    <view class="portfolio" wx:if="{{featuredWorks.length}}">
+      <view class="portfolio-head">
+        <text class="portfolio-title">精选作品</text>
+        <view class="portfolio-action tappable" bindtap="goToWorks">
+          <text class="portfolio-action-text">查看全部</text>
+        </view>
+      </view>
+      <scroll-view scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="portfolio-track">
+          <view
+            class="portfolio-card tappable"
+            wx:for="{{featuredWorks}}"
+            wx:key="_id"
+            bindtap="goToWorkDetail"
+            data-id="{{item._id}}"
+          >
+            <image class="portfolio-card-img" src="{{item.images[0]}}" mode="aspectFill" lazy-load />
+            <view class="portfolio-card-info">
+              <text class="portfolio-card-title text-ellipsis">{{item.title}}</text>
+              <text class="portfolio-card-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
+            </view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="entries">
+      <view class="entry tappable" bindtap="goToWorks">
+        <view class="entry-content">
+          <text class="entry-title">浏览全部作品</text>
+          <text class="entry-desc">探索更多妆容灵感</text>
+        </view>
+        <view class="entry-arrow"></view>
+      </view>
+      <view class="entry tappable" bindtap="goToServices">
+        <view class="entry-content">
+          <text class="entry-title">服务与价格</text>
+          <text class="entry-desc">了解服务内容与收费标准</text>
+        </view>
+        <view class="entry-arrow"></view>
+      </view>
+    </view>
+
+    <view class="hero-btns">
+      <button class="btn-accent" bindtap="goToBooking">预约化妆</button>
+      <button class="btn-ghost" open-type="contact">在线咨询</button>
+      <button class="btn-wechat tappable" bindtap="copyWechat" wx:if="{{artist.contact_info.wechat}}">
+        <text class="btn-wechat-text">微信</text>
+      </button>
+    </view>
+  </block>
+
+  <view class="error-wrap" wx:if="{{!loading && error}}">
+    <text class="error-text">{{error}}</text>
+    <view class="error-retry tappable" bindtap="loadProfile">重试</view>
+  </view>
+</view>

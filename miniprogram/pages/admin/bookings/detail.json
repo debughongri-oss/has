@@ -1,0 +1,7 @@
+{
+  "usingComponents": {
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-dialog": "tdesign-miniprogram/dialog/dialog"
+  },
+  "navigationBarTitleText": "预约详情"
+}

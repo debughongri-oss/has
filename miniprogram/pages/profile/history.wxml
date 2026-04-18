@@ -1,0 +1,26 @@
+<view class="page-history">
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <view class="list" wx:if="{{!loading && bookings.length}}">
+    <view class="card" wx:for="{{bookings}}" wx:key="_id">
+      <view class="card-top">
+        <view class="card-left">
+          <text class="card-svc">{{item.service_name}}</text>
+          <text class="card-time">{{item.booking_date}} {{item.booking_time}}</text>
+        </view>
+        <text class="badge badge--{{item.status}}">{{item.statusLabel}}</text>
+      </view>
+      <text class="card-note" wx:if="{{item.notes}}">{{item.notes}}</text>
+      <text class="card-reason" wx:if="{{item.reject_reason}}">拒绝原因: {{item.reject_reason}}</text>
+      <view class="card-action" wx:if="{{item.status === 'pending'}}">
+        <text class="cancel" bindtap="cancelBooking" data-id="{{item._id}}">取消预约</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-container" wx:if="{{!loading && !bookings.length}}">
+    <t-empty icon="calendar" description="暂无预约记录" />
+  </view>
+</view>

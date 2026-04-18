@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-empty": "tdesign-miniprogram/empty/empty"
+  },
+  "navigationBarTitleText": "服务项目",
+  "enablePullDownRefresh": true
+}

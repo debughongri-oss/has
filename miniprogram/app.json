@@ -1,0 +1,76 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/works/list",
+    "pages/works/detail",
+    "pages/services/list",
+    "pages/booking/create",
+    "pages/profile/index",
+    "pages/profile/history"
+  ],
+  "window": {
+    "backgroundTextStyle": "dark",
+    "navigationBarBackgroundColor": "#F5F2EE",
+    "navigationBarTitleText": "",
+    "navigationBarTextStyle": "black"
+  },
+  "tabBar": {
+    "color": "#A8A098",
+    "selectedColor": "#9C7A5A",
+    "backgroundColor": "#FDFCF9",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "images/tab-home.png",
+        "selectedIconPath": "images/tab-home-active.png"
+      },
+      {
+        "pagePath": "pages/works/list",
+        "text": "作品",
+        "iconPath": "images/tab-works.png",
+        "selectedIconPath": "images/tab-works-active.png"
+      },
+      {
+        "pagePath": "pages/services/list",
+        "text": "服务",
+        "iconPath": "images/tab-services.png",
+        "selectedIconPath": "images/tab-services-active.png"
+      },
+      {
+        "pagePath": "pages/booking/create",
+        "text": "预约",
+        "iconPath": "images/tab-booking.png",
+        "selectedIconPath": "images/tab-booking-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "images/tab-profile.png",
+        "selectedIconPath": "images/tab-profile-active.png"
+      }
+    ]
+  },
+  "subPackages": [
+    {
+      "root": "pages/admin",
+      "name": "admin",
+      "pages": [
+        "works/list",
+        "works/edit",
+        "services/list",
+        "services/edit",
+        "bookings/list",
+        "bookings/detail",
+        "profile/edit"
+      ]
+    }
+  ],
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "usingComponents": {
+    "privacy-popup": "/components/privacy/privacy"
+  }
+}

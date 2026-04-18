@@ -1,0 +1,58 @@
+<view class="edit-work">
+  <view class="form-block">
+    <view class="group">
+      <view class="row">
+        <text class="label">标题</text>
+        <input class="input" placeholder="输入作品标题" value="{{title}}" bindinput="onTitleInput" />
+      </view>
+    </view>
+  </view>
+
+  <view class="form-block">
+    <text class="form-title">分类</text>
+    <view class="chips">
+      <view
+        class="chip tappable {{category === item.key ? 'chip--on' : ''}}"
+        wx:for="{{categories}}"
+        wx:key="key"
+        bindtap="onCategoryPick"
+        data-key="{{item.key}}"
+      >{{item.label}}</view>
+    </view>
+  </view>
+
+  <view class="form-block">
+    <text class="form-title">图片（最多9张）</text>
+    <view class="img-grid">
+      <view class="img-item" wx:for="{{images}}" wx:key="index">
+        <image class="img-preview" src="{{item}}" mode="aspectFill" />
+        <view class="img-del tappable" bindtap="removeImage" data-index="{{index}}">×</view>
+      </view>
+      <view class="img-add tappable" wx:if="{{images.length < 9}}" bindtap="chooseImages">
+        <text class="img-add-icon">+</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="form-block">
+    <view class="group">
+      <view class="row col">
+        <text class="label">描述</text>
+        <textarea class="textarea" placeholder="描述一下这个作品..." value="{{description}}" bindinput="onDescInput" maxlength="500" />
+      </view>
+    </view>
+  </view>
+
+  <view class="form-block">
+    <view class="group">
+      <view class="row row--switch">
+        <text class="label">精选（显示在首页）</text>
+        <switch checked="{{isFeatured}}" bindchange="onFeaturedChange" color="#9C7A5A" />
+      </view>
+    </view>
+  </view>
+
+  <view class="save-bar">
+    <button class="save-btn" bindtap="saveWork" disabled="{{saving}}">{{saving ? '保存中...' : '保存'}}</button>
+  </view>
+</view>

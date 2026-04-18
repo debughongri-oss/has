@@ -1,0 +1,117 @@
+.edit-service {
+  min-height: 100vh;
+  background-color: var(--bg);
+  padding-bottom: 200rpx;
+}
+
+.group {
+  background-color: var(--bg-elevated);
+  margin: 16rpx var(--page-pad) 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--page-pad);
+  min-height: 96rpx;
+  border-bottom: 1rpx solid var(--separator);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row--textarea {
+  padding: var(--page-pad);
+}
+
+.key {
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+  width: 100rpx;
+  flex-shrink: 0;
+}
+
+.val {
+  flex: 1;
+  height: 96rpx;
+  font-size: var(--fs-sm);
+  text-align: right;
+  color: var(--text-primary);
+  padding: 0;
+}
+
+.textarea {
+  width: 100%;
+  height: 200rpx;
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+  padding: 0;
+  line-height: 1.7;
+}
+
+.form-title {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  padding: 32rpx var(--page-pad) 12rpx;
+}
+
+.chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  padding: 0 var(--page-pad);
+}
+
+.chip {
+  padding: 12rpx 32rpx;
+  background-color: var(--fill-secondary);
+  color: var(--text-primary);
+  font-size: var(--fs-xs);
+  border-radius: 999rpx;
+  text-align: center;
+}
+
+.chip--on {
+  background-color: var(--accent);
+  color: #FDFBF8;
+}
+
+.save-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 24rpx var(--page-pad);
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  background-color: var(--bg-elevated);
+  border-top: 1rpx solid var(--separator);
+}
+
+.save-btn {
+  width: 100%;
+  height: 96rpx;
+  line-height: 96rpx;
+  background-color: var(--accent);
+  color: #FDFBF8;
+  border-radius: var(--radius-md);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  border: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.save-btn::after {
+  border: none;
+}
+
+.save-btn:active {
+  opacity: 0.8;
+  transform: scale(0.97);
+}
+
+.save-btn[disabled] {
+  opacity: 0.4;
+}

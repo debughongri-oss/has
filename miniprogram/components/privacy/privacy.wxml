@@ -1,0 +1,20 @@
+<!--components/privacy/privacy.wxml-->
+<!--隐私协议弹窗 — Pitfall P1: 必须在调用隐私接口前获得用户同意-->
+<view class="privacy-mask" wx:if="{{showPrivacy}}">
+  <view class="privacy-dialog">
+    <view class="privacy-title">隐私保护提示</view>
+    <view class="privacy-content">
+      在你使用本小程序服务之前，请仔细阅读
+      <text class="privacy-link" bindtap="openPrivacyContract">《隐私保护指引》</text>。
+      如你同意，请点击"同意"开始使用。
+    </view>
+    <view class="privacy-buttons">
+      <button class="privacy-btn privacy-btn-disagree" bindtap="handleDisagree">拒绝</button>
+      <button
+        class="privacy-btn privacy-btn-agree"
+        open-type="agreePrivacyAuthorization"
+        bindagreeprivacyauthorization="handleAgree"
+      >同意</button>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,134 @@
+.page-profile {
+  min-height: 100vh;
+  background-color: var(--bg);
+}
+
+.user-block {
+  display: flex;
+  align-items: center;
+  background-color: var(--bg-elevated);
+  padding: 56rpx var(--page-pad) 48rpx;
+}
+
+.user-avatar {
+  width: 112rpx;
+  height: 112rpx;
+  padding: 0;
+  margin: 0;
+  margin-right: 28rpx;
+  border: none;
+  background: none;
+  border-radius: 50%;
+  overflow: hidden;
+  line-height: normal;
+  flex-shrink: 0;
+}
+
+.user-avatar::after {
+  border: none;
+}
+
+.avatar-img {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  display: block;
+}
+
+.avatar-fallback {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 50%;
+  background-color: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-fallback text {
+  font-size: var(--fs-base);
+  color: var(--accent);
+  font-weight: 300;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-name {
+  font-size: var(--fs-lg);
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 0;
+  height: 50rpx;
+  line-height: 50rpx;
+}
+
+.user-sub {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  margin-top: 4rpx;
+}
+
+.section {
+  margin-top: 32rpx;
+}
+
+.section-title {
+  display: block;
+  padding: 0 var(--page-pad);
+  margin-bottom: 12rpx;
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.group {
+  background-color: var(--bg-elevated);
+  margin: 0 var(--page-pad);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28rpx var(--page-pad);
+  border-bottom: 1rpx solid var(--separator);
+}
+
+.menu-item--last {
+  border-bottom: none;
+}
+
+.menu-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.menu-text {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.menu-note {
+  display: block;
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+  margin-top: 4rpx;
+}
+
+.menu-arrow {
+  width: 14rpx;
+  height: 14rpx;
+  border-top: 2rpx solid var(--text-tertiary);
+  border-right: 2rpx solid var(--text-tertiary);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+  margin-left: 16rpx;
+}

@@ -10,7 +10,7 @@ Requirements for initial release. Each maps to roadmap phases.
 ### Authentication
 
 - [ ] **AUTH-01**: User can silently log in via WeChat (wx.login) and obtain unique identity (OpenID)
-- [ ] **AUTH-02**: User can view makeup artist profile (name, avatar, bio, specialties, experience)
+- [x] **AUTH-02**: User can view makeup artist profile (name, avatar, bio, specialties, experience)
 
 ### Portfolio
 
@@ -84,8 +84,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
 | PORT-01 | Phase 2 | Pending |
 | PORT-02 | Phase 2 | Pending |
 | PORT-03 | Phase 2 | Pending |

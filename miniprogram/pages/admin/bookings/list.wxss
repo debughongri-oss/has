@@ -1,0 +1,129 @@
+.admin-bookings {
+  min-height: 100vh;
+  background-color: var(--bg);
+}
+
+.filter-bar {
+  background-color: var(--bg-elevated);
+  padding: 16rpx var(--page-pad);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1rpx solid var(--separator);
+}
+
+.seg-track {
+  display: inline-flex;
+  gap: 8rpx;
+}
+
+.seg {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 12rpx 28rpx;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  background-color: var(--fill-secondary);
+  border-radius: 999rpx;
+  letter-spacing: 1rpx;
+}
+
+.seg--on {
+  background-color: var(--accent);
+  color: #fff;
+}
+
+.seg-count {
+  font-size: 20rpx;
+  background-color: var(--red);
+  color: #fff;
+  padding: 2rpx 10rpx;
+  border-radius: 999rpx;
+  min-width: 28rpx;
+  text-align: center;
+}
+
+.seg--on .seg-count {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.list {
+  padding: 24rpx var(--page-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.card {
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--page-pad);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.03);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-svc {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: 1rpx;
+}
+
+.badge {
+  font-size: 22rpx;
+  font-weight: 500;
+  padding: 6rpx 20rpx;
+  border-radius: 999rpx;
+  letter-spacing: 1rpx;
+}
+
+.badge--pending {
+  background-color: var(--orange-bg);
+  color: var(--orange);
+}
+
+.badge--accepted {
+  background-color: var(--green-bg);
+  color: var(--green);
+}
+
+.badge--completed {
+  background-color: var(--purple-bg);
+  color: var(--purple);
+}
+
+.badge--cancelled,
+.badge--rejected {
+  background-color: var(--fill-primary);
+  color: var(--text-secondary);
+}
+
+.card-info {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  margin-top: 12rpx;
+  letter-spacing: 1rpx;
+}
+
+.card-note {
+  display: block;
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--separator);
+  letter-spacing: 1rpx;
+}
+
+.empty-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40vh;
+}

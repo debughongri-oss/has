@@ -1,0 +1,38 @@
+<view class="admin-services">
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <block wx:if="{{!loading}}">
+    <view class="top-bar">
+      <view class="add-btn tappable" bindtap="goToAdd">添加服务</view>
+    </view>
+
+    <view class="list" wx:if="{{services.length}}">
+      <view class="item" wx:for="{{services}}" wx:key="_id">
+        <view class="item-body">
+          <text class="item-name">{{item.name}}</text>
+          <text class="item-meta">{{item.price}} · {{item.duration}}分钟</text>
+        </view>
+        <view class="item-btns">
+          <text class="item-edit tappable" bindtap="goToEdit" data-id="{{item._id}}">编辑</text>
+          <text class="item-del tappable" bindtap="confirmDelete" data-id="{{item._id}}" data-index="{{index}}">删除</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-container" wx:if="{{!services.length}}">
+      <t-empty icon="shop" description="还没有服务项目" />
+    </view>
+  </block>
+
+  <t-dialog
+    visible="{{showDeleteDialog}}"
+    title="确认删除"
+    content="删除后无法恢复，确定要删除这个服务吗？"
+    confirm-btn="删除"
+    cancel-btn="取消"
+    bind:confirm="onDeleteConfirm"
+    bind:cancel="onDeleteCancel"
+  />
+</view>

@@ -1,0 +1,38 @@
+<view class="page-services">
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <view class="header" wx:if="{{!loading && services.length}}">
+    <text class="header-title">服务项目</text>
+    <text class="header-sub">选择适合你的妆容服务</text>
+  </view>
+
+  <view class="list" wx:if="{{!loading && services.length}}">
+    <view class="svc" wx:for="{{services}}" wx:key="_id">
+      <view class="svc-top">
+        <view class="svc-left">
+          <text class="svc-name">{{item.name}}</text>
+          <view class="svc-meta" wx:if="{{item.duration || item.category}}">
+            <text wx:if="{{item.duration}}">{{item.duration}}分钟</text>
+            <text class="svc-sep" wx:if="{{item.duration && item.category}}">·</text>
+            <text wx:if="{{item.category}}">{{item.category}}</text>
+          </view>
+        </view>
+        <view class="svc-price-wrap">
+          <text class="svc-price">{{item.price}}</text>
+          <text class="svc-price-unit">元</text>
+        </view>
+      </view>
+      <text class="svc-desc" wx:if="{{item.description}}">{{item.description}}</text>
+    </view>
+  </view>
+
+  <view class="empty-container" wx:if="{{!loading && !services.length}}">
+    <t-empty icon="shop" description="暂无服务项目" />
+  </view>
+
+  <view class="bottom-cta" wx:if="{{!loading && services.length}}">
+    <button class="cta-btn" bindtap="goToBook">预约服务</button>
+  </view>
+</view>

@@ -1,0 +1,169 @@
+.page {
+  min-height: 100vh;
+  background-color: var(--bg);
+  padding-bottom: 180rpx;
+}
+
+.status-bar {
+  padding: 48rpx var(--page-pad);
+  text-align: center;
+}
+
+.status-bar--pending {
+  background-color: var(--orange);
+}
+
+.status-bar--accepted {
+  background-color: var(--green);
+}
+
+.status-bar--completed {
+  background-color: var(--purple);
+}
+
+.status-bar--cancelled,
+.status-bar--rejected {
+  background-color: var(--text-secondary);
+}
+
+.status-text {
+  color: #fff;
+  font-size: 34rpx;
+  font-weight: 600;
+  letter-spacing: 3rpx;
+}
+
+.group {
+  background-color: var(--bg-elevated);
+  margin: 16rpx var(--page-pad) 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 28rpx var(--page-pad);
+  border-bottom: 1rpx solid var(--separator);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row--col {
+  flex-direction: column;
+}
+
+.key {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+  letter-spacing: 1rpx;
+}
+
+.val {
+  font-size: 28rpx;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-align: right;
+  max-width: 60%;
+  letter-spacing: 1rpx;
+}
+
+.val--wrap {
+  white-space: normal;
+}
+
+.val--red {
+  color: var(--red);
+}
+
+.label {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16rpx;
+  letter-spacing: 1rpx;
+}
+
+.textarea {
+  width: 100%;
+  height: 160rpx;
+  background-color: var(--fill-secondary);
+  border-radius: var(--radius-md);
+  padding: 20rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+  line-height: 1.7;
+  border: none;
+  letter-spacing: 1rpx;
+}
+
+.save-link {
+  display: block;
+  text-align: center;
+  color: var(--accent);
+  font-size: 28rpx;
+  font-weight: 500;
+  margin-top: 16rpx;
+  letter-spacing: 1rpx;
+}
+
+.dialog-textarea {
+  width: 100%;
+  height: 120rpx;
+  padding: 16rpx;
+  background-color: var(--fill-secondary);
+  border-radius: var(--radius-md);
+  font-size: 28rpx;
+  box-sizing: border-box;
+  margin-top: 16rpx;
+  border: none;
+  letter-spacing: 1rpx;
+}
+
+.action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  gap: 16rpx;
+  padding: 24rpx var(--page-pad);
+  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  background-color: var(--bg-elevated);
+  border-top: 1rpx solid var(--separator);
+}
+
+.act-btn {
+  flex: 1;
+  height: 96rpx;
+  line-height: 96rpx;
+  border-radius: var(--radius-md);
+  font-size: 28rpx;
+  font-weight: 500;
+  letter-spacing: 2rpx;
+  border: none;
+  padding: 0;
+}
+
+.act-btn::after {
+  border: none;
+}
+
+.act-btn--accept {
+  background-color: var(--green);
+  color: #fff;
+}
+
+.act-btn--reject {
+  background-color: var(--fill-primary);
+  color: var(--red);
+}
+
+.act-btn--done {
+  background-color: var(--accent);
+  color: #fff;
+}

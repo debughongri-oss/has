@@ -1,0 +1,51 @@
+<view class="edit-profile">
+  <view class="avatar-area">
+    <view class="avatar-row">
+      <text class="key">头像</text>
+      <view class="avatar-picker" bindtap="chooseAvatar">
+        <image wx:if="{{avatar}}" class="avatar-preview" src="{{avatar}}" mode="aspectFill" />
+        <view wx:else class="avatar-ph">
+          <text class="avatar-ph-text">+</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="group">
+    <view class="row">
+      <text class="key">姓名</text>
+      <input class="val" placeholder="化妆师姓名" value="{{name}}" bindinput="onNameInput" />
+    </view>
+    <view class="row">
+      <text class="key">经验</text>
+      <input class="val" placeholder="如：5年经验" value="{{experience}}" bindinput="onExperienceInput" />
+    </view>
+    <view class="row">
+      <text class="key">擅长</text>
+      <input class="val" placeholder="逗号分隔" value="{{specialtiesText}}" bindinput="onSpecialtiesInput" />
+    </view>
+    <view class="row">
+      <text class="key">地区</text>
+      <input class="val" placeholder="所在地区" value="{{location}}" bindinput="onLocationInput" />
+    </view>
+    <view class="row">
+      <text class="key">微信</text>
+      <input class="val" placeholder="微信号" value="{{wechat}}" bindinput="onWechatInput" />
+    </view>
+    <view class="row">
+      <text class="key">手机</text>
+      <input class="val" type="number" placeholder="手机号" value="{{phone}}" bindinput="onPhoneInput" />
+    </view>
+  </view>
+
+  <view class="group">
+    <view class="row row--col">
+      <text class="label">简介</text>
+      <textarea class="textarea" placeholder="介绍一下自己..." value="{{bio}}" bindinput="onBioInput" maxlength="200" />
+    </view>
+  </view>
+
+  <view class="save-bar">
+    <button class="save-btn" bindtap="saveProfile" disabled="{{saving}}">{{saving ? '保存中...' : '保存'}}</button>
+  </view>
+</view>
