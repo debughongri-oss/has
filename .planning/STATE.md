@@ -1,17 +1,17 @@
 ---
 gsd_state_version: 1.0
-milestone: none
-milestone_name: planning
-status: milestone_complete
-stopped_at: v1.0 milestone archived — awaiting next milestone
-last_updated: "2026-04-19T07:00:00.000Z"
-last_activity: 2026-04-19 -- v1.0 milestone archived
+milestone: v1.1
+milestone_name: 品牌升级 & 体验增强
+status: defining_requirements
+stopped_at: defining requirements
+last_updated: "2026-04-19T08:00:00.000Z"
+last_activity: 2026-04-19 -- Milestone v1.1 started
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 8
-  completed_plans: 8
-  percent: 100
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-19)
 
 **Core value:** 客户看到作品后能直接预约化妆服务——从"看到好看的作品"到"我要预约"的路径最短
-**Current focus:** Planning next milestone
+**Current focus:** v1.1 品牌升级 & 体验增强
 
 ## Current Position
 
-Phase: All v1.0 phases complete (1-5)
-Plan: 8/8 complete
-Status: **v1.0 ARCHIVED**
-Last activity: 2026-04-19 -- Milestone v1.0 archived to .planning/milestones/
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-19 -- Milestone v1.1 started
 
 Progress: [██████████] 100%
 

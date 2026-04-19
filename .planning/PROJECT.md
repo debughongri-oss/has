@@ -40,6 +40,12 @@
 - [ ] 前后对比滑块 (PORT-07) — deferred from v1.0
 - [ ] 预约状态变更通知 (BOOK-06/07) — requires WeChat admin template config
 - [ ] 小程序码海报生成 (MGMT-03) — deferred from v1.0
+- [ ] 服务端身份验证 — 云函数写入操作加服务端 isArtist 验证
+- [ ] 日历视图 — 化妆师管理预约用日历展示
+- [ ] 时间冲突检测 — 预约时自动检测时间重叠
+- [ ] 预约备注增强 — 客户填写更多信息（皮肤类型、特殊需求等）
+- [ ] 客户评价系统 — 预约完成后公开打分+文字评价
+- [ ] 简介增强 — 服务区域、从业年限、擅长风格标签
 
 ### Out of Scope
 
@@ -97,5 +103,21 @@ This document evolves at phase transitions and milestone boundaries.
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
+## Current Milestone: v1.1 品牌升级 & 体验增强
+
+**Goal:** 补齐 v1.0 遗留功能，提升预约体验和化妆师品牌形象
+
+**Target features:**
+- 前后对比滑块 (PORT-07) — 作品详情页 before/after 滑块对比
+- 预约状态变更通知 (BOOK-06/07) — 微信订阅消息
+- 小程序码海报生成 (MGMT-03) — 分享海报
+- 服务端身份验证 — 云函数写入操作加服务端验证
+- 日历视图 — 化妆师管理预约用日历展示
+- 时间冲突检测 — 预约时自动检测时间重叠
+- 预约备注增强 — 客户填写更多信息
+- 客户评价系统 — 预约完成后公开打分+文字评价
+- 简介增强 — 服务区域、从业年限、擅长风格标签
+
 ---
+
 *Last updated: 2026-04-19 after v1.0 milestone*
