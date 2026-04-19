@@ -1,11 +1,11 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: complete
-stopped_at: All 5 phases complete — v1.0 done
-last_updated: "2026-04-17T10:00:00.000Z"
-last_activity: 2026-04-17 -- Completed Phase 5 (Plan 05-01) — v1.0 COMPLETE
+milestone: none
+milestone_name: planning
+status: milestone_complete
+stopped_at: v1.0 milestone archived — awaiting next milestone
+last_updated: "2026-04-19T07:00:00.000Z"
+last_activity: 2026-04-19 -- v1.0 milestone archived
 progress:
   total_phases: 5
   completed_phases: 5
@@ -18,17 +18,17 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-17)
+See: .planning/PROJECT.md (updated 2026-04-19)
 
 **Core value:** 客户看到作品后能直接预约化妆服务——从"看到好看的作品"到"我要预约"的路径最短
-**Current focus:** v1.0 COMPLETE
+**Current focus:** Planning next milestone
 
 ## Current Position
 
-Phase: 5 of 5 (Sharing & Growth)
-Plan: 1 of 1 in current phase — ALL COMPLETE
-Status: **v1.0 COMPLETE**
-Last activity: 2026-04-17 -- Completed Plan 05-01
+Phase: All v1.0 phases complete (1-5)
+Plan: 8/8 complete
+Status: **v1.0 ARCHIVED**
+Last activity: 2026-04-19 -- Milestone v1.0 archived to .planning/milestones/
 
 Progress: [██████████] 100%
 
@@ -37,25 +37,18 @@ Progress: [██████████] 100%
 **Velocity:**
 
 - Total plans completed: 8
-- Average duration: ~3m
-- Total execution time: ~0.4 hours
+- Average duration: ~4m
+- Total execution time: ~0.5 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 1. Foundation & Profile | 2 | ~6m | ~3m |
-| 2. Portfolio System | 2 | ~6m | ~3m |
-| 3. Service Catalog | 1 | ~3m | ~3m |
-| 4. Booking System | 2 | ~7m | ~3.5m |
+| 1. Foundation & Profile | 2 | ~8m | ~4m |
+| 2. Portfolio System | 2 | ~10m | ~5m |
+| 3. Service Catalog | 1 | ~10m | ~10m |
+| 4. Booking System | 2 | ~8m | ~4m |
 | 5. Sharing & Growth | 1 | ~2m | ~2m |
-
-**Recent Trend:**
-
-- Last 5 plans: -
-- Trend: -
-
-*Updated after each plan completion*
 
 ## Accumulated Context
 
@@ -69,23 +62,26 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-- Phase 4 (Booking): Cloud database transaction API needs runtime verification for concurrency handling
-- Phase 4 (Booking): Subscription message template IDs require manual WeChat admin console configuration
+- Write operations on cloud functions only have client-side auth checks — server-side verification needed
+- Placeholder values (AppID, cloud env ID, TabBar icons) require manual replacement before deployment
 
 ## Deferred Items
 
-Items acknowledged and carried forward from previous milestone close:
+Items acknowledged and deferred at v1.0 milestone close:
 
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
-| *(none)* | | | |
+| requirement | PORT-07: Before/after comparison slider | Not implemented | 2026-04-19 |
+| requirement | BOOK-06/07: Subscription message notifications | Needs WeChat admin config | 2026-04-19 |
+| requirement | MGMT-03: QR code poster generation | Not implemented | 2026-04-19 |
+| tech-debt | Server-side auth verification on write operations | Client-side only | 2026-04-19 |
 
 ## Session Continuity
 
-Last session: 2026-04-17T10:00:00.000Z
-Stopped at: v1.0 COMPLETE — All 5 phases done
-Resume file: .planning/phases/05-sharing-growth/05-01-SUMMARY.md
+Last session: 2026-04-19
+Stopped at: v1.0 milestone archived — awaiting next milestone
+Next step: `/gsd-new-milestone` to start v1.1+ planning
