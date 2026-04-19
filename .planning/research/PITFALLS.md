@@ -1,373 +1,498 @@
-# Domain Pitfalls
+# Domain Pitfalls — v1.1 Milestone: Adding Features to Existing System
 
-**Domain:** 微信小程序 — 化妆师作品展示与预约系统
-**Researched:** 2026-04-17
-**Overall Confidence:** HIGH (sourced from official WeChat documentation, Context7-verified framework docs)
+**Domain:** 微信小程序 — 化妆师作品展示与预约系统 (v1.1 feature additions)
+**Researched:** 2026-04-19
+**Overall Confidence:** HIGH (code-verified pitfalls from existing codebase + official WeChat documentation)
 
 ---
 
 ## Critical Pitfalls
 
-Mistakes that cause rewrites, review rejection, or major user-facing failures.
+Mistakes that cause rewrites, review rejection, or data corruption when adding these features to the existing system.
 
-### Pitfall 1: 未经隐私协议授权就调用隐私接口（审核必拒）
+### Pitfall 1: 订阅消息模板 ID 硬编码在两处 — 新增模板时漏改
 
-**What goes wrong:** 从 2023年10月17日起，微信强制要求所有小程序在调用涉及用户个人信息的 API 前必须先获得用户隐私协议同意。本项目需要调用 `wx.chooseMedia`（上传作品图片）、`wx.getUserProfile`（获取用户信息）等隐私接口。如果在用户未同意隐私协议的情况下调用，接口会直接失败，且**审核会被拒绝**。
+**What goes wrong:** 现有代码中 `SUBSCRIBE_TEMPLATE_ID` 同时存在于客户端 `utils/constants.js`（第39行）和云函数 `cloudfunctions/bookings/index.js`（第7行）。当添加新模板（如"评价邀请"模板、"预约提醒"模板）时，极易只改了一处而忘记另一处，导致客户端订阅成功但云函数下发失败（或反过来）。
 
-**Why it happens:** 开发者习惯性地在页面加载时直接调用 API，忽略了隐私协议同步流程。`wx.chooseImage` 已停止维护，必须使用 `wx.chooseMedia`，后者属于隐私接口。
+**Why it happens:** 现有 `TEMPLATE_ID` 是一个硬编码字符串常量 `-i6OevJwdS5fGFXCsB9Xux4zaaxUkXTR0xfLg5T48jM`，客户端和云端各自维护一份。新增模板时没有集中管理机制。
 
 **Consequences:**
-- 审核直接被拒，无法发布
-- 用户首次使用时功能崩溃（chooseMedia 静默失败）
-- 被微信要求整改，延迟上线
+- 新增的"评价邀请"通知完全无声 — 客户订阅了但永远收不到
+- 新增的"预约提醒"发送到错误的模板 ID — 消息内容与模板不匹配
+- 调试困难 — 云函数不报错（`sendNotify` 有 try-catch 吞掉错误，见 bookings/index.js 第31-33行）
 
 **Prevention:**
-1. 在 `app.json` 或全局入口通过 `wx.getPrivacySetting` 检查 `needAuthorization`
-2. 使用 `<button open-type="agreePrivacyAuthorization">` 组件让用户同意
-3. 只在 `bindagreeprivacyauthorization` 回调之后才调用隐私接口
-4. 设计全局隐私弹窗组件，在 App.onLaunch 时统一处理
+1. 所有模板 ID 统一管理在一个地方（推荐：云函数端使用配置对象，客户端通过 `constants.js` 导出）
+2. 建立 `TEMPLATE_IDS` 对象而非散落的单个常量：
+   ```javascript
+   // constants.js
+   const TEMPLATE_IDS = {
+     BOOKING_STATUS_CHANGE: 'xxx', // 现有
+     REVIEW_INVITE: 'yyy',         // 新增 — 预约完成后邀请评价
+     BOOKING_REMINDER: 'zzz'        // 新增 — 服务前提醒
+   }
+   ```
+3. 云函数端同样使用结构化配置
+4. `sendNotify` 函数当前的 `console.error` 被静默吞掉 — 必须改为记录到数据库日志集合或使用 `wx realtime log`
 
-**Detection:** 首次打开小程序 → 触发任何需要选择图片/获取信息的操作 → 如果没有先弹出隐私协议 → 必然触发此问题
+**Detection:** 在微信公众平台后台创建新模板后，搜代码中所有 `TEMPLATE` / `templateId` / `tmplIds` 关键字确认两处同步
 
-**Phase:** Phase 1（基础框架搭建）就必须实现隐私协议流程
+**Phase:** Phase 1 — 订阅消息功能开发前
 
 **Sources:**
-- 官方文档: https://developers.weixin.qq.com/miniprogram/dev/framework/user-privacy/PrivacyAuthorize.html
+- 代码审查: `miniprogram/utils/constants.js:39`, `cloudfunctions/bookings/index.js:7-8`
+- 微信官方订阅消息文档: https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/subscribe-message.html
 - Confidence: HIGH
 
 ---
 
-### Pitfall 2: 订阅消息设计为"无限推送"（架构根本性错误）
+### Pitfall 2: 订阅消息 `requestSubscribeMessage` 的时机错误 — 不在用户点击事件中调用
 
-**What goes wrong:** 微信小程序的订阅消息是**一次性**的 — 用户每次订阅只能收到一条消息通知。`wx.requestSubscribeMessage` 每调用一次，用户授权后只能下发一条消息。不存在"订阅一次永久推送"的能力。如果将预约通知设计为"化妆师接受预约后自动通知用户"，而不考虑用户是否已订阅，消息将无法送达。
+**What goes wrong:** 现有代码（`pages/booking/create.js:116`）在预约提交成功后调用 `wx.requestSubscribeMessage`，这个位置是合法的（在 Promise 回调中，由用户点击"提交预约"触发）。但新增功能中，如果尝试在页面 `onLoad` 或 `onShow` 中自动弹出订阅弹窗（如评价邀请），会被微信拒绝 — **`requestSubscribeMessage` 必须由用户主动点击行为触发**，不能在页面自动加载时调用。
 
-**Why it happens:** 开发者（尤其是从 Web/App 背景来的）假设微信消息 = Web push notification，可以随时推送。
+**Why it happens:** 开发者想在用户完成预约后自动弹出评价邀请订阅，但"预约完成"是一个 modal 弹窗（`wx.showModal`），modal 关闭后回调里调用 `requestSubscribeMessage` 不算用户点击事件。
 
 **Consequences:**
-- 预约状态变更后通知无法送达
-- 化妆师看不到新预约提醒
-- 用户对"没收到通知"投诉
-- 需要重构通知机制
+- `requestSubscribeMessage` 调用失败，返回 `requestSubscribeMessage:fail can only be invoked by user TAP gesture`
+- 功能完全不工作
 
 **Prevention:**
-1. **在用户提交预约时**引导用户订阅（`wx.requestSubscribeMessage`），此时用户有明确动机同意
-2. 每个预约流程的交互节点都要对应一次订阅：
-   - 用户提交预约时 → 订阅"预约结果通知"模板
-   - 化妆师接受预约时 → 让化妆师订阅"预约提醒"模板
-3. 预先在微信公众平台后台申请消息模板（需审核通过）
-4. 通过云函数/服务端调用 `subscribeMessage.send` 下发消息
-5. 处理消息下发失败的情况（用户拒收、已取消订阅等）
+1. 评价邀请的订阅必须放在用户主动点击的按钮上（如"邀请评价"按钮的 `bindtap` 回调中）
+2. 订阅时机设计：
+   - ✅ 用户点击"提交预约"→ 成功后弹出订阅（现有方案，合法）
+   - ✅ 用户点击"查看预约详情"→ 页面内有"接收通知"按钮
+   - ❌ 页面 onLoad 时自动弹出订阅
+   - ❌ wx.showModal 的 success 回调中弹出订阅
+3. 对于"评价邀请"，更好的方案是：在预约状态变为"已完成"时，由云函数下发一条带"评价"链接的订阅消息，用户点击消息卡片进入评价页面 — 而不是在小程序内弹出订阅
 
-**Detection:** 通知功能代码中如果出现"在非用户交互时调用 requestSubscribeMessage" → 必然失败
+**Detection:** 如果 `requestSubscribeMessage` 不在 `bindtap` 回调链中 → 必然失败
 
-**Phase:** Phase 2（预约功能开发）时必须正确实现
+**Phase:** Phase 1 — 订阅消息增强
 
 **Sources:**
-- 官方文档: https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/subscribe-message.html
+- 微信官方文档明确要求用户 TAP gesture 触发
+- 现有正确实现: `miniprogram/pages/booking/create.js:94-129`
 - Confidence: HIGH
 
 ---
 
-### Pitfall 3: 图片未压缩就上传，导致超时/OOM/流量浪费
+### Pitfall 3: Canvas 海报生成用旧版 API — `wx.createCanvasContext` 已废弃
 
-**What goes wrong:** 化妆作品通常是高分辨率照片（单张 5-10MB），直接上传会导致：
-1. `wx.uploadFile` 超时（默认60秒，网络差时可能不够）
-2. 用户消耗大量移动流量
-3. 云存储成本飙升
-4. 作品列表加载缓慢（缩略图也是原图）
-5. 小程序并发网络请求限制为 **10 个**，大量图片同时上传会阻塞其他请求
+**What goes wrong:** 海报生成需要在小程序端使用 Canvas 绘制图片+文字+小程序码，然后 `canvasToTempFilePath` 导出图片。如果使用旧版 Canvas API (`wx.createCanvasContext`)，在新版微信客户端上可能出现渲染异常、文字截断、图片不显示等问题。微信已推荐使用 **新版 Canvas 2D API**（通过 `<canvas type="2d">` 标签）。
 
-**Why it happens:** `wx.chooseMedia` 返回的是临时文件路径，开发者直接拿去上传，没有压缩步骤。
+**Why it happens:** 搜索到的教程和博客大部分仍在使用旧版 API，开发者照抄会踩坑。
 
 **Consequences:**
-- 上传失败率高，用户体验差
-- 云存储/CDN 费用远超预期
-- 作品列表加载慢，用户流失
+- 海报在部分设备上渲染为空白
+- 文字溢出或乱码
+- `canvasToTempFilePath` 返回空白图片
+- 未来微信版本可能完全移除旧版 API
 
 **Prevention:**
-1. 上传前必须调用 `wx.compressImage({ src, quality: 80 })` 压缩
-2. 作品列表使用缩略图（上传时生成缩略图版本，如 `wx.compressImage({ quality: 30 })` 作为列表用）
-3. 作品详情页使用中等质量版本
-4. 云存储使用 `fileID` 而非原始 URL
-5. 图片上传使用队列控制，避免超过并发限制
-6. 展示上传进度（`uploadTask.onProgressUpdate`）
+1. 使用新版 Canvas 2D API：
+   ```xml
+   <canvas type="2d" id="posterCanvas" style="width: 600px; height: 800px;"></canvas>
+   ```
+   ```javascript
+   const query = wx.createSelectorQuery()
+   query.select('#posterCanvas').fields({ node: true, size: true }).exec((res) => {
+     const canvas = res[0].node
+     const ctx = canvas.getContext('2d')
+     // 使用标准 Canvas 2D API 绑定
+   })
+   ```
+2. 注意 `type="2d"` 的 canvas 不能用 `wx.createCanvasContext`
+3. Canvas 内绘制网络图片需要先 `wx.getImageInfo` 或 `wx.downloadFile` 获取本地路径（云存储 fileID 需要先转 tempFileURL）
+4. 海报中嵌入小程序码：使用 `wxacode.getUnlimited` 接口（服务端 API，需在云函数中调用），返回的 buffer 转为图片后绘制到 Canvas
 
-**Detection:** 如果 `wx.chooseMedia` → `wx.uploadFile` 之间没有 `wx.compressImage` → 必然触发
+**Detection:** 代码中出现 `wx.createCanvasContext` → 旧版 API，需替换
 
-**Phase:** Phase 1（作品上传功能）就必须实现
+**Phase:** Phase 2 — 海报生成功能
 
 **Sources:**
-- Taro 官方文档: https://context7.com/nervjs/taro-docs/apis/media/image/compressImage.md
-- uni-app 官方文档: https://context7.com/websites/uniapp_dcloud_net_cn/api/media/video.html
+- 微信官方 Canvas 介绍: https://developers.weixin.qq.com/miniprogram/dev/framework/ability/canvas.html
+- 微信官方旧版迁移指南: https://developers.weixin.qq.com/miniprogram/dev/framework/ability/canvas-legacy-migration.html
 - Confidence: HIGH
 
 ---
 
-### Pitfall 4: 包体积超限（主包 > 2MB 导致无法发布）
+### Pitfall 4: 小程序码接口 `getUnlimited` 只能在已发布版本使用
 
-**What goes wrong:** 微信小程序**主包不能超过 2MB**，每个分包不超过 2MB，总计不超过 **20MB**。如果将所有页面、组件、静态资源都放在主包，很容易超限。本项目包含大量页面（作品列表、作品详情、服务管理、预约流程、化妆师后台管理），如果还有 UI 组件库（如 Vant Weapp、TDesign），包体积会迅速膨胀。
+**What goes wrong:** `wxacode.getUnlimited`（接口B，无数量限制，推荐使用）是**服务端 API**，且**只能为已发布的小程序生成小程序码**。开发阶段调用会返回错误。如果海报功能在开发/体验版测试时始终失败，开发者可能浪费时间排查"代码问题"而忽略这只是环境限制。
 
-**Why it happens:** 初始开发时不考虑包体积，后期才发现超限，被迫重构分包结构。
+**Why it happens:** 文档中这个限制容易被忽略，且错误信息不直观。
+
+**Consequences:**
+- 开发阶段海报功能完全无法测试
+- 误以为是代码 bug 导致无限调试
+- 如果用了接口A (`getQRCode`)，有 10万次总量限制，测试时浪费配额
+
+**Prevention:**
+1. 开发阶段使用 TDesign 的 `<t-qrcode>` 组件生成普通二维码替代（项目已安装 TDesign，`miniprogram_npm/tdesign-miniprogram/qrcode` 已存在）
+2. 生产环境切换为 `wxacode.getUnlimited`（云函数调用）
+3. 使用条件编译或环境变量区分：
+   ```javascript
+   // 开发阶段 — 用 TDesign QR Code 组件显示
+   // 生产环境 — 云函数调用 getUnlimited 获取真实小程序码图片
+   ```
+4. `getUnlimited` 的 `scene` 参数最大 **32 字节** — 不能传长字符串。本项目传作品 ID 即可
+5. `page` 参数必须是已发布页面路径，不能带查询参数（参数通过 `scene` 传递）
+
+**Detection:** 海报功能开发时，云函数调用 `openapi.wxacode.getUnlimited` 报错 → 检查小程序是否已发布
+
+**Phase:** Phase 2 — 海报生成功能
+
+**Sources:**
+- 微信官方小程序码文档: https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/qr-code.html
+- 注意事项: "接口只能生成已发布的小程序的二维码" + "接口B调用分钟频率受限(5000次/分钟)"
+- Confidence: HIGH
+
+---
+
+### Pitfall 5: 作品数据模型缺少 before/after 字段 — 新增滑块需要数据迁移
+
+**What goes wrong:** 现有 `works` 集合的 `images` 字段是一个简单数组（`images: string[]`），不区分"妆前"和"妆后"图片。如果要实现 before/after 滑块，需要知道哪些图片是"妆前"、哪些是"妆后"。如果直接在现有 images 数组上做约定（如"第一张是before，第二张是after"），会导致：
+1. 已有作品全部需要重新编辑才能使用滑块
+2. 没有before/after的作品显示异常
+3. 约定容易被人遗忘
+
+**Why it happens:** v1.0 数据模型设计中 images 是平铺数组，没有分类能力。
+
+**Consequences:**
+- 滑块组件收到不确定的数据结构而崩溃
+- 已有作品在 detail 页显示错乱
+- 化妆师需要重新编辑所有作品
+
+**Prevention:**
+1. **扩展数据模型而非替换**：
+   ```javascript
+   // works 集合新增字段（向后兼容）
+   {
+     images: string[],              // 保留 — 用于普通轮播（不破坏现有逻辑）
+     before_image: string,          // 新增 — 妆前图片 fileID（可选）
+     after_image: string,           // 新增 — 妆后图片 fileID（可选）
+     has_comparison: boolean        // 新增 — 是否有前后对比
+   }
+   ```
+2. **不修改现有 `images` 字段** — 它仍然用于轮播展示（现有 swiper 逻辑不变）
+3. `has_comparison` 为 false 或不存在时，detail 页不显示滑块区域（向后兼容所有已有作品）
+4. 新增作品时，化妆师可选填 before/after 图片（不是必须的）
+5. 云函数 `works` 的 `detail` action 不需要修改 — 返回整个文档，客户端自行判断
+
+**Detection:** 新增 `before_image` / `after_image` 字段后，测试已有作品详情页是否正常显示
+
+**Phase:** Phase 1 — 前后对比滑块
+
+**Sources:**
+- 代码审查: `cloudfunctions/works/index.js` 的 create/update action 直接透传 data，不校验字段
+- 代码审查: `miniprogram/pages/works/detail.js` 只使用 `work.images` 数组
+- Confidence: HIGH
+
+---
+
+### Pitfall 6: 日历视图组件包体积风险 — TDesign Calendar 是大组件
+
+**What goes wrong:** 当前 `miniprogram_npm/` 目录已达 **4.6MB**（全量 TDesign 组件）。虽然微信构建时会 tree-shake 未引用的组件，但 TDesign 的 Calendar 组件依赖较多子组件（Popup、Button 等），加上新增的 QRCode 组件、自定义滑块组件，可能导致 admin 分包超 2MB 或主包超 2MB。
+
+**Why it happens:** TDesign 组件库按需引入依赖 `lazyCodeLoading: "requiredComponents"`（已在 app.json 配置），但 Calendar 本身体积较大，且 admin 分包已有 7 个页面。
 
 **Consequences:**
 - 无法上传代码到微信后台
-- 被迫大规模重构分包
-- 启动速度慢（主包越大启动越慢）
+- 被迫做紧急分包拆分
+- 启动速度变慢
 
 **Prevention:**
-1. **项目初期就规划分包结构**，例如：
-   - 主包：首页、TabBar 页面、公共组件
-   - 分包A：作品展示模块（列表+详情）
-   - 分包B：预约模块（选择服务+选择时间+提交）
-   - 分包C：化妆师管理后台（上传作品+管理服务+处理预约）
-2. 图片等静态资源**不要打包到小程序内**，全部使用云存储/CDN
-3. 使用按需注入（`"lazyCodeLoading": "requiredComponents"`）
-4. UI 组件库按需引入，不要全量引入
-5. 定期用微信开发者工具的"代码依赖分析"检查包体积
+1. **每个新功能开发后立即检查包体积**（微信开发者工具 → 详情 → 本地设置 → 勾选"上传代码时自动压缩" → 编译后查看包大小）
+2. 日历视图放到 **admin 分包**（化妆师专用），不放主包 — 客户端预约页面保留现有的横向日期列表（`generateDateList`）
+3. 海报生成功能使用独立页面（可考虑放到 admin 分包）
+4. 如果 admin 分包超限，考虑拆分为两个分包：
+   - `admin-main`: 作品管理、服务管理
+   - `admin-calendar`: 日历视图、预约管理
+5. 自定义 before/after 滑块组件不需要引入额外库（用原生 touch 事件 + WXSS clip-path 实现），不增加包体积
 
-**Detection:** 每次编译后检查微信开发者工具中的包体积提示 → 主包 > 1.5MB 就要警惕
+**Detection:** 每次添加新 TDesign 组件引用后编译查看包体积
 
-**Phase:** Phase 1（项目初始化和架构设计）就必须规划
+**Phase:** 贯穿所有 phase — 每个 feature 完成后检查
 
 **Sources:**
-- uni-app 文档: 微信小程序每个分包 2MB，总限制 20MB
-- Taro 文档: `optimizeMainPackage` 优化选项
-- Confidence: HIGH
-
----
-
-### Pitfall 5: 预约并发冲突 — 两人同时预约同一时段
-
-**What goes wrong:** 如果不处理并发，两个客户可能同时预约化妆师的同一时间段。在数据写入前只检查"该时段是否已被预约"是不够的 — 存在竞态条件：A 检查通过 → B 也检查通过 → A 写入 → B 写入 → 同一时段被预约两次。
-
-**Why it happens:** 使用客户端直接查询+写入的方式，没有数据库级别的并发控制。
-
-**Consequences:**
-- 化妆师同一天同一时间被预约两次
-- 客户到店后发现冲突
-- 严重损害化妆师信誉
-
-**Prevention:**
-1. **使用云函数处理预约逻辑**（而非客户端直接写数据库）
-2. 在云函数中使用数据库事务：
-   ```javascript
-   const db = cloud.database()
-   const _ = db.command
-   const transaction = await db.startTransaction()
-   try {
-     // 检查时段是否可用（在事务内）
-     const existing = await transaction.collection('appointments')
-       .where({ date: targetDate, timeSlot: targetSlot, status: _.neq('cancelled') })
-       .get()
-     if (existing.data.length > 0) {
-       await transaction.rollback()
-       return { success: false, message: '该时段已被预约' }
-     }
-     // 创建预约
-     await transaction.collection('appointments').add({ ... })
-     await transaction.commit()
-   } catch (e) {
-     await transaction.rollback()
-   }
-   ```
-3. 或者更简单的方式：使用**唯一约束**（日期+时段组合唯一），写入失败即表示冲突
-
-**Detection:** 测试时模拟两个客户端同时提交同一时段的预约
-
-**Phase:** Phase 2（预约功能）时实现
-
-**Sources:**
-- 微信云开发数据库事务能力
-- Confidence: MEDIUM（需验证云开发事务API当前支持情况）
-
----
-
-### Pitfall 6: 服务器域名未配置/配置错误（生产环境网络请求全部失败）
-
-**What goes wrong:** 微信小程序**只允许与预先配置的域名通信**。所有 `wx.request`、`wx.uploadFile`、`wx.downloadFile` 都必须指向在「小程序后台 → 开发 → 开发设置 → 服务器域名」中配置过的域名。开发时可以跳过校验，但发布后**所有未配置的域名请求都会失败**。
-
-**Why it happens:** 开发阶段勾选了"不校验域名"，一切正常。上线前忘记配置域名，或者域名变更后没有更新配置。
-
-**Consequences:**
-- 上线后所有网络请求失败（作品无法加载、预约无法提交）
-- 用户看到空白页面或错误提示
-- 需要紧急更新域名配置（每次修改需要重新审核）
-
-**Key constraints:**
-- 必须使用 **HTTPS** 协议
-- 域名必须经过 **ICP 备案**
-- 不能使用 IP 地址或 localhost
-- 不能配置 `api.weixin.qq.com`
-- `wx.request` 并发上限 **10 个**
-- `wx.uploadFile` 并发上限 **10 个**
-- 小程序进入后台 **5 秒**后未完成的网络请求会中断
-
-**Prevention:**
-1. 开发阶段就配置好域名，**不要长期依赖"跳过域名校验"**
-2. 将所有需要配置的域名列一个清单（API服务器、图片CDN、云存储域名）
-3. 每次发布前检查域名配置是否完整
-4. 使用微信云开发/云托管可免去域名配置
-
-**Detection:** 关闭开发者工具的"跳过域名校验"选项后测试 → 如果有请求失败 → 需要补充域名
-
-**Phase:** Phase 1（开发环境搭建）时就必须配置
-
-**Sources:**
-- 官方文档: https://developers.weixin.qq.com/miniprogram/dev/framework/ability/network.html
+- 现有 miniprogram_npm 大小: 4.6MB（但实际构建后会 tree-shake）
+- admin 分包: `miniprogram/pages/admin/` = 116KB（源码，不含 npm）
+- app.json 已配置 `"lazyCodeLoading": "requiredComponents"`
 - Confidence: HIGH
 
 ---
 
 ## Moderate Pitfalls
 
-### Pitfall 7: setData 性能灾难 — 传递大量图片数据
+### Pitfall 7: 评价系统的状态耦合陷阱 — "已完成"是双入口操作
 
-**What goes wrong:** 微信小程序的 `setData` 会将数据从逻辑层（JS线程）序列化后传递到渲染层（WebView），这是**跨线程通信**。如果把作品列表的所有图片 URL（甚至 base64）一次性通过 setData 传递，会导致严重的性能问题。
+**What goes wrong:** 预约需要先变为"已完成"状态才能触发评价。但"已完成"状态有两个触发入口：(1) 化妆师在 admin 后台手动标记（`onComplete` in `admin/bookings/detail.js`）；(2) 未来可能需要自动标记（服务时间过后自动完成）。如果评价邀请只在手动标记时发送，那自动完成的预约将永远没有评价入口。
+
+**Why it happens:** 现有系统的 booking 状态变更集中在 `updateStatus` action（cloudfunctions/bookings/index.js:154-170），且已经有 `sendNotify` 调用。但评价邀请是新的通知类型，需要新的订阅模板，不能复用现有模板。
 
 **Prevention:**
-1. setData 只传必要的数据，不要传 base64 图片
-2. 分页加载作品列表，每次 setData 只传当前页数据
-3. 图片使用 `<image src="{{url}}">` 组件，由渲染层自行加载
-4. 避免频繁调用 setData，合并更新
+1. 评价邀请不走订阅消息（避免新增模板的复杂性），改为：在客户端"我的预约"列表中，已完成的预约显示"去评价"按钮
+2. 如果确实需要通知，在 `updateStatus` 的 `completed` 分支中添加评价邀请通知（使用新模板 ID）
+3. 评价页面通过 URL 参数接收 booking ID，创建评价时校验该 booking 状态确实是 `completed`
 
-**Phase:** Phase 1（作品列表页开发）
+**Detection:** 画出 booking 状态机图，确认每个 `completed` 转换路径都有评价入口
 
-**Sources:** 微信官方性能优化文档 — Confidence: HIGH
+**Phase:** Phase 3 — 评价系统
+
+**Sources:**
+- 现有状态转换: `cloudfunctions/bookings/index.js:162` — `['accepted', 'rejected', 'completed']` 触发通知
+- Confidence: HIGH
 
 ---
 
-### Pitfall 8: 使用已废弃的 API（wx.chooseImage / wx.getUserInfo）
+### Pitfall 8: 日历视图与现有预约列表的重复逻辑 — admin 预约管理出现两套代码
 
-**What goes wrong:** `wx.chooseImage` 已停止维护，应使用 `wx.chooseMedia`。`wx.getUserInfo` 在微信小程序中可能返回匿名数据，应使用 `wx.getUserProfile` 或头像昵称填写组件。使用废弃 API 会在未来版本中完全失效。
+**What goes wrong:** 现有 `pages/admin/bookings/list.js` 已经有完整的预约列表加载、状态筛选功能。新增日历视图后，如果日历页面重新实现了一套加载预约数据的逻辑，会导致：
+1. 两处代码维护成本翻倍
+2. 一个改了另一个没改 → 数据显示不一致
+3. `loadBookings` 和 `getBookingsList` 的参数/过滤条件不同步
+
+**Why it happens:** 日历视图是一个新页面，开发者倾向于复制粘贴列表页逻辑。
 
 **Prevention:**
-1. 使用 `wx.chooseMedia` 替代 `wx.chooseImage`
-2. 用户信息使用"头像昵称填写组件"或 `wx.getUserProfile`
-3. 定期查看微信小程序 API 更新日志
+1. **复用现有 service 层** — `services/bookings.js` 的 `getBookingsList` 已实现分页、状态筛选
+2. 日历页面调用同一个 service 方法，只是数据展示方式不同（日历视图按日期分组 vs 列表视图按时间排序）
+3. 新增一个 `getBookingsByDateRange(startDate, endDate)` 方法（云函数端），日历视图按月查询数据，避免加载全量预约
+4. 考虑日历视图和列表视图使用**同一个页面，通过 tab 切换**（减少页面数量和代码重复）
 
-**Phase:** 贯穿所有开发阶段
+**Detection:** 如果出现两个页面都调用 `getBookingsList` 且各自处理数据 → 代码重复
 
-**Sources:** uni-app 文档明确标注 — Confidence: HIGH
+**Phase:** Phase 1 — 日历视图
+
+**Sources:**
+- 代码审查: `miniprogram/pages/admin/bookings/list.js:33-53` 和 `miniprogram/services/bookings.js:15-19`
+- Confidence: HIGH
 
 ---
 
-### Pitfall 9: 云开发数据库查询默认只返回 20 条记录
+### Pitfall 9: 预约备注增强的字段冲突 — 现有 `notes` 字段语义不清
 
-**What goes wrong:** 微信云开发数据库在**客户端**调用 `.get()` 默认只返回 **20 条**记录，在**云函数**中默认返回 **100 条**。如果作品超过 20 个，不使用分页查询的话只能看到最新的 20 个作品。
+**What goes wrong:** 现有 `bookings` 集合的 `notes` 字段（`cloudfunctions/bookings/index.js:81`）是一个自由文本字符串，用于"客户留言"。增强后需要新增"皮肤类型"、"特殊需求"等结构化字段。如果直接在 `notes` 上叠加，会导致：
+1. 旧数据的 `notes` 是纯文本，新代码尝试解析为 JSON → 报错
+2. 或者新增字段名和现有字段冲突
+
+**Why it happens:** v1.0 的 notes 设计为简单字符串，没有结构化。
 
 **Prevention:**
-1. 使用 `.limit()` 和 `.skip()` 实现分页
-2. 作品列表用滚动加载（触底加载下一页）
-3. 推荐通过云函数中转查询（限制更宽松）
+1. **新增独立字段，不修改现有 `notes`**：
+   ```javascript
+   // bookings 文档扩展
+   {
+     notes: string,                    // 保留 — 客户自由留言（向后兼容）
+     skin_type: string,                // 新增 — 皮肤类型（干性/油性/混合/敏感）
+     special_needs: string,            // 新增 — 特殊需求（过敏史等）
+     reference_images: string[]        // 新增 — 参考图片（可选）
+   }
+   ```
+2. 客户端预约表单新增这些字段（`pages/booking/create.js` 的 `submitBooking` 需要传递新字段）
+3. 云函数 `bookings` 的 `create` action 的白名单式字段提取需要扩展（当前直接透传 `event`，需要确保新字段被正确保存）
+4. 管理后台的预约详情页需要展示新字段
 
-**Phase:** Phase 1（作品列表功能）
+**Detection:** 提交预约时检查云数据库中新字段是否正确写入
 
-**Sources:** Taro 云数据库文档 — Confidence: HIGH
+**Phase:** Phase 1 — 预约备注增强
+
+**Sources:**
+- 代码审查: `cloudfunctions/bookings/index.js:74-88` — create action 直接透传字段
+- 代码审查: `miniprogram/pages/booking/create.js:104-113` — submitBooking 传递的字段
+- Confidence: HIGH
 
 ---
 
-### Pitfall 10: 预约时间管理设计不当 — 硬编码时段 vs 自定义时段
+### Pitfall 10: 评价系统缺少审核机制 — 恶意/垃圾评价公开显示
 
-**What goes wrong:** 如果预约时段硬编码（如固定每小时一个时段），化妆师无法根据自己的实际情况调整。不同服务（日常妆 vs 新娘妆）所需时间不同，固定时段会导致时间浪费或预约冲突。
+**What goes wrong:** 公开评价系统如果没有审核机制，任何用户都可以提交任何内容（广告、辱骂、虚假评价）。对于个人化妆师的品牌形象，一条恶意评价可能造成严重影响。
+
+**Why it happens:** 先做功能后做审核是常见顺序错误。
+
+**Consequences:**
+- 化妆师品牌受损
+- 微信审核可能以"缺少内容管理机制"拒绝
+- 需要紧急添加审核功能或下线评价
 
 **Prevention:**
-1. 服务项目包含"预计时长"字段（由化妆师设定）
-2. 化妆师设定"可预约时间段"（如 9:00-18:00）和"休息时间"
-3. 系统根据已有预约自动计算可用时段
-4. 预约时显示"预计服务时长"，帮助客户选择合适时间
+1. **默认设计为"审核后显示"** — 评价创建时 `status: 'pending'`，只有化妆师审核通过后（`status: 'approved'`）才在作品/服务页面公开展示
+2. 评价数据模型：
+   ```javascript
+   // reviews 集合
+   {
+     booking_id: string,       // 关联预约
+     user_openid: string,      // 评价人
+     rating: number,           // 1-5 星
+     content: string,          // 评价文字
+     status: 'pending' | 'approved' | 'rejected',
+     artist_reply: string,     // 化妆师回复（可选）
+     created_at: date
+   }
+   ```
+3. 化妆师在 admin 后台管理评价（审核/回复/隐藏）
+4. 限制每个预约只能评价一次（通过 `booking_id` + `user_openid` 唯一性校验）
+5. 只有 `status: 'completed'` 的预约才能评价（云函数校验）
+6. 考虑使用微信内容安全 API (`security.msgSecCheck`) 检测评价文字是否违规 — **这是审核要求**
 
-**Phase:** Phase 2（预约功能设计）时考虑
+**Detection:** 评价功能代码中如果没有 `status` 字段和审核流程 → 必定触发此问题
 
-**Sources:** 领域知识 — Confidence: MEDIUM
+**Phase:** Phase 3 — 评价系统
+
+**Sources:**
+- 微信小程序审核常见拒绝原因: 缺少内容安全审查
+- 微信内容安全 API: https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/sec-center/sec-check/msgSecCheck.html
+- Confidence: HIGH
 
 ---
 
-### Pitfall 11: 作品图片加载白屏 — 无 loading 态和错误态处理
+### Pitfall 11: 化妆师简介增强的数据迁移 — `artist_profile` 单文档直接覆盖风险
 
-**What goes wrong:** 化妆作品图片较大，在弱网环境加载慢。如果没有 loading 占位图和加载失败提示，用户会看到长时间白屏或布局跳动。
+**What goes wrong:** `artist_profile` 是单文档集合（`cloudfunctions/profile/index.js:25`）。增强简介需要新增字段（`service_area`, `experience_years`, `style_tags`）。现有 `update` action（profile/index.js:56-57）直接 `Object.assign` 传入的 data 到文档更新，这意味着：
+1. 如果新版本客户端发送的新字段名有误，会写入错误数据
+2. 如果老版本客户端（用户还没更新小程序）编辑简介时，不会发送新字段 → 新字段被覆盖丢失
+3. `update` action 没有字段白名单 — 任何字段都可以被写入
+
+**Why it happens:** 现有 update 逻辑是直接透传 `event.data`，没有字段过滤。
 
 **Prevention:**
-1. `<image>` 组件使用 `bindload` 和 `binderror` 事件
-2. 加载中显示骨架屏或低质量占位图（LQIP）
-3. 加载失败显示默认图和重试按钮
-4. 使用 `lazy-load` 属性实现懒加载
-5. 图片使用渐进式 JPEG 格式
+1. **云函数 update action 添加字段白名单**：
+   ```javascript
+   const ALLOWED_FIELDS = [
+     'name', 'avatar', 'bio', 'experience',
+     'specialties', 'contact_info',
+     // v1.1 新增
+     'service_area', 'experience_years', 'style_tags'
+   ]
+   const updateData = {}
+   ALLOWED_FIELDS.forEach(field => {
+     if (event.data[field] !== undefined) {
+       updateData[field] = event.data[field]
+     }
+   })
+   ```
+2. **使用 `$set` 而非替换整个文档** — 避免未传字段被删除（当前 `update` 行为是 merge，但最好显式）
+3. **给新字段设置默认值** — 防止客户端读取时 undefined
 
-**Phase:** Phase 1（作品展示页面）
+**Detection:** 云函数 `profile/index.js` 的 update action 中如果有 `...event.data` 或类似直接透传 → 需要加白名单
 
-**Sources:** 通用前端经验 — Confidence: HIGH
+**Phase:** Phase 1 — 简介增强（应最先做，因为涉及数据模型扩展）
+
+**Sources:**
+- 代码审查: `cloudfunctions/profile/index.js:56-77` — update action 直接使用 `event.data`
+- 代码审查: `miniprogram/pages/admin/profile/edit.js:80-90` — saveProfile 构造的对象
+- Confidence: HIGH
 
 ---
 
-### Pitfall 12: 化妆师管理入口未做身份验证
+### Pitfall 12: 时间冲突检测的竞态条件未完全解决
 
-**What goes wrong:** 如果管理功能（上传作品、管理预约等）只是简单的页面跳转，没有身份验证，任何用户都可以通过直接输入页面路径访问管理页面。
+**What goes wrong:** 现有的冲突检测（`cloudfunctions/bookings/index.js:62-71`）是"先查后写"模式，没有使用数据库事务。v1.0 注释中也标注了 "MEDIUM confidence — 需验证云开发事务API当前支持情况"。当添加日历视图（更多用户同时查看可用时段）+ 增强预约备注（更长的表单填写时间）后，竞态窗口更大。
+
+**Why it happens:** 云开发的数据库事务 API 在较新版本才稳定，v1.0 选择简单方案。
+
+**Consequences:**
+- 两个客户同时预约同一时段成功
+- 化妆师日历上出现重叠预约
 
 **Prevention:**
-1. 管理页面 onLoad 时检查当前用户的 openid 是否为化妆师
-2. 云函数中对管理操作进行身份校验（不要信任客户端）
-3. 使用云开发的权限系统限制数据访问
-4. 非授权用户访问管理页面时重定向到首页
+1. 使用云数据库事务包裹"查询+写入"：
+   ```javascript
+   const transaction = await db.startTransaction()
+   try {
+     const existing = await transaction.collection('bookings')
+       .where({ booking_date, booking_time, status: _.in(['pending', 'accepted']) })
+       .get()
+     if (existing.data.length > 0) {
+       await transaction.rollback()
+       return { errCode: -1, errMsg: '该时段已被预约' }
+     }
+     await transaction.collection('bookings').add({ data: bookingData })
+     await transaction.commit()
+   } catch (e) {
+     await transaction.rollback()
+     throw e
+   }
+   ```
+2. 如果事务 API 不可用，退而求其次使用 `db.serverDate()` 做乐观锁
 
-**Phase:** Phase 1（基础架构）时设计权限系统
+**Detection:** 压测时两个客户端同时提交同一时段预约
 
-**Sources:** 微信安全指引 — Confidence: HIGH
+**Phase:** Phase 1 — 时间冲突检测增强
+
+**Sources:**
+- 现有代码: `cloudfunctions/bookings/index.js:59-93`
+- 现有 pitfalls 文档: Pitfall 5 (v1.0) 标注为 MEDIUM confidence
+- Confidence: MEDIUM（需验证当前云开发环境事务 API 支持情况）
 
 ---
 
 ## Minor Pitfalls
 
-### Pitfall 13: 小程序分享功能未配置 — 用户无法分享作品
+### Pitfall 13: Before/After 滑块的 touch 事件在 swiper 内冲突
 
-**What goes wrong:** 默认分享行为只分享当前页面标题。化妆师希望客户能分享特定作品到微信聊天，但默认分享卡片不包含作品图片，没有吸引力。
+**What goes wrong:** 作品详情页现有 swiper 组件（`pages/works/detail.wxml:8-15`）支持左右滑动切换图片。如果在 swiper 内嵌入 before/after 滑块组件（也需要水平拖拽），触摸事件会冲突 — 用户拖拽滑块时 swiper 也跟着滑动。
 
 **Prevention:**
-1. 为作品详情页配置 `onShareAppMessage`，设置作品缩略图作为分享卡片图片
-2. 分享标题包含化妆师名称和作品描述
-3. 考虑配置 `onShareTimeline` 支持分享到朋友圈
+1. Before/after 滑块放在 swiper **外部**（作为独立的展示区域）
+2. 或者滑块触发时调用 `e.stopPropagation()` + `catchtouchmove` 阻止事件冒泡
+3. 推荐布局：顶部 before/after 对比区（固定高度）→ 下方 swiper 展示更多作品图片
+4. 滑块区域使用 `catchtouchmove` 而非 `bindtouchmove` 来吞掉触摸事件
 
-**Phase:** Phase 3（优化阶段）
+**Detection:** 在作品详情页同时存在 swiper 和 before/after 滑块时，测试拖拽是否冲突
+
+**Phase:** Phase 1 — 前后对比滑块
+
+**Sources:**
+- 现有 swiper: `miniprogram/pages/works/detail.wxml:8-15`
+- 微信小程序事件冒泡机制
+- Confidence: HIGH
 
 ---
 
-### Pitfall 14: 未处理小程序版本更新机制
+### Pitfall 14: 海报 Canvas 在不同设备上尺寸不一致
 
-**What goes wrong:** 微信小程序有缓存机制，用户可能长时间使用旧版本。如果发布了新版修复了预约 bug，部分用户仍然使用有 bug 的旧版。
+**What goes wrong:** Canvas 绘制使用像素单位，但不同设备的 DPR（设备像素比）不同。如果不做 DPR 适配，海报在高清屏上会模糊，在低分屏上文字会溢出。
 
 **Prevention:**
-1. 使用 `wx.getUpdateManager()` 检测版本更新
-2. 检测到新版本时提示用户重启小程序
-3. 关键业务逻辑尽量放在云函数端，更新无需用户操作
+1. 使用 `wx.getSystemInfoSync().pixelRatio` 获取 DPR
+2. Canvas 实际像素 = 显示尺寸 × DPR
+3. 绘制时所有坐标和字号都乘以 DPR
+4. 导出时使用 `canvas.toTempFilePath` 的 `destWidth` 和 `destHeight` 指定输出尺寸
 
-**Phase:** Phase 3（发布前）
+**Detection:** 在 iPhone (DPR=3) 和 Android (DPR=2) 上分别生成海报对比清晰度
+
+**Phase:** Phase 2 — 海报生成
 
 ---
 
-### Pitfall 15: 本地缓存滥用 — 作品数据过期问题
+### Pitfall 15: 评价星级的交互细节 — 评分组件的点击区域太小
 
-**What goes wrong:** 为了加速加载把作品列表缓存到 `wx.setStorageSync`，但更新作品后用户看到的仍是旧数据。
+**What goes wrong:** 微信小程序中星级评分组件如果星星太小，用户很难精准点击。这在手机上尤其明显。
 
 **Prevention:**
-1. 只缓存不常变化的数据（如服务项目列表）
-2. 作品列表使用下拉刷新强制更新
-3. 设置缓存过期时间，过期后重新请求
+1. 每颗星星的点击区域至少 80rpx × 80rpx（包含 padding）
+2. 使用 TDesign 的 `t-rate` 组件（如果可用），或自定义大尺寸星星
+3. 支持半星（0.5步进）时需要更大的点击区域
 
-**Phase:** Phase 1
+**Detection:** 在真机上测试评价流程，确认点星体验流畅
+
+**Phase:** Phase 3 — 评价系统
 
 ---
 
-### Pitfall 16: 页面层级过深导致返回体验差
+### Pitfall 16: 风格标签的输入方式 — 用逗号分隔字符串不可靠
 
-**What goes wrong:** 微信小程序页面栈最多 **10 层**。如果用户浏览路径为：首页 → 作品列表 → 作品详情 → 预约 → 选择服务 → 选择时间 → 确认预约 → 预约详情，可能超出限制。
+**What goes wrong:** 现有 profile edit 页面（`admin/profile/edit.js:78`）的 specialties 使用逗号分隔字符串输入：`specialtiesText.split(/[,，]/).filter(s => s.trim())`。新增的 `style_tags` 如果也用同样方式，用户体验差且容易出错。
 
 **Prevention:**
-1. 使用 `wx.redirectTo` 替代 `wx.navigateTo`（不需要返回的页面）
-2. 合理设计页面流程，减少中间页面
-3. 预约流程使用同一页面的步骤切换（非跳转新页面）
+1. 使用 TDesign 的 `t-tag` + "添加"按钮的交互方式（点击添加标签，点击标签删除）
+2. 或者使用 `t-input` + 预设标签选择的混合方式
+3. 提供预设标签列表（如："清新自然", "韩系", "欧美", "中式古典"）+ 自定义输入
 
-**Phase:** Phase 1（页面路由设计）
+**Detection:** 风格标签输入的 UX 测试
 
-**Sources:** 微信官方文档 — Confidence: HIGH
+**Phase:** Phase 1 — 简介增强
 
 ---
 
@@ -375,43 +500,57 @@ Mistakes that cause rewrites, review rejection, or major user-facing failures.
 
 | Phase Topic | Likely Pitfall | Mitigation | Priority |
 |-------------|---------------|------------|----------|
-| **项目初始化** | 包体积未规划分包 (P4) | 从第一天就设计分包结构 | 🔴 Critical |
-| **项目初始化** | 域名未配置 (P6) | 开发阶段就配好域名 | 🔴 Critical |
-| **隐私协议** | 未实现隐私授权流程 (P1) | 全局隐私弹窗组件 | 🔴 Critical |
-| **作品展示** | 图片未压缩上传 (P3) | 上传前压缩 + 缩略图策略 | 🔴 Critical |
-| **作品展示** | setData 传大量数据 (P7) | 分页 + 只传 URL | 🟡 Moderate |
-| **作品展示** | 数据库查询只返回20条 (P9) | 实现分页加载 | 🟡 Moderate |
-| **作品展示** | 图片无 loading/error 态 (P11) | 骨架屏 + 错误态处理 | 🟡 Moderate |
-| **预约功能** | 订阅消息设计错误 (P2) | 每次交互节点引导订阅 | 🔴 Critical |
-| **预约功能** | 并发预约冲突 (P5) | 云函数 + 数据库事务 | 🔴 Critical |
-| **预约功能** | 时段管理设计不当 (P10) | 自定义服务时长 | 🟡 Moderate |
-| **权限管理** | 管理页面未鉴权 (P12) | openid 校验 + 云函数权限 | 🟡 Moderate |
-| **全局** | 使用废弃 API (P8) | 查阅最新文档 | 🟡 Moderate |
-| **全局** | 页面层级超10层 (P16) | 使用 redirectTo / 步骤切换 | 🟡 Moderate |
-| **优化** | 分享未配置 (P13) | onShareAppMessage 配置 | 🟢 Minor |
-| **发布** | 未处理版本更新 (P14) | UpdateManager 检测 | 🟢 Minor |
+| **前后对比滑块** | 数据模型缺少 before/after 字段 (P5) | 新增独立字段，不改 images 数组 | 🔴 Critical |
+| **前后对比滑块** | swiper 与滑块 touch 事件冲突 (P13) | 滑块放 swiper 外，使用 catchtouchmove | 🟡 Moderate |
+| **订阅消息增强** | 模板 ID 两处硬编码不同步 (P1) | 统一 TEMPLATE_IDS 对象管理 | 🔴 Critical |
+| **订阅消息增强** | requestSubscribeMessage 不在 tap 中调用 (P2) | 只在用户点击回调中调用 | 🔴 Critical |
+| **海报生成** | Canvas 旧版 API (P3) | 使用 Canvas 2D API (`type="2d"`) | 🔴 Critical |
+| **海报生成** | getUnlimited 只能已发布版本 (P4) | 开发阶段用 TDesign QR Code 替代 | 🔴 Critical |
+| **海报生成** | Canvas DPR 适配 (P14) | 获取 pixelRatio 缩放绘制 | 🟡 Moderate |
+| **日历视图** | 包体积超限风险 (P6) | Calendar 放 admin 分包，完成后检查体积 | 🔴 Critical |
+| **日历视图** | 与现有列表页逻辑重复 (P8) | 复用 service 层，新增日期范围查询 | 🟡 Moderate |
+| **预约备注增强** | notes 字段语义不清 (P9) | 新增独立字段，不修改 notes | 🟡 Moderate |
+| **时间冲突** | 竞态条件未解决 (P12) | 云函数中使用数据库事务 | 🟡 Moderate |
+| **简介增强** | profile update 字段无白名单 (P11) | 云函数添加 ALLOWED_FIELDS 过滤 | 🟡 Moderate |
+| **简介增强** | 风格标签输入方式 (P16) | 使用标签选择交互而非逗号分隔 | 🟢 Minor |
+| **评价系统** | 缺少审核机制 (P10) | 默认 pending 状态 + 化妆师审核 | 🔴 Critical |
+| **评价系统** | "已完成"状态双入口评价触发 (P7) | 客户端预约列表显示"去评价"按钮 | 🟡 Moderate |
+| **评价系统** | 星级点击区域太小 (P15) | 星星点击区域 ≥ 80rpx | 🟢 Minor |
+| **全局** | 包体积持续增长 (P6) | 每个功能完成后检查包体积 | 🔴 Critical |
 
-## Audit (审核) Checklist
+## Integration Order Risks
 
-微信小程序审核常见拒绝原因（与本项目相关）：
+Based on the codebase analysis, recommended order and its rationale:
+
+| Order | Feature | Risk if Done Earlier | Risk if Done Later |
+|-------|---------|---------------------|-------------------|
+| 1️⃣ | 简介增强 + 数据模型扩展 | N/A | 其他功能依赖 profile 数据结构，晚做会导致反复调整 |
+| 2️⃣ | 预约备注增强 + 时间冲突检测 | 依赖 booking 数据模型 | 日历视图和通知需要稳定的预约数据结构 |
+| 3️⃣ | 前后对比滑块 | 依赖 works 数据模型 | 纯 UI 增强，可后做但无依赖 |
+| 4️⃣ | 日历视图 | 依赖稳定的 booking 数据 | 管理端功能，需要预约数据就绪 |
+| 5️⃣ | 订阅消息增强 | 需要预约状态机稳定 | 通知是附加层，最后做风险最低 |
+| 6️⃣ | 海报生成 | 独立功能，但需要 profile 和 works 数据 | 可随时做，但建议后做以避免包体积风险积累 |
+| 7️⃣ | 评价系统 | 需要"已完成"状态稳定运行一段时间 | 最晚做 — 需要有已完成的预约数据才能测试 |
+
+## Audit (审核) Checklist for v1.1
+
+新增审核风险点：
 
 | 拒绝原因 | 本项目涉及 | 预防措施 |
 |----------|-----------|---------|
-| 未填写隐私保护指引 | ✅ 涉及图片选择、用户信息 | 提交审核前在小程序后台填写完整 |
-| 隐私协议未在调用前获得同意 | ✅ chooseMedia/getUserProfile | 实现隐私弹窗组件 |
-| 内容涉及虚假宣传 | ⚠️ 化妆前后对比照 | 确保作品真实，标注说明 |
-| 服务类目与实际不符 | ✅ 需选择正确类目 | 注册时选择"生活服务 > 美容美发" |
-| 涉及虚拟支付但未接入 | ✅ 本项目明确不涉及支付 | 确保无支付入口，审核说明注明"线下结算" |
-| 用户数据未加密传输 | ✅ 预约信息含手机号 | 使用 HTTPS + 云开发加密通道 |
-| 缺少用户协议/服务条款 | ⚠️ 预约服务应提供 | 添加服务条款页面 |
+| 评价系统缺少内容安全审查 | ✅ 用户提交文字评价 | 接入 `security.msgSecCheck` 或使用审核机制 |
+| 前后对比照涉及虚假宣传 | ⚠️ 化妆效果对比 | 确保作品真实，不使用过度修图 |
+| 海报分享涉及诱导分享 | ⚠️ 分享海报可能被判定为诱导 | 海报不能包含"分享得优惠"等文字 |
+| 订阅消息滥用 | ⚠️ 新增多个通知模板 | 每个模板都要在微信后台申请审核 |
+| 隐私保护指引需更新 | ✅ 新增了评价和更多用户输入 | 更新隐私保护指引，申明收集评价内容 |
 
 ## Sources
 
-- **微信官方网络能力文档**: https://developers.weixin.qq.com/miniprogram/dev/framework/ability/network.html (HIGH confidence)
-- **微信隐私协议开发指南**: https://developers.weixin.qq.com/miniprogram/dev/framework/user-privacy/PrivacyAuthorize.html (HIGH confidence)
-- **微信订阅消息开发指南**: https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/subscribe-message.html (HIGH confidence)
-- **Taro 云数据库文档**: Context7 /nervjs/taro-docs (HIGH confidence)
-- **Taro 图片压缩 API**: Context7 /nervjs/taro-docs/apis/media/image/compressImage.md (HIGH confidence)
-- **uni-app 分包配置文档**: Context7 /websites/uniapp_dcloud_net_cn (HIGH confidence)
-- **Taro 订阅消息 API**: Context7 /nervjs/taro-docs/apis/open-api/subscribe-message/requestSubscribeMessage.md (HIGH confidence)
-- **并发预约事务处理**: 基于微信云开发能力推测 (MEDIUM confidence — 需验证当前事务 API)
+- **代码审查** — 所有 pitfall 均基于对现有代码的直接分析（云函数、页面 JS、WXML、service 层）
+- **微信官方订阅消息文档**: https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/subscribe-message.html (HIGH confidence)
+- **微信官方 Canvas 文档**: https://developers.weixin.qq.com/miniprogram/dev/framework/ability/canvas.html (HIGH confidence)
+- **微信官方小程序码文档**: https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/qr-code.html (HIGH confidence)
+- **TDesign Calendar 组件**: Context7 `/tencent/tdesign-miniprogram` (HIGH confidence)
+- **TDesign QRCode 组件**: Context7 `/tencent/tdesign-miniprogram` (HIGH confidence)
+- **TDesign Slider 组件**: Context7 `/tencent/tdesign-miniprogram` — 确认需在 hidden/popup 容器中调用 `init()` (HIGH confidence)
+- **微信内容安全 API**: https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/sec-center/sec-check/msgSecCheck.html (HIGH confidence)
