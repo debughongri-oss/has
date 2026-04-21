@@ -50,7 +50,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. 客户在化妆师主页看到服务区域、从业年限和风格标签展示
   3. 客户预约时可填写肤质类型、特殊需求和场合说明，化妆师在管理后台以结构化形式查看这些信息
   4. 所有云函数写操作经服务端 isArtist 身份验证，非化妆师身份无法执行管理操作
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 06-01-PLAN.md — Wave 1: 服务端安全验证基础设施（shared/auth.js + 4个云函数写操作保护）
+- [ ] 06-02-PLAN.md — Wave 2: 化妆师资料增强（从业年限 + 风格标签 + 主页展示）
+- [ ] 06-03-PLAN.md — Wave 3: 预约备注结构化（肤质/特殊需求/场合说明替代留言）
+
 **UI hint**: yes
 
 ### Phase 7: Before/After Comparison Slider
@@ -108,7 +114,7 @@ Phases execute in numeric order: 6 → 7 → 8 → 9 → 10
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 6. Data Model Extensions & Quick Wins | v1.1 | 0/? | Not started | - |
+| 6. Data Model Extensions & Quick Wins | v1.1 | 0/3 | Planning complete | - |
 | 7. Before/After Comparison Slider | v1.1 | 0/? | Not started | - |
 | 8. Booking Notifications & Calendar | v1.1 | 0/? | Not started | - |
 | 9. Customer Review System | v1.1 | 0/? | Not started | - |
