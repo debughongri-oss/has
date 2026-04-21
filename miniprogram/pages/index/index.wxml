@@ -24,15 +24,17 @@
         <view class="hero-info">
           <text class="hero-name">{{artist.name}}</text>
           <view class="hero-meta">
-            <text class="hero-sub" wx:if="{{artist.experience}}">{{artist.experience}}</text>
-            <text class="hero-sep" wx:if="{{artist.experience && artist.contact_info.location}}">·</text>
+            <text class="hero-sub" wx:if="{{artist.experience_years}}">{{artist.experience_years}}年经验</text>
+            <text class="hero-sub" wx:elif="{{artist.experience}}">{{artist.experience}}</text>
+            <text class="hero-sep" wx:if="{{(artist.experience_years || artist.experience) && artist.contact_info.location}}">·</text>
             <text class="hero-sub" wx:if="{{artist.contact_info.location}}">{{artist.contact_info.location}}</text>
           </view>
         </view>
       </view>
       <text class="hero-bio" wx:if="{{artist.bio}}">{{artist.bio}}</text>
-      <view class="hero-tags" wx:if="{{artist.specialties.length}}">
+      <view class="hero-tags" wx:if="{{artist.specialties.length || artist.style_tags.length}}">
         <text class="tag" wx:for="{{artist.specialties}}" wx:key="index">{{item}}</text>
+        <text class="tag tag--style" wx:for="{{artist.style_tags}}" wx:key="index">{{item}}</text>
       </view>
     </view>
 

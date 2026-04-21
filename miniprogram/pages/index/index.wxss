@@ -87,6 +87,11 @@
   border-radius: 999rpx;
 }
 
+.tag--style {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
 .portfolio {
   margin-top: 24rpx;
   padding: 36rpx 0 40rpx;
@@ -189,11 +194,12 @@
 }
 
 .entry-arrow {
-  width: 16rpx;
-  height: 16rpx;
-  border-top: 2rpx solid var(--text-tertiary);
-  border-right: 2rpx solid var(--text-tertiary);
-  transform: rotate(45deg);
+  width: 32rpx;
+  height: 32rpx;
+  background-image: var(--icon-arrow-right);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
   margin-left: 20rpx;
   flex-shrink: 0;
 }
@@ -207,7 +213,9 @@
 .btn-accent {
   flex: 1;
   height: 96rpx;
-  line-height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--accent);
   color: #FDFBF8;
   border-radius: var(--radius-md);
@@ -215,6 +223,8 @@
   font-weight: 500;
   border: none;
   padding: 0;
+  margin: 0;
+  line-height: 1;
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
@@ -230,7 +240,9 @@
 .btn-ghost {
   flex: 1;
   height: 96rpx;
-  line-height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: transparent;
   color: var(--accent);
   border-radius: var(--radius-md);
@@ -238,6 +250,8 @@
   font-weight: 500;
   border: 2rpx solid var(--accent-medium);
   padding: 0;
+  margin: 0;
+  line-height: 1;
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
@@ -253,15 +267,11 @@
 .btn-wechat {
   width: 96rpx;
   height: 96rpx;
-  background-color: var(--accent-light);
-  color: var(--accent);
   border-radius: var(--radius-md);
   border: none;
   padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
+  background: var(--accent-light) var(--icon-wechat) no-repeat center / 44rpx 44rpx;
 }
 
 .btn-wechat::after {
@@ -269,8 +279,7 @@
 }
 
 .btn-wechat-text {
-  font-size: var(--fs-xs);
-  font-weight: 500;
+  display: none;
 }
 
 .error-wrap {
