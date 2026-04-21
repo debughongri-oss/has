@@ -1,7 +1,7 @@
 const servicesService = require('../../services/services')
 const bookingsService = require('../../services/bookings')
 const authService = require('../../services/auth')
-const { SUBSCRIBE_TEMPLATE_ID } = require('../../utils/constants')
+const { SUBSCRIBE_TEMPLATE_ID, SKIN_TYPE_OPTIONS } = require('../../utils/constants')
 
 Page({
   data: {
@@ -12,12 +12,18 @@ Page({
     timeSlots: [],
     selectedTime: '',
     loadingSlots: false,
-    notes: '',
+    skinType: '',
+    specialNeeds: '',
+    occasion: '',
+    skinTypeOptions: [],
     loading: true,
     submitting: false
   },
 
   onLoad: function () {
+    this.setData({
+      skinTypeOptions: SKIN_TYPE_OPTIONS.map(t => ({ ...t, selected: false }))
+    })
     this.loadServices()
   },
 
@@ -87,12 +93,29 @@ Page({
     this.setData({ selectedTime: e.currentTarget.dataset.time })
   },
 
-  onNotesInput: function (e) {
-    this.setData({ notes: e.detail.value })
+  onSelectSkinType: function (e) {
+    const key = e.currentTarget.dataset.key
+    const currentSkinType = this.data.skinType
+    const newSkinType = currentSkinType === key ? '' : key
+    this.setData({
+      skinType: newSkinType,
+      skinTypeOptions: SKIN_TYPE_OPTIONS.map(t => ({
+        ...t,
+        selected: t.key === newSkinType
+      }))
+    })
+  },
+
+  onSpecialNeedsInput: function (e) {
+    this.setData({ specialNeeds: e.detail.value })
+  },
+
+  onOccasionInput: function (e) {
+    this.setData({ occasion: e.detail.value })
   },
 
   submitBooking: function () {
-    const { selectedService, selectedDate, selectedTime, notes } = this.data
+    const { selectedService, selectedDate, selectedTime, skinType, specialNeeds, occasion } = this.data
     if (!selectedService || !selectedDate || !selectedTime) {
       wx.showToast({ title: '请完成选择', icon: 'none' })
       return
@@ -106,7 +129,9 @@ Page({
       service_name: selectedService.name,
       booking_date: selectedDate,
       booking_time: selectedTime,
-      notes,
+      skin_type: skinType || '',
+      special_needs: specialNeeds.trim().slice(0, 200),
+      occasion: occasion.trim().slice(0, 200),
       user_info: {
         nickname: userInfo.nickname || '',
         phone: ''

@@ -40,6 +40,15 @@ const STYLE_TAGS = [
   { key: 'glamorous', label: '华丽' }
 ]
 
+// 肤质类型选项
+const SKIN_TYPE_OPTIONS = [
+  { key: 'dry', label: '干性' },
+  { key: 'oily', label: '油性' },
+  { key: 'combination', label: '混合性' },
+  { key: 'sensitive', label: '敏感性' },
+  { key: 'unknown', label: '不确定' }
+]
+
 // 图片相关配置
 const IMAGE_CONFIG = {
   MAX_COUNT: 9,            // 单次最多选择图片数
@@ -56,6 +65,7 @@ module.exports = {
   BOOKING_STATUS,
   SERVICE_CATEGORIES,
   STYLE_TAGS,
+  SKIN_TYPE_OPTIONS,
   IMAGE_CONFIG,
   SUBSCRIBE_TEMPLATE_ID
 }

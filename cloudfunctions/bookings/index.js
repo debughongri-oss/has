@@ -25,7 +25,7 @@ async function sendNotify(booking, status) {
         thing1: { value: booking.service_name || '化妆服务' },
         date2: { value: `${booking.booking_date} ${booking.booking_time}` },
         date3: { value: `${booking.booking_date} ${booking.booking_time}` },
-        thing4: { value: booking.notes || '无' },
+        thing4: { value: booking.special_needs || booking.notes || '无' },
         phrase5: { value: STATUS_LABELS[status] || status }
       }
     })
@@ -58,7 +58,7 @@ exports.main = async (event, context) => {
     }
 
     case 'create': {
-      const { service_id, service_name, booking_date, booking_time, notes, user_info } = event
+      const { service_id, service_name, booking_date, booking_time, skin_type, special_needs, occasion, user_info } = event
       try {
         const existing = await db.collection('bookings')
           .where({
@@ -79,7 +79,9 @@ exports.main = async (event, context) => {
           service_name,
           booking_date,
           booking_time,
-          notes: notes || '',
+          skin_type: skin_type || '',
+          special_needs: special_needs || '',
+          occasion: occasion || '',
           status: 'pending',
           artist_notes: '',
           reject_reason: '',

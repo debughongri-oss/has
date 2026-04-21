@@ -1,7 +1,7 @@
 .page-booking {
   min-height: 100vh;
   background-color: var(--bg-elevated);
-  padding-bottom: 220rpx;
+  padding-bottom: calc(220rpx + env(safe-area-inset-bottom));
 }
 
 .steps {
@@ -38,6 +38,7 @@
 .step--done .step-num {
   background-color: var(--accent);
   color: #FDFBF8;
+  opacity: 0.7;
 }
 
 .step-label {
@@ -51,6 +52,7 @@
 
 .step--done .step-label {
   color: var(--accent);
+  opacity: 0.7;
 }
 
 .step-line {
@@ -246,6 +248,27 @@
   color: var(--text-primary);
 }
 
+.skin-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.skin-btn {
+  padding: 14rpx 28rpx;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-xs);
+  background-color: var(--fill-secondary);
+  color: var(--text-secondary);
+  border: 2rpx solid transparent;
+}
+
+.skin-btn--on {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
 .submit {
   position: fixed;
   bottom: 0;
@@ -255,6 +278,7 @@
   border-top: 1rpx solid var(--separator);
   padding: 24rpx var(--page-pad);
   padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  z-index: 100;
 }
 
 .submit-summary {
@@ -279,13 +303,18 @@
 .submit-btn {
   width: 100%;
   height: 96rpx;
-  line-height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--accent);
   color: #FDFBF8;
   border-radius: var(--radius-md);
   font-size: var(--fs-sm);
   font-weight: 500;
   border: none;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 

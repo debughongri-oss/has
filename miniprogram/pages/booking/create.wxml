@@ -83,12 +83,38 @@
     </view>
 
     <view class="form-block" wx:if="{{selectedTime}}">
-      <text class="form-title">留言</text>
+      <text class="form-title">肤质类型</text>
+      <view class="skin-group">
+        <view
+          class="skin-btn tappable {{item.selected ? 'skin-btn--on' : ''}}"
+          wx:for="{{skinTypeOptions}}"
+          wx:key="key"
+          bindtap="onSelectSkinType"
+          data-key="{{item.key}}"
+        >
+          {{item.label}}
+        </view>
+      </view>
+    </view>
+
+    <view class="form-block" wx:if="{{selectedTime}}">
+      <text class="form-title">特殊需求</text>
       <textarea
         class="note"
-        placeholder="你的需求、肤质情况等..."
-        value="{{notes}}"
-        bindinput="onNotesInput"
+        placeholder="过敏史、皮肤问题等..."
+        value="{{specialNeeds}}"
+        bindinput="onSpecialNeedsInput"
+        maxlength="200"
+      />
+    </view>
+
+    <view class="form-block" wx:if="{{selectedTime}}">
+      <text class="form-title">场合说明</text>
+      <textarea
+        class="note"
+        placeholder="婚礼主题、活动类型等..."
+        value="{{occasion}}"
+        bindinput="onOccasionInput"
         maxlength="200"
       />
     </view>
