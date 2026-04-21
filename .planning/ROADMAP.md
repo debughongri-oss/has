@@ -53,9 +53,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 3 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Wave 1: 服务端安全验证基础设施（shared/auth.js + 4个云函数写操作保护）
-- [ ] 06-02-PLAN.md — Wave 2: 化妆师资料增强（从业年限 + 风格标签 + 主页展示）
-- [ ] 06-03-PLAN.md — Wave 3: 预约备注结构化（肤质/特殊需求/场合说明替代留言）
+- [x] 06-01-PLAN.md — Wave 1: 服务端安全验证基础设施（shared/auth.js + 4个云函数写操作保护）
+- [x] 06-02-PLAN.md — Wave 2: 化妆师资料增强（从业年限 + 风格标签 + 主页展示）
+- [x] 06-03-PLAN.md — Wave 3: 预约备注结构化（肤质/特殊需求/场合说明替代留言）
 
 **UI hint**: yes
 

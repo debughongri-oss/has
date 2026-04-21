@@ -8,19 +8,19 @@
 
 ### Profile (个人简介)
 
-- [ ] **PROF-01**: 化妆师可以设置服务区域（文字描述，如"上海市区，可上门"）
-- [ ] **PROF-02**: 化妆师可以设置从业年限（数字）
-- [ ] **PROF-03**: 化妆师可以设置擅长风格标签（多选标签，如"韩系""森系""复古"）
-- [ ] **PROF-04**: 客户在主页可以看到服务区域、从业年限、风格标签
+- [x] **PROF-01**: 化妆师可以设置服务区域（文字描述，如"上海市区，可上门"）
+- [x] **PROF-02**: 化妆师可以设置从业年限（数字）
+- [x] **PROF-03**: 化妆师可以设置擅长风格标签（多选标签，如"韩系""森系""复古"）
+- [x] **PROF-04**: 客户在主页可以看到服务区域、从业年限、风格标签
 
 ### Booking (预约体验)
 
 - [ ] **BOOK-06**: 客户提交预约后，预约状态变更时收到微信订阅消息通知（接受/拒绝/完成）
 - [ ] **BOOK-07**: 化妆师接受预约后，客户收到"预约提醒"订阅消息（预约前一天）
-- [ ] **BOOK-09**: 客户填写预约时可以填写肤质（干性/油性/混合性/敏感性/不确定）
-- [ ] **BOOK-10**: 客户填写预约时可以填写特殊需求（过敏史等，最多200字）
-- [ ] **BOOK-11**: 客户填写预约时可以填写场合说明（婚礼主题等，最多200字）
-- [ ] **BOOK-12**: 化妆师在管理后台可以看到结构化预约备注（肤质、特殊需求、场合）
+- [x] **BOOK-09**: 客户填写预约时可以填写肤质（干性/油性/混合性/敏感性/不确定）
+- [x] **BOOK-10**: 客户填写预约时可以填写特殊需求（过敏史等，最多200字）
+- [x] **BOOK-11**: 客户填写预约时可以填写场合说明（婚礼主题等，最多200字）
+- [x] **BOOK-12**: 化妆师在管理后台可以看到结构化预约备注（肤质、特殊需求、场合）
 - [ ] **BOOK-13**: 化妆师在管理后台可以用日历视图查看预约（按月显示，有预约的日期标点）
 - [ ] **BOOK-14**: 化妆师点击日历日期后可以看到当天预约列表（按时间排序）
 - [ ] **BOOK-15**: 客户预约时看到剩余可用时段数量提示
@@ -49,8 +49,8 @@
 
 ### Security (安全)
 
-- [ ] **SEC-01**: 所有云函数写操作增加服务端身份验证（isArtist 检查）
-- [ ] **SEC-02**: profile 云函数更新操作增加字段白名单校验
+- [x] **SEC-01**: 所有云函数写操作增加服务端身份验证（isArtist 检查）
+- [x] **SEC-02**: profile 云函数更新操作增加字段白名单校验
 
 ## v2 Requirements
 
@@ -76,16 +76,16 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PROF-01 | Phase 6 | Pending |
-| PROF-02 | Phase 6 | Pending |
-| PROF-03 | Phase 6 | Pending |
-| PROF-04 | Phase 6 | Pending |
-| BOOK-09 | Phase 6 | Pending |
-| BOOK-10 | Phase 6 | Pending |
-| BOOK-11 | Phase 6 | Pending |
-| BOOK-12 | Phase 6 | Pending |
-| SEC-01 | Phase 6 | Pending |
-| SEC-02 | Phase 6 | Pending |
+| PROF-01 | Phase 6 | Complete |
+| PROF-02 | Phase 6 | Complete |
+| PROF-03 | Phase 6 | Complete |
+| PROF-04 | Phase 6 | Complete |
+| BOOK-09 | Phase 6 | Complete |
+| BOOK-10 | Phase 6 | Complete |
+| BOOK-11 | Phase 6 | Complete |
+| BOOK-12 | Phase 6 | Complete |
+| SEC-01 | Phase 6 | Complete |
+| SEC-02 | Phase 6 | Complete |
 | PORT-07 | Phase 7 | Pending |
 | PORT-08 | Phase 7 | Pending |
 | PORT-09 | Phase 7 | Pending |
