@@ -120,6 +120,8 @@ function getDefaultProfile() {
     avatar: '',
     bio: '一位热爱美的化妆师，专注打造属于你的独特妆容。',
     experience: '5年从业经验',
+    experience_years: 0,
+    style_tags: [],
     specialties: ['新娘妆', '日常妆', '订婚妆'],
     contact_info: {
       wechat: '',

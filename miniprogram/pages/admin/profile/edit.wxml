@@ -21,8 +21,26 @@
       <input class="val" placeholder="如：5年经验" value="{{experience}}" bindinput="onExperienceInput" />
     </view>
     <view class="row">
+      <text class="key">从业年数</text>
+      <input class="val" type="number" placeholder="数字，如 5" value="{{experienceYears}}" bindinput="onExperienceYearsInput" />
+    </view>
+    <view class="row">
       <text class="key">擅长</text>
       <input class="val" placeholder="逗号分隔" value="{{specialtiesText}}" bindinput="onSpecialtiesInput" />
+    </view>
+    <view class="row row--col">
+      <text class="label">擅长风格</text>
+      <view class="tag-group">
+        <view
+          class="tag-btn {{item.selected ? 'tag-btn--on' : ''}} tappable"
+          wx:for="{{styleTagOptions}}"
+          wx:key="key"
+          bindtap="onToggleStyleTag"
+          data-label="{{item.label}}"
+        >
+          {{item.label}}
+        </view>
+      </view>
     </view>
     <view class="row">
       <text class="key">地区</text>

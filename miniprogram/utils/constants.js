@@ -28,6 +28,18 @@ const SERVICE_CATEGORIES = [
   { key: 'creative', label: '创意妆' }
 ]
 
+// 擅长风格标签
+const STYLE_TAGS = [
+  { key: 'korean', label: '韩系' },
+  { key: 'natural', label: '自然' },
+  { key: 'sweet', label: '甜美' },
+  { key: 'elegant', label: '气质' },
+  { key: 'retro', label: '复古' },
+  { key: 'creative', label: '创意' },
+  { key: 'fresh', label: '清新' },
+  { key: 'glamorous', label: '华丽' }
+]
+
 // 图片相关配置
 const IMAGE_CONFIG = {
   MAX_COUNT: 9,            // 单次最多选择图片数
@@ -43,6 +55,7 @@ module.exports = {
   ARTIST_OPENID,
   BOOKING_STATUS,
   SERVICE_CATEGORIES,
+  STYLE_TAGS,
   IMAGE_CONFIG,
   SUBSCRIBE_TEMPLATE_ID
 }

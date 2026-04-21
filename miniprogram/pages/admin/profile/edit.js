@@ -1,6 +1,7 @@
 const profileService = require('../../../services/profile')
 const authService = require('../../../services/auth')
 const storageService = require('../../../services/storage')
+const { STYLE_TAGS } = require('../../../utils/constants')
 
 Page({
   data: {
@@ -9,7 +10,10 @@ Page({
     name: '',
     bio: '',
     experience: '',
+    experienceYears: '',
     specialtiesText: '',
+    selectedStyleTags: [],
+    styleTagOptions: [],
     location: '',
     wechat: '',
     phone: '',
@@ -34,7 +38,13 @@ Page({
           name: data.name || '',
           bio: data.bio || '',
           experience: data.experience || '',
+          experienceYears: data.experience_years ? String(data.experience_years) : '',
           specialtiesText: (data.specialties || []).join(','),
+          selectedStyleTags: data.style_tags || [],
+          styleTagOptions: STYLE_TAGS.map(t => ({
+            ...t,
+            selected: (data.style_tags || []).includes(t.label)
+          })),
           location: (data.contact_info && data.contact_info.location) || '',
           wechat: (data.contact_info && data.contact_info.wechat) || '',
           phone: (data.contact_info && data.contact_info.phone) || ''
@@ -50,7 +60,22 @@ Page({
   onNameInput: function (e) { this.setData({ name: e.detail.value }) },
   onBioInput: function (e) { this.setData({ bio: e.detail.value }) },
   onExperienceInput: function (e) { this.setData({ experience: e.detail.value }) },
+  onExperienceYearsInput: function (e) { this.setData({ experienceYears: e.detail.value }) },
   onSpecialtiesInput: function (e) { this.setData({ specialtiesText: e.detail.value }) },
+  onToggleStyleTag: function (e) {
+    const label = e.currentTarget.dataset.label
+    const tags = this.data.selectedStyleTags.slice()
+    const idx = tags.indexOf(label)
+    if (idx >= 0) {
+      tags.splice(idx, 1)
+    } else {
+      tags.push(label)
+    }
+    this.setData({
+      selectedStyleTags: tags,
+      styleTagOptions: STYLE_TAGS.map(t => ({ ...t, selected: tags.includes(t.label) }))
+    })
+  },
   onLocationInput: function (e) { this.setData({ location: e.detail.value }) },
   onWechatInput: function (e) { this.setData({ wechat: e.detail.value }) },
   onPhoneInput: function (e) { this.setData({ phone: e.detail.value }) },
@@ -68,7 +93,7 @@ Page({
   },
 
   saveProfile: function () {
-    const { name, bio, experience, specialtiesText, location, wechat, phone } = this.data
+    const { name, bio, experience, experienceYears, specialtiesText, selectedStyleTags, location, wechat, phone } = this.data
     if (!name.trim()) {
       wx.showToast({ title: '请输入姓名', icon: 'none' })
       return
@@ -81,6 +106,8 @@ Page({
       name: name.trim(),
       bio: bio.trim(),
       experience: experience.trim(),
+      experience_years: parseInt(experienceYears) || 0,
+      style_tags: selectedStyleTags,
       specialties,
       contact_info: {
         wechat: wechat.trim(),
