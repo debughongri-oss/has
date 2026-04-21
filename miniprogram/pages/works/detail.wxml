@@ -5,35 +5,48 @@
 
   <block wx:if="{{!loading && work}}">
     <view class="gallery">
-      <swiper
-        class="gallery-swiper"
-        indicator-dots="{{false}}"
-        autoplay="{{false}}"
-        circular="{{true}}"
-        current="{{currentImage}}"
-        bindchange="onSwiperChange"
-      >
-        <swiper-item wx:for="{{work.images}}" wx:key="index">
-          <image
-            class="gallery-img"
-            src="{{item}}"
-            mode="aspectFill"
-            show-menu-by-longpress
-            bindtap="onPreviewImage"
-            data-index="{{index}}"
-          />
-        </swiper-item>
-      </swiper>
+      <!-- Before/After comparison mode (has before_image) -->
+      <block wx:if="{{work.before_image}}">
+        <before-after-slider
+          beforeSrc="{{work.before_image}}"
+          afterSrc="{{work.images[0]}}"
+          height="900rpx"
+          bind:fullscreen="onSliderFullscreen"
+        />
+      </block>
 
-      <view class="gallery-counter" wx:if="{{work.images.length > 1}}">
-        <text class="counter-current">{{currentImage + 1}}</text>
-        <text class="counter-sep">/</text>
-        <text class="counter-total">{{work.images.length}}</text>
-      </view>
+      <!-- Standard swiper mode (no before_image) -->
+      <block wx:else>
+        <swiper
+          class="gallery-swiper"
+          indicator-dots="{{false}}"
+          autoplay="{{false}}"
+          circular="{{true}}"
+          current="{{currentImage}}"
+          bindchange="onSwiperChange"
+        >
+          <swiper-item wx:for="{{work.images}}" wx:key="index">
+            <image
+              class="gallery-img"
+              src="{{item}}"
+              mode="aspectFill"
+              show-menu-by-longpress
+              bindtap="onPreviewImage"
+              data-index="{{index}}"
+            />
+          </swiper-item>
+        </swiper>
+
+        <view class="gallery-counter" wx:if="{{work.images.length > 1}}">
+          <text class="counter-current">{{currentImage + 1}}</text>
+          <text class="counter-sep">/</text>
+          <text class="counter-total">{{work.images.length}}</text>
+        </view>
+      </block>
 
       <view class="gallery-share">
         <button class="share-btn" open-type="share">
-          <text class="share-icon">↗</text>
+          <view class="share-icon"></view>
         </button>
       </view>
     </view>

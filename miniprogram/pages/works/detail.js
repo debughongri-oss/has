@@ -52,6 +52,14 @@ Page({
     wx.switchTab({ url: '/pages/booking/create' })
   },
 
+  onSliderFullscreen: function () {
+    const work = this.data.work
+    if (!work || !work._id) return
+    wx.navigateTo({
+      url: '/pages/works/compare?id=' + work._id
+    })
+  },
+
   onShareAppMessage: function () {
     const work = this.data.work
     return {

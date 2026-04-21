@@ -1,7 +1,8 @@
 {
   "usingComponents": {
     "t-loading": "tdesign-miniprogram/loading/loading",
-    "t-empty": "tdesign-miniprogram/empty/empty"
+    "t-empty": "tdesign-miniprogram/empty/empty",
+    "before-after-slider": "/components/before-after-slider/slider"
   },
   "navigationBarTitleText": "",
   "navigationStyle": "custom",
