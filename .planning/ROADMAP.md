@@ -67,7 +67,11 @@ Plans:
   1. 化妆师上传作品时可额外上传一张"妆前照片"
   2. 客户查看有妆前照片的作品详情时，可用手指拖动滑块对比前后效果
   3. 前后对比支持全屏查看模式
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 07-01-PLAN.md — Wave 1: Before-after slider 组件（clip-path + 手动 touch 事件）
+- [ ] 07-02-PLAN.md — Wave 2: 全链路集成（管理端上传 + 详情页条件渲染 + 全屏对比页）
+
 **UI hint**: yes
 
 ### Phase 8: Booking Notifications & Calendar
@@ -115,7 +119,7 @@ Phases execute in numeric order: 6 → 7 → 8 → 9 → 10
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 6. Data Model Extensions & Quick Wins | v1.1 | 0/3 | Planning complete | - |
-| 7. Before/After Comparison Slider | v1.1 | 0/? | Not started | - |
+| 7. Before/After Comparison Slider | v1.1 | 0/2 | Planning complete | - |
 | 8. Booking Notifications & Calendar | v1.1 | 0/? | Not started | - |
 | 9. Customer Review System | v1.1 | 0/? | Not started | - |
 | 10. QR Code & Poster Generation | v1.1 | 0/? | Not started | - |
