@@ -25,6 +25,11 @@ Page({
     this.setData({ loading: true })
     bookingsService.getBookingDetail(id)
       .then(data => {
+        // 转换 skin_type key 为中文标签
+        if (data.skin_type) {
+          const SKIN_LABELS = { dry: '干性', oily: '油性', combination: '混合性', sensitive: '敏感性', unknown: '不确定' }
+          data.skin_type_label = SKIN_LABELS[data.skin_type] || data.skin_type
+        }
         this.setData({
           booking: data,
           loading: false,

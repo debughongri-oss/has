@@ -25,7 +25,19 @@
         <text class="key">客户</text>
         <text class="val">{{booking.user_info.nickname || '微信用户'}}</text>
       </view>
-      <view class="row" wx:if="{{booking.notes}}">
+      <view class="row" wx:if="{{booking.skin_type}}">
+        <text class="key">肤质</text>
+        <text class="val">{{booking.skin_type_label || booking.skin_type}}</text>
+      </view>
+      <view class="row" wx:if="{{booking.special_needs}}">
+        <text class="key">特殊需求</text>
+        <text class="val val--wrap">{{booking.special_needs}}</text>
+      </view>
+      <view class="row" wx:if="{{booking.occasion}}">
+        <text class="key">场合说明</text>
+        <text class="val val--wrap">{{booking.occasion}}</text>
+      </view>
+      <view class="row" wx:if="{{booking.notes && !booking.skin_type}}">
         <text class="key">留言</text>
         <text class="val val--wrap">{{booking.notes}}</text>
       </view>
