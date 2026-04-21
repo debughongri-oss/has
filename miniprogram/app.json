@@ -3,10 +3,12 @@
     "pages/index/index",
     "pages/works/list",
     "pages/works/detail",
+    "pages/works/compare",
     "pages/services/list",
     "pages/booking/create",
     "pages/profile/index",
-    "pages/profile/history"
+    "pages/profile/history",
+    "pages/demo-ui/demo-ui"
   ],
   "window": {
     "backgroundTextStyle": "dark",

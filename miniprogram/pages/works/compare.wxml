@@ -1,0 +1,39 @@
+<view class="compare-page">
+  <!-- Custom navbar -->
+  <view class="compare-navbar" style="padding-top: {{statusBarHeight}}px;">
+    <view class="navbar-content">
+      <view class="navbar-back tappable" bindtap="onBack">
+        <view class="navbar-back-icon"></view>
+      </view>
+      <text class="navbar-title">妆前妆后对比</text>
+      <view class="navbar-placeholder"></view>
+    </view>
+  </view>
+
+  <!-- Loading state -->
+  <view class="compare-loading" wx:if="{{loading}}">
+    <view class="loading-spinner"></view>
+  </view>
+
+  <!-- Slider content -->
+  <block wx:if="{{!loading && work && work.before_image}}">
+    <view class="compare-slider-area">
+      <before-after-slider
+        beforeSrc="{{work.before_image}}"
+        afterSrc="{{work.images[0]}}"
+        height="100%"
+        bind:fullscreen="onSliderFullscreen"
+      />
+    </view>
+
+    <!-- Bottom hint -->
+    <view class="compare-hint">
+      <text class="compare-hint-text">左右拖动滑块对比效果</text>
+    </view>
+  </block>
+
+  <!-- Error state -->
+  <view class="compare-error" wx:if="{{!loading && (!work || !work.before_image)}}">
+    <text class="compare-error-text">无法加载对比内容</text>
+  </view>
+</view>
