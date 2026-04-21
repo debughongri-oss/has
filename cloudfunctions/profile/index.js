@@ -1,4 +1,5 @@
 const cloud = require('wx-server-sdk')
+const { requireArtist, sanitizeProfileUpdate } = require('../shared/auth')
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
@@ -50,10 +51,12 @@ exports.main = async (event, context) => {
 
     case 'update': {
       try {
-        // 验证身份 — 只有化妆师可以更新资料
-        // 注意：ARTIST_OPENID 需要在部署后配置
-        // Phase 1 先用简单校验，Phase 2+ 加强
-        const updateData = event.data || {}
+        // 服务端身份验证 — 只有化妆师可以更新资料
+        const authCheck = requireArtist(wxContext)
+        if (!authCheck.ok) return authCheck.response
+
+        // 字段白名单过滤 (per D-13)
+        const updateData = sanitizeProfileUpdate(event.data || {})
         updateData.updated_at = db.serverDate()
 
         const query = await db.collection('artist_profile')
@@ -79,6 +82,10 @@ exports.main = async (event, context) => {
 
     case 'init': {
       try {
+        // 服务端身份验证 — 只有化妆师可以初始化资料
+        const authCheck = requireArtist(wxContext)
+        if (!authCheck.ok) return authCheck.response
+
         // 初始化默认资料 — 首次使用时调用
         const existing = await db.collection('artist_profile')
           .limit(1)

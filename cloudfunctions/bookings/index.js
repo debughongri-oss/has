@@ -1,4 +1,5 @@
 const cloud = require('wx-server-sdk')
+const { requireArtist } = require('../shared/auth')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
@@ -154,6 +155,9 @@ exports.main = async (event, context) => {
     case 'updateStatus': {
       const { id, status, artist_notes, reject_reason } = event
       try {
+        const authCheck = requireArtist(wxContext)
+        if (!authCheck.ok) return authCheck.response
+
         const updateData = { status, updated_at: db.serverDate() }
         if (artist_notes !== undefined) updateData.artist_notes = artist_notes
         if (reject_reason !== undefined) updateData.reject_reason = reject_reason

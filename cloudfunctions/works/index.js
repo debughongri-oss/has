@@ -1,4 +1,5 @@
 const cloud = require('wx-server-sdk')
+const { requireArtist } = require('../shared/auth')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
@@ -58,6 +59,9 @@ exports.main = async (event, context) => {
     case 'create': {
       const { data } = event
       try {
+        const authCheck = requireArtist(wxContext)
+        if (!authCheck.ok) return authCheck.response
+
         const workData = {
           ...data,
           created_at: db.serverDate(),
@@ -74,6 +78,9 @@ exports.main = async (event, context) => {
     case 'update': {
       const { id, data } = event
       try {
+        const authCheck = requireArtist(wxContext)
+        if (!authCheck.ok) return authCheck.response
+
         const updateData = { ...data, updated_at: db.serverDate() }
         await db.collection('works').doc(id).update({ data: updateData })
         return { errCode: 0, data: { success: true } }
@@ -86,6 +93,9 @@ exports.main = async (event, context) => {
     case 'delete': {
       const { id } = event
       try {
+        const authCheck = requireArtist(wxContext)
+        if (!authCheck.ok) return authCheck.response
+
         await db.collection('works').doc(id).remove()
         return { errCode: 0, data: { success: true } }
       } catch (error) {
