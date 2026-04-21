@@ -1,0 +1,33 @@
+<view class="ba-container" style="height: {{height}};">
+  <!-- After image (bottom layer, full width) -->
+  <image class="ba-image ba-image--after" src="{{afterSrc}}" mode="aspectFill" />
+
+  <!-- Before image (overlay, clipped from right) -->
+  <view class="ba-before-clip" style="clip-path: inset(0 {{100 - clipPercent}}% 0 0);">
+    <image class="ba-image ba-image--before" src="{{beforeSrc}}" mode="aspectFill" />
+  </view>
+
+  <!-- Divider line + handle -->
+  <view class="ba-divider" style="left: {{clipPercent}}%;">
+    <view class="ba-handle">
+      <view class="ba-handle-arrow ba-handle-arrow--left"></view>
+      <view class="ba-handle-arrow ba-handle-arrow--right"></view>
+    </view>
+  </view>
+
+  <!-- Labels -->
+  <view class="ba-label ba-label--before">BEFORE</view>
+  <view class="ba-label ba-label--after">AFTER</view>
+
+  <!-- Fullscreen button (top-right) -->
+  <view class="ba-fullscreen tappable" bindtap="onFullscreenTap">
+    <view class="ba-fullscreen-icon"></view>
+  </view>
+
+  <!-- Touch area covers entire container for easy dragging -->
+  <view class="ba-touch-area"
+    catchtouchstart="onHandleTouchStart"
+    catchtouchmove="onHandleTouchMove"
+    catchtouchend="onHandleTouchEnd">
+  </view>
+</view>
