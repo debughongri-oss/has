@@ -13,6 +13,7 @@ Page({
     images: [],
     description: '',
     isFeatured: false,
+    beforeImage: '',
     saving: false
   },
 
@@ -41,7 +42,8 @@ Page({
           category: data.category,
           images: data.images || [],
           description: data.description || '',
-          isFeatured: data.is_featured || false
+          isFeatured: data.is_featured || false,
+          beforeImage: data.before_image || ''
         })
         wx.hideLoading()
       })
@@ -90,8 +92,25 @@ Page({
     this.setData({ images })
   },
 
+  chooseBeforeImage: function () {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        this.setData({
+          beforeImage: res.tempFiles[0].tempFilePath
+        })
+      }
+    })
+  },
+
+  removeBeforeImage: function () {
+    this.setData({ beforeImage: '' })
+  },
+
   saveWork: function () {
-    const { title, category, images, description, isFeatured } = this.data
+    const { title, category, images, description, isFeatured, beforeImage } = this.data
     if (!title.trim()) {
       wx.showToast({ title: '请输入标题', icon: 'none' })
       return
@@ -105,20 +124,28 @@ Page({
     wx.showLoading({ title: '保存中...' })
 
     this.processImages().then(processedImages => {
-      const workData = {
-        title: title.trim(),
-        category,
-        images: processedImages,
-        description: description.trim(),
-        is_featured: isFeatured,
-        sort_order: 0
-      }
+      // Process before image (reuse uploadWorkImages)
+      const beforeImagePromise = beforeImage && !beforeImage.startsWith('cloud://')
+        ? storageService.uploadWorkImages([beforeImage]).then(function (ids) { return ids[0] })
+        : Promise.resolve(beforeImage || '')
 
-      const promise = this.data.isEdit
-        ? worksService.updateWork(this.data.workId, workData)
-        : worksService.createWork(workData)
+      return beforeImagePromise.then(function (processedBeforeImage) {
+        const workData = {
+          title: title.trim(),
+          category: category,
+          images: processedImages,
+          description: description.trim(),
+          is_featured: isFeatured,
+          sort_order: 0,
+          before_image: processedBeforeImage
+        }
 
-      return promise
+        const promise = this.data.isEdit
+          ? worksService.updateWork(this.data.workId, workData)
+          : worksService.createWork(workData)
+
+        return promise
+      }.bind(this))
     }).then(() => {
       wx.hideLoading()
       this.setData({ saving: false })

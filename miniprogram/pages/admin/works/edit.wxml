@@ -26,11 +26,25 @@
     <view class="img-grid">
       <view class="img-item" wx:for="{{images}}" wx:key="index">
         <image class="img-preview" src="{{item}}" mode="aspectFill" />
-        <view class="img-del tappable" bindtap="removeImage" data-index="{{index}}">×</view>
+        <view class="img-del tappable" bindtap="removeImage" data-index="{{index}}"></view>
       </view>
       <view class="img-add tappable" wx:if="{{images.length < 9}}" bindtap="chooseImages">
         <text class="img-add-icon">+</text>
       </view>
+    </view>
+  </view>
+
+  <view class="form-block">
+    <text class="form-title">妆前对比照（可选）</text>
+    <view class="before-img-area" wx:if="{{!beforeImage}}">
+      <view class="before-img-add tappable" bindtap="chooseBeforeImage">
+        <view class="before-img-add-icon"></view>
+        <text class="before-img-add-text">上传妆前照片</text>
+      </view>
+    </view>
+    <view class="before-img-card" wx:else>
+      <image class="before-img-preview" src="{{beforeImage}}" mode="aspectFill" />
+      <view class="before-img-del tappable" bindtap="removeBeforeImage"></view>
     </view>
   </view>
 
