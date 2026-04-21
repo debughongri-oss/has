@@ -28,9 +28,9 @@
 
 ### Portfolio (作品展示)
 
-- [ ] **PORT-07**: 化妆师上传作品时可以上传"妆前照片"（before image）
-- [ ] **PORT-08**: 客户查看有妆前照片的作品详情时，可以用滑块拖动对比前后效果
-- [ ] **PORT-09**: 前后对比滑块支持全屏查看
+- [x] **PORT-07**: 化妆师上传作品时可以上传"妆前照片"（before image）
+- [x] **PORT-08**: 客户查看有妆前照片的作品详情时，可以用滑块拖动对比前后效果
+- [x] **PORT-09**: 前后对比滑块支持全屏查看
 
 ### Review (客户评价)
 
@@ -86,9 +86,9 @@
 | BOOK-12 | Phase 6 | Complete |
 | SEC-01 | Phase 6 | Complete |
 | SEC-02 | Phase 6 | Complete |
-| PORT-07 | Phase 7 | Pending |
-| PORT-08 | Phase 7 | Pending |
-| PORT-09 | Phase 7 | Pending |
+| PORT-07 | Phase 7 | Complete |
+| PORT-08 | Phase 7 | Complete |
+| PORT-09 | Phase 7 | Complete |
 | BOOK-06 | Phase 8 | Pending |
 | BOOK-07 | Phase 8 | Pending |
 | BOOK-13 | Phase 8 | Pending |

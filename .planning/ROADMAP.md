@@ -34,7 +34,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Milestone Goal:** 补齐 v1.0 遗留功能，提升预约体验和化妆师品牌形象
 
 - [ ] **Phase 6: Data Model Extensions & Quick Wins** — 简介增强、预约备注结构化、服务端安全加固
-- [ ] **Phase 7: Before/After Comparison Slider** — 作品详情页妆前妆后滑块对比
+- [x] **Phase 7: Before/After Comparison Slider** — 作品详情页妆前妆后滑块对比 (completed 2026-04-21)
 - [ ] **Phase 8: Booking Notifications & Calendar** — 订阅消息通知、日历管理视图、时段提示
 - [ ] **Phase 9: Customer Review System** — 预约完成后评价打分、公开评价展示
 - [ ] **Phase 10: QR Code & Poster Generation** — 小程序码海报一键生成与保存
@@ -69,8 +69,8 @@ Plans:
   3. 前后对比支持全屏查看模式
 **Plans**: 2 plans
 Plans:
-- [ ] 07-01-PLAN.md — Wave 1: Before-after slider 组件（clip-path + 手动 touch 事件）
-- [ ] 07-02-PLAN.md — Wave 2: 全链路集成（管理端上传 + 详情页条件渲染 + 全屏对比页）
+- [x] 07-01-PLAN.md — Wave 1: Before-after slider 组件（clip-path + 手动 touch 事件）
+- [x] 07-02-PLAN.md — Wave 2: 全链路集成（管理端上传 + 详情页条件渲染 + 全屏对比页）
 
 **UI hint**: yes
 
@@ -119,7 +119,7 @@ Phases execute in numeric order: 6 → 7 → 8 → 9 → 10
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 6. Data Model Extensions & Quick Wins | v1.1 | 0/3 | Planning complete | - |
-| 7. Before/After Comparison Slider | v1.1 | 0/2 | Planning complete | - |
+| 7. Before/After Comparison Slider | v1.1 | 2/2 | Complete   | 2026-04-21 |
 | 8. Booking Notifications & Calendar | v1.1 | 0/? | Not started | - |
 | 9. Customer Review System | v1.1 | 0/? | Not started | - |
 | 10. QR Code & Poster Generation | v1.1 | 0/? | Not started | - |
