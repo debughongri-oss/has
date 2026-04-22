@@ -194,6 +194,52 @@ exports.main = async (event, context) => {
       }
     }
 
+    case 'getCalendarData': {
+      const { year, month } = event
+      try {
+        const authCheck = requireArtist(wxContext)
+        if (!authCheck.ok) return authCheck.response
+
+        // 构造该月的日期范围
+        const startDate = `${year}-${String(month).padStart(2, '0')}-01`
+        // 计算下月第一天
+        let nextMonth = month + 1
+        let nextYear = year
+        if (nextMonth > 12) { nextMonth = 1; nextYear = year + 1 }
+        const endDate = `${nextYear}-${String(nextMonth).padStart(2, '0')}-01`
+
+        // 查询该月所有非取消的预约
+        const { data: bookings } = await db.collection('bookings')
+          .where({
+            booking_date: _.gte(startDate).and(_.lt(endDate)),
+            status: _.neq('cancelled')
+          })
+          .orderBy('booking_date', 'asc')
+          .orderBy('booking_time', 'asc')
+          .get()
+
+        // 按日期分组（服务端分组，减少客户端计算 per D-13）
+        const grouped = {}
+        bookings.forEach(b => {
+          if (!grouped[b.booking_date]) {
+            grouped[b.booking_date] = []
+          }
+          grouped[b.booking_date].push(b)
+        })
+
+        return {
+          errCode: 0,
+          data: {
+            grouped,
+            bookings
+          }
+        }
+      } catch (error) {
+        console.error('获取日历数据失败:', error)
+        return { errCode: -1, errMsg: '获取日历数据失败' }
+      }
+    }
+
     default:
       return { errCode: -1, errMsg: '未知操作' }
   }

@@ -42,6 +42,12 @@ const cancelBooking = async (id) => {
   return result.data
 }
 
+const getCalendarData = async (year, month) => {
+  const result = await callCloudFunction('bookings', { action: 'getCalendarData', year, month })
+  if (result.errCode !== 0) throw new Error(result.errMsg)
+  return result.data
+}
+
 const getStatusLabel = (status) => {
   const labels = {
     pending: '待确认',
@@ -74,6 +80,7 @@ module.exports = {
   getBookingDetail,
   updateBookingStatus,
   cancelBooking,
+  getCalendarData,
   getStatusLabel,
   getStatusColor
 }

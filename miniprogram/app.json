@@ -65,6 +65,7 @@
         "services/edit",
         "bookings/list",
         "bookings/detail",
+        "bookings/calendar",
         "profile/edit"
       ]
     }
