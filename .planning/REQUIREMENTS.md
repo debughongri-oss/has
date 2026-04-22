@@ -15,16 +15,16 @@
 
 ### Booking (预约体验)
 
-- [ ] **BOOK-06**: 客户提交预约后，预约状态变更时收到微信订阅消息通知（接受/拒绝/完成）
-- [ ] **BOOK-07**: 化妆师接受预约后，客户收到"预约提醒"订阅消息（预约前一天）
+- [x] **BOOK-06**: 客户提交预约后，预约状态变更时收到微信订阅消息通知（接受/拒绝/完成）
+- [x] **BOOK-07**: 化妆师接受预约后，客户收到"预约提醒"订阅消息（预约前一天）
 - [x] **BOOK-09**: 客户填写预约时可以填写肤质（干性/油性/混合性/敏感性/不确定）
 - [x] **BOOK-10**: 客户填写预约时可以填写特殊需求（过敏史等，最多200字）
 - [x] **BOOK-11**: 客户填写预约时可以填写场合说明（婚礼主题等，最多200字）
 - [x] **BOOK-12**: 化妆师在管理后台可以看到结构化预约备注（肤质、特殊需求、场合）
-- [ ] **BOOK-13**: 化妆师在管理后台可以用日历视图查看预约（按月显示，有预约的日期标点）
-- [ ] **BOOK-14**: 化妆师点击日历日期后可以看到当天预约列表（按时间排序）
-- [ ] **BOOK-15**: 客户预约时看到剩余可用时段数量提示
-- [ ] **BOOK-16**: 化妆师看到同一天3+预约时显示"紧凑日程"警告
+- [x] **BOOK-13**: 化妆师在管理后台可以用日历视图查看预约（按月显示，有预约的日期标点）
+- [x] **BOOK-14**: 化妆师点击日历日期后可以看到当天预约列表（按时间排序）
+- [x] **BOOK-15**: 客户预约时看到剩余可用时段数量提示
+- [x] **BOOK-16**: 化妆师看到同一天3+预约时显示"紧凑日程"警告
 
 ### Portfolio (作品展示)
 
@@ -89,12 +89,12 @@
 | PORT-07 | Phase 7 | Complete |
 | PORT-08 | Phase 7 | Complete |
 | PORT-09 | Phase 7 | Complete |
-| BOOK-06 | Phase 8 | Pending |
-| BOOK-07 | Phase 8 | Pending |
-| BOOK-13 | Phase 8 | Pending |
-| BOOK-14 | Phase 8 | Pending |
-| BOOK-15 | Phase 8 | Pending |
-| BOOK-16 | Phase 8 | Pending |
+| BOOK-06 | Phase 8 | Complete |
+| BOOK-07 | Phase 8 | Complete |
+| BOOK-13 | Phase 8 | Complete |
+| BOOK-14 | Phase 8 | Complete |
+| BOOK-15 | Phase 8 | Complete |
+| BOOK-16 | Phase 8 | Complete |
 | REVW-01 | Phase 9 | Pending |
 | REVW-02 | Phase 9 | Pending |
 | REVW-03 | Phase 9 | Pending |

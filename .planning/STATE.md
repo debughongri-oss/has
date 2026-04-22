@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 品牌升级 & 体验增强
-status: executing
-stopped_at: Phase 8 planning complete — 2 plans ready for execution
-last_updated: "2026-04-22T01:00:00.000Z"
-last_activity: "2026-04-22 -- Phase 8 plan-phase: 2 plans created (Wave 1, no dependencies)"
+status: Phase 8 complete — 2/2 plans executed
+stopped_at: Completed Phase 08 — 2 plans, 4 tasks, booking notifications & calendar
+last_updated: "2026-04-22T09:09:03.894Z"
+last_activity: "2026-04-22 -- Phase 8 execute-phase: 2 plans completed (08-01, 08-02)"
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 5
-  completed_plans: 5
+  completed_phases: 3
+  total_plans: 7
+  completed_plans: 7
   percent: 100
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-19)
 
 **Core value:** 客户看到作品后能直接预约化妆服务——从"看到好看的作品"到"我要预约"的路径最短
-**Current focus:** v1.1 品牌升级 & 体验增强 — Phase 8 discussion complete, ready for planning
+**Current focus:** v1.1 品牌升级 & 体验增强 — Phase 8 complete, Phase 9 next
 
 ## Current Position
 
-Phase: 8 of 10 (Booking Notifications & Calendar) 🔄 Planning Complete
-Plan: 0/2 plans
-Status: Phase 8 Planned — 2 plans in Wave 1, zero file overlap, max parallelism
-Last activity: 2026-04-22 -- Phase 8 plan-phase completed
+Phase: 8 of 10 (Booking Notifications & Calendar) ✅ Complete
+Plan: 2/2 plans
+Status: Phase 8 complete — all 6 requirements delivered
+Last activity: 2026-04-22 -- Phase 8 execute-phase completed
 
 Progress: [████░░░░░░] 40%
 
@@ -80,6 +80,8 @@ Progress: [████░░░░░░] 40%
 | Phase 06 P03 | 12m | 2 tasks | 7 files |
 | Phase 07 P01 | 3m | 1 tasks | 4 files |
 | Phase 07 P02 | 6m | 3 tasks | 11 files |
+| Phase 08 P01 | 4m | 2 tasks | 6 files |
+| Phase 08 P02 | 4m | 2 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -105,6 +107,8 @@ Recent decisions affecting current work:
 - [Phase 08]: D-13: bookings 云函数新增 getCalendarData action（服务端分组）
 - [Phase 08]: D-18: 预约创建页时段列表上方显示"剩余 X 个可用时段"
 - [Phase 08]: D-21: 日历页面预约列表上方显示紧凑日程警告（阈值 3）
+- [Phase 08]: D-01~D-10: booking-reminder cron at 20:00, reuse subscribe template, sequential send
+- [Phase 08]: D-11~D-23: TDesign Calendar embedded mode, getCalendarData server-grouped, BUSY_DAY_THRESHOLD=3, orange markers
 
 ### Phase 8 Key Decisions (from 08-CONTEXT.md)
 
@@ -133,12 +137,12 @@ Items acknowledged and carried forward from v1.0 milestone close:
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
 | requirement | PORT-07: Before/after comparison slider | ✅ Resolved (Phase 7) | 2026-04-19 |
-| requirement | BOOK-06/07: Subscription message notifications | 🔄 Phase 8 in progress | 2026-04-19 |
+| requirement | BOOK-06/07: Subscription message notifications | ✅ Resolved (Phase 8) | 2026-04-19 |
 | requirement | MGMT-03: QR code poster generation | → Phase 10 | 2026-04-19 |
 | tech-debt | Server-side auth verification on write operations | ✅ Resolved (Plan 06-01) | 2026-04-19 |
 
 ## Session Continuity
 
-Last session: 2026-04-22T00:00:00.000Z
-Stopped at: Phase 8 discuss complete — ready for research/planning
-Next step: `/gsd-research-phase 8` or `/gsd-plan-phase 8` to plan booking notifications & calendar
+Last session: 2026-04-22T09:09:03.891Z
+Stopped at: Completed Phase 08 — 2 plans, 4 tasks, booking notifications & calendar
+Next step: `/gsd-research-phase 9` or `/gsd-plan-phase 9` to plan customer review system
