@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: 品牌升级 & 体验增强
 status: executing
-stopped_at: Phase 7 complete — ready for Phase 8 planning
-last_updated: "2026-04-21T11:45:00.000Z"
-last_activity: "2026-04-21 -- Phase 7 execute-phase: 07-01 + 07-02 completed (4 tasks, 15 files)"
+stopped_at: Phase 8 discuss complete — ready for Phase 8 research/planning
+last_updated: "2026-04-22T00:00:00.000Z"
+last_activity: "2026-04-22 -- Phase 8 discuss-phase: context gathered, 25 decisions locked"
 progress:
   total_phases: 5
   completed_phases: 2
@@ -21,42 +21,48 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-19)
 
 **Core value:** 客户看到作品后能直接预约化妆服务——从"看到好看的作品"到"我要预约"的路径最短
-**Current focus:** v1.1 品牌升级 & 体验增强 — Phase 7 COMPLETE, Phase 8 next
+**Current focus:** v1.1 品牌升级 & 体验增强 — Phase 8 discussion complete, ready for planning
 
 ## Current Position
 
-Phase: 7 of 10 (Before/After Comparison Slider) ✅ COMPLETE
-Plan: All plans executed
-Status: Phase 7 Execution Complete ✅
-Last activity: 2026-04-21 -- Phase 7 executed: 2 plans, 4 tasks, 15 files
+Phase: 8 of 10 (Booking Notifications & Calendar) 🔄 Discussion Complete
+Plan: 0/? plans
+Status: Phase 8 Context Gathered — 25 decisions locked in 08-CONTEXT.md
+Last activity: 2026-04-22 -- Phase 8 discuss-phase completed
 
 Progress: [████░░░░░░] 40%
 
-## Phase 7 Context Summary
+## Phase 8 Context Summary
 
-**Requirements:** PORT-07 (妆前照片上传), PORT-08 (滑块对比), PORT-09 (全屏查看)
+**Requirements:** BOOK-06 (状态变更通知), BOOK-07 (预约前一天提醒), BOOK-13 (日历视图), BOOK-14 (日历点击预约列表), BOOK-15 (剩余时段提示), BOOK-16 (紧凑日程警告)
 
-**Key Decisions (21 decisions locked):**
+**Key Findings:**
 
-- D-06/D-07: 手动 touch 事件 + CSS clip-path（不用 movable-view）
-- D-08: After 底图 + Before 裁剪层（行业惯例）
-- D-12: 独立全屏页面 `pages/works/compare`（不用 popup overlay）
-- D-20/D-21: 云函数和服务层零修改（...data 自动透传 before_image）
+- BOOK-06 (状态变更通知) 已在 v1.0 完整实现 — sendNotify() + requestSubscribeMessage() 代码完整，零改动需要
+- BOOK-07 (前一天提醒) 需新建独立云函数 `booking-reminder`，使用定时触发器每天 20:00 扫描
+- BOOK-13/14 (日历) 需新建管理端日历页面，TDesign Calendar 组件 72KB，放入 admin 子包无包体积问题
+- BOOK-15 (剩余时段) 数据已有，只需在 create.wxml 加文字提示
+- BOOK-16 (紧凑日程) 在日历页面的预约列表上方显示警告条
 
-**New Files:** 8 (4 component files + 4 fullscreen page files)
-**Modified Files:** 8 (detail page × 4, edit page × 3, app.json × 1)
-**Unchanged Backend:** 0 cloud function changes needed
+**Key Decisions (25 decisions locked):**
 
-**Plans:**
+- D-01: 复用现有订阅消息模板，不新增模板
+- D-05/D-06: 云函数定时触发器实现预约提醒，独立云函数 booking-reminder
+- D-08: 用现有模板发提醒（phrase5 区分状态），避免多模板
+- D-11: 新建日历页面 pages/admin/bookings/calendar（不嵌入列表页）
+- D-13: 服务端按月分组返回日历数据
+- D-18: 时段列表上方文字提示剩余可用数量
+- D-21: 日历页面展示紧凑日程警告（阈值 3）
+- D-24: Calendar 72KB 放 admin 子包，远低于限制
 
-- 07-01-PLAN.md (Wave 1): Slider 组件 — 1 task, 4 new files
-- 07-02-PLAN.md (Wave 2): 全链路集成 — 3 tasks, 8 modified + 4 new files
+**Estimated New Files:** 5 (calendar page × 4 + booking-reminder cloud function × 3)
+**Estimated Modified Files:** 6 (app.json, bookings/index.js, bookings.js service, create.wxml, create.js, admin/list.wxml+js)
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 8 (v1.0) + 3 (v1.1 Phase 6)
+- Total plans completed: 8 (v1.0) + 3 (v1.1 Phase 6) + 2 (v1.1 Phase 7)
 - Average duration: ~4m
 - Total execution time: ~0.5 hours
 
@@ -84,7 +90,7 @@ Recent decisions affecting current work:
 
 - Phase 6 first: data model extensions are prerequisites for later phases (profile fields, booking note fields)
 - Phase 7 standalone: before/after slider is pure UI, zero coupling to other features
-- Phase 8 groups 3 booking features: they share booking infrastructure and can be tested together
+- Phase 8 groups booking features: notifications + calendar + time slot hints share booking infrastructure
 - Phase 9 after Phase 8: reviews depend on stable booking completion flow
 - Phase 10 last: poster is highest technical risk (Canvas 2D) and lowest business urgency
 - [Phase 06]: D-10/D-11: 硬编码 ARTIST_OPENID + shared/auth.js 公共验证模块
@@ -93,18 +99,21 @@ Recent decisions affecting current work:
 - [Phase 07]: D-06/D-07: 手动 touch + clip-path 实现对比滑块（不用 movable-view）
 - [Phase 07]: D-12: 独立全屏页面 pages/works/compare（不用 popup overlay）
 - [Phase 07]: D-20/D-21: 云函数零修改（...data 自动透传 before_image）
-- [Phase 07]: D-06/D-07: 手动 touch + clip-path 实现对比滑块（不用 movable-view）
-- [Phase 07]: D-12: 独立全屏页面 pages/works/compare
-- [Phase 07]: D-20/D-21: 云函数零修改，before_image 自动透传
+- [Phase 08]: D-01: 复用现有订阅消息模板，不新增第二个模板
+- [Phase 08]: D-05/D-06: 云函数定时触发器 booking-reminder（独立云函数，每天20:00）
+- [Phase 08]: D-11: 新建日历页面 pages/admin/bookings/calendar（TDesign Calendar 内嵌模式）
+- [Phase 08]: D-13: bookings 云函数新增 getCalendarData action（服务端分组）
+- [Phase 08]: D-18: 预约创建页时段列表上方显示"剩余 X 个可用时段"
+- [Phase 08]: D-21: 日历页面预约列表上方显示紧凑日程警告（阈值 3）
 
-### Phase 7 Key Decisions (from 07-CONTEXT.md)
+### Phase 8 Key Decisions (from 08-CONTEXT.md)
 
-- D-01~D-05: 妆前照片上传 — 独立 form-block、单图、可选、复用上传服务
-- D-06~D-09: 滑块组件 — 手动 touch + clip-path、After 底图 + Before 裁剪、初始 50%
-- D-10~D-11: 组件接口 — beforeSrc/afterSrc/height properties, bind:fullscreen event
-- D-12~D-15: 全屏模式 — 独立页面、自定义导航栏、纯黑背景、全屏按钮在 gallery 右上角
-- D-16~D-18: 条件渲染 — before_image 存在 → slider，否则 → swiper
-- D-19~D-21: 数据模型 — works 集合新增 before_image 字段，后端零改动
+- D-01~D-04: 订阅消息通知系统 — 复用现有模板、保持调用时机、静默失败
+- D-05~D-10: 预约前一天提醒 — 定时触发器、独立云函数、20:00触发、仅 accepted
+- D-11~D-17: 日历视图 — TDesign Calendar 内嵌、按月翻页、getCalendarData action、format 标记
+- D-18~D-20: 剩余时段提示 — available.length 显示、约满特殊文案
+- D-21~D-23: 紧凑日程警告 — 日历页面警告条、阈值 3、橙色标记区分
+- D-24~D-25: 包体积 — Calendar 72KB 在 admin 子包无问题
 
 ### Pending Todos
 
@@ -112,10 +121,10 @@ None.
 
 ### Blockers/Concerns
 
-- WeChat admin console: subscription message template registration required before Phase 8 (1-3 day approval)
+- ~~WeChat admin console: subscription message template registration required before Phase 8~~ → 已确认模板 ID 已硬编码在代码中，开发阶段不受阻，部署前确认注册即可
 - Canvas 2D poster rendering: needs real-device testing on iOS (DPR=3) and Android (DPR=2) in Phase 10
 - Review system: must integrate `security.msgSecCheck` for WeChat审核 in Phase 9
-- Package size: TDesign Calendar is large, admin sub-package may need monitoring in Phase 8
+- ~~Package size: TDesign Calendar is large, admin sub-package may need monitoring in Phase 8~~ → 已确认 Calendar 72KB，admin 子包完全没问题
 
 ## Deferred Items
 
@@ -124,12 +133,12 @@ Items acknowledged and carried forward from v1.0 milestone close:
 | Category | Item | Status | Deferred At |
 |----------|------|--------|-------------|
 | requirement | PORT-07: Before/after comparison slider | ✅ Resolved (Phase 7) | 2026-04-19 |
-| requirement | BOOK-06/07: Subscription message notifications | → Phase 8 | 2026-04-19 |
+| requirement | BOOK-06/07: Subscription message notifications | 🔄 Phase 8 in progress | 2026-04-19 |
 | requirement | MGMT-03: QR code poster generation | → Phase 10 | 2026-04-19 |
 | tech-debt | Server-side auth verification on write operations | ✅ Resolved (Plan 06-01) | 2026-04-19 |
 
 ## Session Continuity
 
-Last session: 2026-04-21T11:45:00.000Z
-Stopped at: Phase 7 complete — ready for Phase 8 planning
-Next step: `/gsd-plan-phase 8` to plan booking notifications & calendar
+Last session: 2026-04-22T00:00:00.000Z
+Stopped at: Phase 8 discuss complete — ready for research/planning
+Next step: `/gsd-research-phase 8` or `/gsd-plan-phase 8` to plan booking notifications & calendar
