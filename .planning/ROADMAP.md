@@ -101,7 +101,12 @@ Plans:
   3. 化妆师主页展示平均评分和评价总数
   4. 化妆师主页展示最近评价列表（评分+文字+客户昵称）
   5. 化妆师在管理后台可查看所有评价
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 09-01-PLAN.md — Wave 1: reviews 云函数 + 评价表单页 + 历史页"去评价"入口
+- [ ] 09-02-PLAN.md — Wave 2: 主页评价展示模块 + 管理端评价列表页
+
 **UI hint**: yes
 
 ### Phase 10: QR Code & Poster Generation
