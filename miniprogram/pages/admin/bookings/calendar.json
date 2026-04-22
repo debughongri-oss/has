@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "预约日历",
+  "usingComponents": {
+    "t-calendar": "tdesign-miniprogram/calendar/calendar",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-empty": "tdesign-miniprogram/empty/empty"
+  }
+}

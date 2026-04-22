@@ -59,5 +59,9 @@ Page({
 
   goToDetail: function (e) {
     wx.navigateTo({ url: `/pages/admin/bookings/detail?id=${e.currentTarget.dataset.id}` })
+  },
+
+  goToCalendar: function () {
+    wx.navigateTo({ url: '/pages/admin/bookings/calendar' })
   }
 })
