@@ -84,7 +84,11 @@ Plans:
   3. 化妆师在管理后台以月历视图查看预约分布，点击日期查看当天预约列表（按时间排序）
   4. 客户预约时看到所选日期剩余可用时段数量提示
   5. 化妆师看到同一天 3+ 预约时显示"紧凑日程"警告
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 08-01-PLAN.md — Wave 1: booking-reminder 定时触发器 + 预约创建页剩余时段提示
+- [ ] 08-02-PLAN.md — Wave 1: 管理端日历页面（TDesign Calendar + getCalendarData + 紧凑日程警告）
+
 **UI hint**: yes
 
 ### Phase 9: Customer Review System
@@ -120,6 +124,6 @@ Phases execute in numeric order: 6 → 7 → 8 → 9 → 10
 |-------|-----------|----------------|--------|-----------|
 | 6. Data Model Extensions & Quick Wins | v1.1 | 0/3 | Planning complete | - |
 | 7. Before/After Comparison Slider | v1.1 | 2/2 | Complete   | 2026-04-21 |
-| 8. Booking Notifications & Calendar | v1.1 | 0/? | Not started | - |
+| 8. Booking Notifications & Calendar | v1.1 | 0/2 | Planning complete | - |
 | 9. Customer Review System | v1.1 | 0/? | Not started | - |
 | 10. QR Code & Poster Generation | v1.1 | 0/? | Not started | - |
