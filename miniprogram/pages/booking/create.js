@@ -12,6 +12,8 @@ Page({
     timeSlots: [],
     selectedTime: '',
     loadingSlots: false,
+    availableCount: 0,
+    allBooked: false,
     skinType: '',
     specialNeeds: '',
     occasion: '',
@@ -76,7 +78,12 @@ Page({
           time,
           available: data.available.includes(time)
         }))
-        this.setData({ timeSlots: slots, loadingSlots: false })
+        this.setData({
+          timeSlots: slots,
+          availableCount: data.available.length,
+          allBooked: data.available.length === 0,
+          loadingSlots: false
+        })
       })
       .catch(err => {
         console.error('获取时段失败:', err)

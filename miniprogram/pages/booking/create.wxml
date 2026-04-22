@@ -65,6 +65,12 @@
 
     <view class="form-block" wx:if="{{selectedDate}}">
       <text class="form-title">选择时间</text>
+      <view class="slots-hint" wx:if="{{!loadingSlots && availableCount > 0}}">
+        剩余 {{availableCount}} 个可用时段
+      </view>
+      <view class="slots-hint slots-hint--full" wx:if="{{!loadingSlots && allBooked}}">
+        该日期已约满，请选择其他日期
+      </view>
       <view class="slot-load" wx:if="{{loadingSlots}}">
         <t-loading theme="circular" size="48rpx" />
       </view>

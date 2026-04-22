@@ -330,3 +330,18 @@
 .submit-btn[disabled] {
   opacity: 0.4;
 }
+
+.slots-hint {
+  font-size: var(--fs-xs);
+  color: var(--accent);
+  background-color: var(--accent-soft);
+  padding: 12rpx 24rpx;
+  border-radius: var(--radius-sm);
+  margin-bottom: 20rpx;
+  letter-spacing: 1rpx;
+}
+
+.slots-hint--full {
+  color: var(--orange);
+  background-color: var(--orange-bg);
+}
