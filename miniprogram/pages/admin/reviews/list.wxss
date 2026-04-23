@@ -1,0 +1,67 @@
+.admin-reviews {
+  min-height: 100vh;
+  background-color: var(--bg);
+}
+
+.list {
+  padding: 24rpx var(--page-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.card {
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: var(--page-pad);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.03);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-name {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.card-time {
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
+}
+
+.card-service {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 12rpx;
+}
+
+.card-svc-label {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  background-color: var(--fill-secondary);
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+}
+
+.card-content {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-top: 16rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--separator);
+}
+
+.empty-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40vh;
+}

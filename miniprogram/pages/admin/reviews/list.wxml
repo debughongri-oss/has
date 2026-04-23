@@ -1,0 +1,23 @@
+<view class="admin-reviews">
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <view class="list" wx:if="{{!loading && reviews.length}}">
+    <view class="card" wx:for="{{reviews}}" wx:key="_id">
+      <view class="card-top">
+        <text class="card-name">{{item.user_nickname || '匿名用户'}}</text>
+        <text class="card-time">{{item.timeLabel}}</text>
+      </view>
+      <view class="card-service">
+        <text class="card-svc-label">{{item.service_name}}</text>
+        <t-rate value="{{item.rating}}" disabled size="24rpx" color="var(--gold)" variant="filled" />
+      </view>
+      <text class="card-content" wx:if="{{item.content}}">{{item.content}}</text>
+    </view>
+  </view>
+
+  <view class="empty-container" wx:if="{{!loading && !reviews.length}}">
+    <t-empty icon="chat" description="暂无评价" />
+  </view>
+</view>

@@ -1,0 +1,8 @@
+{
+  "usingComponents": {
+    "t-rate": "tdesign-miniprogram/rate/rate",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-empty": "tdesign-miniprogram/empty/empty"
+  },
+  "navigationBarTitleText": "客户评价"
+}

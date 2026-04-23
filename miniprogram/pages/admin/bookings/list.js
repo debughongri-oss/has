@@ -63,5 +63,12 @@ Page({
 
   goToCalendar: function () {
     wx.navigateTo({ url: '/pages/admin/bookings/calendar' })
+  },
+
+  /**
+   * 评价管理入口 per D-21
+   */
+  goToReviews: function () {
+    wx.navigateTo({ url: '/pages/admin/reviews/list' })
   }
 })
