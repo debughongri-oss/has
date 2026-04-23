@@ -104,6 +104,48 @@ exports.main = async (event, context) => {
       }
     }
 
+    case 'getShareQRCode': {
+      const { id } = event
+      try {
+        // 权限验证 per D-26
+        const authCheck = requireArtist(wxContext)
+        if (!authCheck.ok) return authCheck.response
+
+        // 尝试从云存储获取已缓存的 QR 码 per D-07
+        const cloudPath = 'qrcodes/' + id + '.png'
+        try {
+          const downloadRes = await cloud.downloadFile({
+            fileID: cloudPath
+          })
+          // 缓存命中 — 直接返回 fileID
+          return { errCode: 0, data: { fileID: downloadRes.fileID } }
+        } catch (cacheErr) {
+          // 缓存未命中 — 继续生成
+        }
+
+        // 生成小程序码 per D-05/D-06
+        const qrResult = await cloud.openapi.wxacode.getUnlimitedQRCode({
+          scene: id,
+          page: 'pages/works/detail',
+          width: 280,
+          autoColor: false,
+          lineColor: { r: 156, g: 122, b: 90 },
+          isHyaline: false
+        })
+
+        // 上传到云存储 per D-07/D-25
+        const uploadRes = await cloud.uploadFile({
+          cloudPath: cloudPath,
+          fileContent: qrResult
+        })
+
+        return { errCode: 0, data: { fileID: uploadRes.fileID } }
+      } catch (error) {
+        console.error('生成小程序码失败:', error)
+        return { errCode: -1, errMsg: '生成小程序码失败' }
+      }
+    }
+
     default:
       return { errCode: -1, errMsg: '未知操作' }
   }

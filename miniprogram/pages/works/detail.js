@@ -1,4 +1,5 @@
 const worksService = require('../../services/works')
+const authService = require('../../services/auth')
 const { SERVICE_CATEGORIES } = require('../../utils/constants')
 
 const CATEGORY_MAP = {}
@@ -8,10 +9,12 @@ Page({
   data: {
     work: null,
     loading: true,
-    currentImage: 0
+    currentImage: 0,
+    isArtist: false
   },
 
   onLoad: function (options) {
+    this.setData({ isArtist: authService.isArtist() })
     if (options.id) {
       this.loadDetail(options.id)
     } else {
@@ -50,6 +53,14 @@ Page({
 
   goToBooking: function () {
     wx.switchTab({ url: '/pages/booking/create' })
+  },
+
+  goToPoster: function () {
+    const work = this.data.work
+    if (!work || !work._id) return
+    wx.navigateTo({
+      url: '/pages/works/poster?id=' + work._id
+    })
   },
 
   onSliderFullscreen: function () {

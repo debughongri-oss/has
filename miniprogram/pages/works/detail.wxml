@@ -65,6 +65,7 @@
       </view>
 
       <view class="detail-action">
+        <button class="action-poster btn-outline" wx:if="{{isArtist}}" bindtap="goToPoster">生成海报</button>
         <button class="action-book" bindtap="goToBooking">预约此妆容</button>
         <button class="action-chat tappable" open-type="contact">
           <text class="action-chat-text">咨询</text>

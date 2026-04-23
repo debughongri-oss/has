@@ -4,6 +4,7 @@
     "pages/works/list",
     "pages/works/detail",
     "pages/works/compare",
+    "pages/works/poster",
     "pages/services/list",
     "pages/booking/create",
     "pages/profile/index",

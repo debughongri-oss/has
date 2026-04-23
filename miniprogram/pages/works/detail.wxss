@@ -80,8 +80,13 @@
 }
 
 .share-icon {
-  font-size: var(--fs-base);
-  color: #F5F0EB;
+  display: block;
+  width: 36rpx;
+  height: 36rpx;
+  background-image: var(--icon-share);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 
 .detail-body {
@@ -148,7 +153,9 @@
 .action-book {
   flex: 1;
   height: 100rpx;
-  line-height: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: var(--accent);
   color: #FDFBF8;
   border-radius: var(--radius-lg);
@@ -156,6 +163,8 @@
   font-weight: 500;
   border: none;
   padding: 0;
+  margin: 0;
+  line-height: 1;
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
@@ -171,14 +180,11 @@
 .action-chat {
   width: 100rpx;
   height: 100rpx;
-  background-color: var(--fill-primary);
   border: 2rpx solid var(--separator);
   border-radius: var(--radius-lg);
   padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
+  background: var(--fill-primary) var(--icon-chat) no-repeat center / 44rpx 44rpx;
 }
 
 .action-chat::after {
@@ -186,6 +192,10 @@
 }
 
 .action-chat-text {
-  font-size: var(--fs-xs);
-  color: var(--text-secondary);
+  display: none;
+}
+
+.action-poster {
+  width: 100%;
+  margin-bottom: 16rpx;
 }
