@@ -117,7 +117,12 @@ Plans:
   1. 化妆师在作品详情页可生成包含作品图片和个人信息的分享海报
   2. 海报包含小程序码，扫码可直接进入对应作品详情页
   3. 化妆师可将生成的海报保存到手机相册
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 10-01-PLAN.md — Wave 1: getShareQRCode 云函数 + 服务层 + 详情页"生成海报"入口
+- [ ] 10-02-PLAN.md — Wave 2: 海报生成页（Canvas 2D 渲染 + 保存相册）
+
 **UI hint**: yes
 
 ## Progress
