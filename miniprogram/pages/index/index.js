@@ -1,6 +1,7 @@
 // miniprogram/pages/index/index.js
 const profileService = require('../../services/profile')
 const worksService = require('../../services/works')
+const reviewsService = require('../../services/reviews')
 
 Page({
   data: {
@@ -35,6 +36,8 @@ Page({
         })
         // Load featured works after profile loads
         this.loadFeaturedWorks()
+        // Load review stats in parallel per D-16
+        this.loadReviewStats()
       })
       .catch(err => {
         console.error('加载资料失败:', err)
@@ -61,12 +64,27 @@ Page({
       .then(result => {
         this.setData({
           featuredWorks: result.list,
-          loadingFeatured: false
+    loadingFeatured: false,
+    reviewStats: null
         })
       })
       .catch(err => {
         console.error('加载精选作品失败:', err)
         this.setData({ loadingFeatured: false })
+      })
+  },
+
+  /**
+   * 加载评价统计数据 per D-16/D-17
+   */
+  loadReviewStats: function () {
+    reviewsService.getReviewStats()
+      .then(function (data) {
+        this.setData({ reviewStats: data })
+      }.bind(this))
+      .catch(function (err) {
+        console.error('加载评价统计失败:', err)
+        // 不设置 error 状态，评价模块是增强功能，加载失败不影响主页
       })
   },
 

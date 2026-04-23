@@ -92,6 +92,78 @@
   color: var(--accent);
 }
 
+/* 客户评价模块 per D-13 */
+.reviews {
+  margin-top: 24rpx;
+  padding: 36rpx 0 40rpx;
+  background-color: var(--bg-elevated);
+}
+
+.reviews-head {
+  padding: 0 var(--page-pad);
+  margin-bottom: 28rpx;
+}
+
+.reviews-title {
+  display: block;
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 16rpx;
+}
+
+.reviews-summary {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.reviews-avg {
+  font-size: var(--fs-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.reviews-count {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+}
+
+.reviews-list {
+  padding: 0 var(--page-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.review-item {
+  padding: 20rpx 24rpx;
+  background-color: var(--bg);
+  border-radius: var(--radius-md);
+}
+
+.review-item-top {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.review-item-name {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+}
+
+.review-item-content {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  margin-top: 12rpx;
+  line-height: 1.6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .portfolio {
   margin-top: 24rpx;
   padding: 36rpx 0 40rpx;

@@ -38,6 +38,27 @@
       </view>
     </view>
 
+    <!-- 客户评价模块 per D-13 -->
+    <view class="reviews" wx:if="{{reviewStats && reviewStats.total > 0}}">
+      <view class="reviews-head">
+        <text class="reviews-title">客户评价</text>
+        <view class="reviews-summary">
+          <t-rate value="{{reviewStats.average}}" disabled size="28rpx" color="var(--gold)" variant="filled" />
+          <text class="reviews-avg">{{reviewStats.average}}</text>
+          <text class="reviews-count">({{reviewStats.total}}条评价)</text>
+        </view>
+      </view>
+      <view class="reviews-list">
+        <view class="review-item" wx:for="{{reviewStats.recent}}" wx:key="index">
+          <view class="review-item-top">
+            <t-rate value="{{item.rating}}" disabled size="24rpx" color="var(--gold)" variant="filled" />
+            <text class="review-item-name">{{item.user_nickname || '匿名用户'}}</text>
+          </view>
+          <text class="review-item-content text-ellipsis" wx:if="{{item.content}}">{{item.content}}</text>
+        </view>
+      </view>
+    </view>
+
     <view class="portfolio" wx:if="{{featuredWorks.length}}">
       <view class="portfolio-head">
         <text class="portfolio-title">精选作品</text>
