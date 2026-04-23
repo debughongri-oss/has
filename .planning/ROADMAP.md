@@ -3,7 +3,7 @@
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-5 (shipped 2026-04-19)
-- 🚧 **v1.1 品牌升级 & 体验增强** — Phases 6-10 (in progress)
+- ✅ **v1.1 品牌升级 & 体验增强** — Phases 6-10 (complete 2026-04-23)
 
 ## Overview
 
@@ -29,15 +29,15 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 </details>
 
-### 🚧 v1.1 品牌升级 & 体验增强 (In Progress)
+### ✅ v1.1 品牌升级 & 体验增强 (Complete)
 
 **Milestone Goal:** 补齐 v1.0 遗留功能，提升预约体验和化妆师品牌形象
 
-- [ ] **Phase 6: Data Model Extensions & Quick Wins** — 简介增强、预约备注结构化、服务端安全加固
+- [x] **Phase 6: Data Model Extensions & Quick Wins** — 简介增强、预约备注结构化、服务端安全加固 (completed 2026-04-20)
 - [x] **Phase 7: Before/After Comparison Slider** — 作品详情页妆前妆后滑块对比 (completed 2026-04-21)
 - [x] **Phase 8: Booking Notifications & Calendar** — 订阅消息通知、日历管理视图、时段提示 (completed 2026-04-22)
 - [x] **Phase 9: Customer Review System** — 预约完成后评价打分、公开评价展示 (completed 2026-04-23)
-- [ ] **Phase 10: QR Code & Poster Generation** — 小程序码海报一键生成与保存
+- [x] **Phase 10: QR Code & Poster Generation** — 小程序码海报一键生成与保存 (completed 2026-04-23)
 
 ## Phase Details
 
@@ -120,8 +120,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 10-01-PLAN.md — Wave 1: getShareQRCode 云函数 + 服务层 + 详情页"生成海报"入口
-- [ ] 10-02-PLAN.md — Wave 2: 海报生成页（Canvas 2D 渲染 + 保存相册）
+- [x] 10-01-PLAN.md — Wave 1: getShareQRCode 云函数 + 服务层 + 详情页"生成海报"入口
+- [x] 10-02-PLAN.md — Wave 2: 海报生成页（Canvas 2D 渲染 + 保存相册）
 
 **UI hint**: yes
 
@@ -136,4 +136,4 @@ Phases execute in numeric order: 6 → 7 → 8 → 9 → 10
 | 7. Before/After Comparison Slider | v1.1 | 2/2 | Complete   | 2026-04-21 |
 | 8. Booking Notifications & Calendar | v1.1 | 2/2 | Complete | 2026-04-22 |
 | 9. Customer Review System | v1.1 | 2/2 | Complete | 2026-04-23 |
-| 10. QR Code & Poster Generation | v1.1 | 0/? | Not started | - |
+| 10. QR Code & Poster Generation | v1.1 | 2/2 | Complete | 2026-04-23 |
