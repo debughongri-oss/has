@@ -34,12 +34,12 @@
 
 ### Review (客户评价)
 
-- [ ] **REVW-01**: 客户在预约完成后可以提交评价（1-5星打分 + 文字，文字最多200字）
-- [ ] **REVW-02**: 每个预约只能评价一次
-- [ ] **REVW-03**: 客户在预约历史页面可以看到已完成预约的"评价"入口
-- [ ] **REVW-04**: 化妆师主页公开展示平均评分和评价总数
-- [ ] **REVW-05**: 化妆师主页公开展示最近评价列表（评分+文字+昵称）
-- [ ] **REVW-06**: 化妆师在管理后台可以查看所有评价
+- [x] **REVW-01**: 客户在预约完成后可以提交评价（1-5星打分 + 文字，文字最多200字）
+- [x] **REVW-02**: 每个预约只能评价一次
+- [x] **REVW-03**: 客户在预约历史页面可以看到已完成预约的"评价"入口
+- [x] **REVW-04**: 化妆师主页公开展示平均评分和评价总数
+- [x] **REVW-05**: 化妆师主页公开展示最近评价列表（评分+文字+昵称）
+- [x] **REVW-06**: 化妆师在管理后台可以查看所有评价
 
 ### Growth (增长工具)
 
@@ -95,12 +95,12 @@
 | BOOK-14 | Phase 8 | Complete |
 | BOOK-15 | Phase 8 | Complete |
 | BOOK-16 | Phase 8 | Complete |
-| REVW-01 | Phase 9 | Pending |
-| REVW-02 | Phase 9 | Pending |
-| REVW-03 | Phase 9 | Pending |
-| REVW-04 | Phase 9 | Pending |
-| REVW-05 | Phase 9 | Pending |
-| REVW-06 | Phase 9 | Pending |
+| REVW-01 | Phase 9 | Complete |
+| REVW-02 | Phase 9 | Complete |
+| REVW-03 | Phase 9 | Complete |
+| REVW-04 | Phase 9 | Complete |
+| REVW-05 | Phase 9 | Complete |
+| REVW-06 | Phase 9 | Complete |
 | GROW-01 | Phase 10 | Pending |
 | GROW-02 | Phase 10 | Pending |
 | GROW-03 | Phase 10 | Pending |
