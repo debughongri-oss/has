@@ -1,0 +1,50 @@
+<view class="poster-page">
+  <!-- 自定义导航栏（与 compare 页面模式一致） -->
+  <view class="poster-navbar" style="padding-top: {{statusBarHeight}}px;">
+    <view class="navbar-content">
+      <view class="navbar-back tappable" bindtap="onClose">
+        <view class="navbar-back-icon"></view>
+      </view>
+      <text class="navbar-title">分享海报</text>
+      <view class="navbar-placeholder"></view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="poster-loading" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="海报生成中..." />
+  </view>
+
+  <!-- 错误状态 per D-29 -->
+  <view class="poster-error" wx:if="{{error}}">
+    <text class="poster-error-text">生成海报失败</text>
+    <button class="poster-retry-btn btn-outline" bindtap="onRetry">重试</button>
+  </view>
+
+  <!-- 海报预览区域 -->
+  <view class="poster-content" wx:if="{{!loading && !error && posterImage}}">
+    <!-- 离屏 Canvas per D-22 -->
+    <canvas
+      type="2d"
+      id="posterCanvas"
+      class="poster-canvas"
+    ></canvas>
+
+    <!-- 海报图片预览（用户看到的是导出的图片，不是 canvas 本身）per D-22 -->
+    <view class="poster-preview">
+      <image
+        class="poster-image"
+        src="{{posterImage}}"
+        mode="widthFix"
+        show-menu-by-longpress
+      />
+    </view>
+
+    <!-- 底部操作栏 -->
+    <view class="poster-actions">
+      <button class="poster-save-btn btn-primary" bindtap="onSavePoster" disabled="{{saving}}">
+        {{saving ? '保存中...' : '保存到相册'}}
+      </button>
+    </view>
+  </view>
+</view>
