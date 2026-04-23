@@ -17,6 +17,11 @@
       <view class="card-action" wx:if="{{item.status === 'pending'}}">
         <text class="cancel" bindtap="cancelBooking" data-id="{{item._id}}">取消预约</text>
       </view>
+      <!-- D-04: completed 状态的评价入口 -->
+      <view class="card-action" wx:if="{{item.status === 'completed'}}">
+        <text class="review-btn" wx:if="{{!reviewMap[item._id]}}" bindtap="goToReview" data-id="{{item._id}}">去评价</text>
+        <text class="reviewed-mark" wx:if="{{reviewMap[item._id]}}">已评价 ⭐</text>
+      </view>
     </view>
   </view>
 

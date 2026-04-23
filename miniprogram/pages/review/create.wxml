@@ -1,0 +1,31 @@
+<view class="page-review-create">
+  <!-- 预约摘要 per D-05: 顶部显示预约信息 -->
+  <view class="booking-summary" wx:if="{{booking}}">
+    <text class="summary-svc">{{booking.service_name}}</text>
+    <text class="summary-time">{{booking.booking_date}} {{booking.booking_time}}</text>
+  </view>
+
+  <!-- 评分 per D-06 -->
+  <view class="form-section">
+    <text class="form-label">服务评分</text>
+    <t-rate value="{{rating}}" size="48rpx" color="var(--gold)" variant="filled" bind:change="onRateChange" />
+  </view>
+
+  <!-- 文字评价 per D-06: 原生 textarea + 字数统计 -->
+  <view class="form-section">
+    <text class="form-label">文字评价（选填）</text>
+    <textarea
+      class="review-textarea"
+      placeholder="说说你的体验..."
+      maxlength="{{maxLength}}"
+      value="{{content}}"
+      bindinput="onContentInput"
+    />
+    <text class="char-count">{{contentLength}}/{{maxLength}}</text>
+  </view>
+
+  <!-- 提交按钮 -->
+  <button class="submit-btn" bindtap="onSubmit" disabled="{{submitting || rating === 0}}">
+    {{submitting ? '提交中...' : '提交评价'}}
+  </button>
+</view>

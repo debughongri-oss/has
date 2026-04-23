@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "t-rate": "tdesign-miniprogram/rate/rate"
+  },
+  "navigationBarTitleText": "评价服务"
+}

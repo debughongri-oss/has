@@ -102,3 +102,14 @@
   font-size: var(--fs-sm);
   font-weight: 500;
 }
+
+.review-btn {
+  color: var(--accent);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+}
+
+.reviewed-mark {
+  color: var(--text-tertiary);
+  font-size: var(--fs-sm);
+}
