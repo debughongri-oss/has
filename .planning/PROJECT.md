@@ -2,7 +2,7 @@
 
 ## What This Is
 
-一款微信小程序，帮助独立化妆师展示个人作品、管理服务项目和接受客户预约。已实现完整的作品展示与管理、服务目录、在线预约流程和微信分享功能。化妆师可在小程序内通过管理后台管理作品、服务项目和预约订单，客户可以浏览作品后直接预约化妆服务。
+一款微信小程序，帮助独立化妆师展示个人作品、管理服务项目和接受客户预约。已实现完整的作品展示与管理（含妆前妆后对比滑块）、服务目录、在线预约流程（含订阅消息通知、日历管理）、客户评价系统和海报生成功能。化妆师可在小程序内通过管理后台管理作品、服务项目、预约订单和评价，客户可以浏览作品后直接预约化妆服务并在完成后提交评价。
 
 ## Core Value
 
@@ -10,10 +10,10 @@
 
 ## Current State
 
-**Shipped:** v1.0 MVP (2026-04-19)
+**Shipped:** v1.0 MVP (2026-04-19), v1.1 品牌升级 & 体验增强 (2026-04-23)
 **Tech stack:** 微信原生框架 (WXML/WXSS/JS) + 微信云开发 (CloudBase) + TDesign MiniProgram
-**Cloud functions:** login, profile, works, services, bookings (5 functions)
-**Pages:** 5 TabBar pages + works detail + admin sub-package (works/services/bookings/profile management) + booking history
+**Cloud functions:** login, profile, works, services, bookings, booking-reminder, reviews (7 functions)
+**Pages:** 5 TabBar pages + works detail/compare/poster + admin sub-package (works/services/bookings/profile/reviews/calendar management) + booking history + review create
 
 ## Requirements
 
@@ -34,30 +34,33 @@
 - ✓ 预约历史 (BOOK-08) — v1.0
 - ✓ 管理后台 (MGMT-01) — v1.0
 - ✓ 微信分享 (MGMT-02) — v1.0
+- ✓ 服务端身份验证 (SEC-01/02) — v1.1 Phase 6
+- ✓ 简介增强 (PROF-01/02/03/04) — v1.1 Phase 6
+- ✓ 预约备注结构化 (BOOK-09/10/11/12) — v1.1 Phase 6
+- ✓ 前后对比滑块 (PORT-07/08/09) — v1.1 Phase 7
+- ✓ 预约状态变更通知 (BOOK-06/07) — v1.1 Phase 8
+- ✓ 日历视图 (BOOK-13/14) — v1.1 Phase 8
+- ✓ 时间段提示 (BOOK-15/16) — v1.1 Phase 8
+- ✓ 客户评价系统 (REVW-01/02/03/04/05/06) — v1.1 Phase 9
+- ✓ 海报生成 (GROW-01/02/03) — v1.1 Phase 10
 
 ### Active
 
-- [ ] 前后对比滑块 (PORT-07) — deferred from v1.0
-- [ ] 预约状态变更通知 (BOOK-06/07) — requires WeChat admin template config
-- [ ] 小程序码海报生成 (MGMT-03) — deferred from v1.0
-- [ ] 服务端身份验证 — 云函数写入操作加服务端 isArtist 验证
-- [ ] 日历视图 — 化妆师管理预约用日历展示
-- [ ] 时间冲突检测 — 预约时自动检测时间重叠
-- [ ] 预约备注增强 — 客户填写更多信息（皮肤类型、特殊需求等）
-- [ ] 客户评价系统 — 预约完成后公开打分+文字评价
-- [ ] 简介增强 — 服务区域、从业年限、擅长风格标签
+(No active requirements — all shipped in v1.0 and v1.1)
 
 ### Out of Scope
 
-- 在线支付 — 线下结算，小程序不涉及支付功能
-- 多化妆师平台 — 仅支持单个化妆师，不做平台模式
-- 视频展示 — v1 以图片为主，视频功能延后
-- 客户评价系统 — v1 不包含用户评价功能
-- 客户管理/会员系统 — 超出 v1 范围
-- AI试妆 — 技术不确定性高，复杂度远超范围
-- 社交/社区功能 — 评论/点赞/动态属于平台功能，不是个人预约工具
-- 直播功能 — 需要流媒体基础设施，不是预约工具的核心
-- 地图/定位 — 化妆师服务范围固定，文字描述已足够
+| Feature | Reason |
+|---------|--------|
+| 在线支付 | 线下结算，小程序不涉及支付功能 |
+| 多化妆师平台 | 仅支持单个化妆师，不做平台模式 |
+| 视频展示 | v1 以图片为主，视频功能延后 |
+| 客户管理/会员系统 | 超出当前范围 |
+| AI试妆 | 技术不确定性高，复杂度远超范围 |
+| 社交/社区功能 | 评论/点赞/动态属于平台功能，不是个人预约工具 |
+| 直播功能 | 需要流媒体基础设施，不是预约工具的核心 |
+| 地图/定位 | 化妆师服务范围固定，文字描述已足够 |
+| 多模板消息（5+） | 订阅消息弹窗过多影响体验，限制在2个模板 |
 
 ## Context
 
@@ -66,7 +69,9 @@
 - 服务类型以日常化妆和婚庆相关化妆为主（新娘妆、伴娘妆、订婚妆）
 - 化妆师通过小程序内管理后台操作，不需要额外后台
 - 预约不涉及支付，核心是时间管理和沟通
-- 已知技术债：写操作仅客户端验证身份，服务端验证待加强；部分占位符（AppID、云环境ID、TabBar图标）需用户替换
+- v1.1 新增 7 个云函数、多个页面和组件，代码量显著增长
+- 技术债已清零：服务端身份验证已加强（shared/auth.js）
+- 已知限制：Canvas 2D 海报渲染需真机测试（iOS DPR=3, Android DPR=2）
 
 ## Constraints
 
@@ -81,10 +86,22 @@
 | 手动接单 | 化妆师需要审核预约时间是否冲突 | ✓ Good — 冲突检查已实现 |
 | 不接入支付 | 线下结算，简化开发 | ✓ Good |
 | 小程序内管理 | 化妆师操作习惯，不需要额外后台 | ✓ Good — admin sub-package 方案 |
-| 客户端身份验证 | 简化 v1 实现 | ⚠️ Revisit — 服务端验证需加强 |
+| 客户端身份验证 | 简化 v1 实现 | ✓ Resolved — v1.1 Phase 6 已加服务端验证 |
 | 固定时间槽 | 90分钟间隔，简化预约逻辑 | ✓ Good — 适合化妆服务场景 |
 | CSS custom properties | 全局主题色/间距统一 | ✓ Good |
 | admin sub-package | 主包控制在 2MB 内 | ✓ Good |
+| 手动 touch + clip-path 对比滑块 | 不用 movable-view，更灵活控制 | ✓ Good — 流畅的滑块体验 |
+| 订阅消息复用单模板 | 减少用户授权弹窗 | ✓ Good — 状态变更+提醒共用 |
+| reviews 独立集合 + booking_id 唯一索引 | 防重复评价 | ✓ Good — 双重防重复 |
+| Canvas 2D off-screen 海报 | DPR-aware，品牌色一致性 | ✓ Good — 需真机验证 |
+| wxacode + cloud storage 缓存 | 每作品一次生成，后续复用 | ✓ Good |
+| 评价标签快捷选择 | 简化输入 | — Deferred to v2 |
+| artist_profile 缓存 avg_rating | 性能优化 | — Deferred to v2 |
+| 评价筛选/排序 | 管理便利性 | — Deferred to v2 |
+| 评价带图 | 增强可信度 | — Deferred to v2 |
+| 匿名评价 | 隐私选项 | — Deferred to v2 |
+| 评价通知推送 | 即时反馈 | — Deferred to v2 |
+| 化妆师回复评价 | 互动功能 | — Deferred to v2 |
 
 ## Evolution
 
@@ -103,21 +120,6 @@ This document evolves at phase transitions and milestone boundaries.
 3. Audit Out of Scope — reasons still valid?
 4. Update Context with current state
 
-## Current Milestone: v1.1 品牌升级 & 体验增强
-
-**Goal:** 补齐 v1.0 遗留功能，提升预约体验和化妆师品牌形象
-
-**Target features:**
-- 前后对比滑块 (PORT-07) — 作品详情页 before/after 滑块对比
-- 预约状态变更通知 (BOOK-06/07) — 微信订阅消息
-- 小程序码海报生成 (MGMT-03) — 分享海报
-- 服务端身份验证 — 云函数写入操作加服务端验证
-- 日历视图 — 化妆师管理预约用日历展示
-- 时间冲突检测 — 预约时自动检测时间重叠
-- 预约备注增强 — 客户填写更多信息
-- 客户评价系统 — 预约完成后公开打分+文字评价
-- 简介增强 — 服务区域、从业年限、擅长风格标签
-
 ---
 
-*Last updated: 2026-04-19 after v1.0 milestone*
+*Last updated: 2026-04-24 after v1.1 milestone*
