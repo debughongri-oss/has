@@ -4,9 +4,28 @@ const { SERVICE_CATEGORIES } = require('../../utils/constants')
 const CATEGORY_MAP = {}
 SERVICE_CATEGORIES.forEach(c => { CATEGORY_MAP[c.key] = c.label })
 
+const splitWorks = (works) => {
+  if (!works.length) {
+    return { heroWork: null, leftColumn: [], rightColumn: [] }
+  }
+  const heroWork = works[0]
+  const rest = works.slice(1)
+  const leftColumn = []
+  const rightColumn = []
+  rest.forEach((item, i) => {
+    if (i % 2 === 0) leftColumn.push(item)
+    else rightColumn.push(item)
+  })
+  return { heroWork, leftColumn, rightColumn }
+}
+
 Page({
   data: {
     works: [],
+    heroWork: null,
+    leftColumn: [],
+    rightColumn: [],
+    galleryTitle: '全部作品',
     categories: [],
     currentCategory: 'all',
     loading: false,
@@ -18,8 +37,28 @@ Page({
 
   onLoad: function () {
     const categories = worksService.getCategories()
-    this.setData({ categories })
+    const pending = this.consumePendingCategory()
+    this.setData({ categories, currentCategory: pending || this.data.currentCategory })
     this.loadWorks(true)
+  },
+
+  onShow: function () {
+    const pending = this.consumePendingCategory()
+    if (pending && pending !== this.data.currentCategory) {
+      this.setData({ currentCategory: pending })
+      this.loadWorks(true)
+    }
+  },
+
+  // 接收首页分类 chips 传来的预选分类
+  consumePendingCategory: function () {
+    const app = getApp()
+    const cat = app.globalData && app.globalData.pendingWorksCategory
+    if (cat) {
+      app.globalData.pendingWorksCategory = null
+      return cat
+    }
+    return null
   },
 
   onPullDownRefresh: function () {
@@ -42,11 +81,19 @@ Page({
       .then(result => {
         const list = result.list.map(w => ({
           ...w,
-          categoryLabel: CATEGORY_MAP[w.category] || w.category || ''
+          categoryLabel: CATEGORY_MAP[w.category] || w.category || '',
+          hasBeforeAfter: !!w.before_image
         }))
         const works = reset ? list : this.data.works.concat(list)
+        const { heroWork, leftColumn, rightColumn } = splitWorks(works)
+        const currentCat = this.data.categories.find(c => c.key === this.data.currentCategory)
+        const galleryTitle = (currentCat ? currentCat.label : '全部') + '作品'
         this.setData({
           works,
+          heroWork,
+          leftColumn,
+          rightColumn,
+          galleryTitle,
           hasMore: result.hasMore,
           page: result.page,
           loading: false,
@@ -75,12 +122,6 @@ Page({
   goToDetail: function (e) {
     const id = e.currentTarget.dataset.id
     wx.navigateTo({ url: `/pages/works/detail?id=${id}` })
-  },
-
-  onImageError: function (e) {
-    const index = e.currentTarget.dataset.index
-    const key = `works[${index}]._imageError`
-    this.setData({ [key]: true })
   },
 
   /**

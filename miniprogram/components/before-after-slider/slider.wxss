@@ -61,11 +61,11 @@
 }
 
 .ba-handle-arrow--left {
-  border-right: 12rpx solid var(--text-primary, #1F1B18);
+  border-right: 12rpx solid var(--text-primary, #17151A);
 }
 
 .ba-handle-arrow--right {
-  border-left: 12rpx solid var(--text-primary, #1F1B18);
+  border-left: 12rpx solid var(--text-primary, #17151A);
 }
 
 /* Labels — semi-transparent white */

@@ -1,0 +1,17 @@
+# Deploy secrets — NEVER commit these
+.deploy-key/
+*.key
+
+# Auto-synced shared/ inside each cloudfunction (regenerate with `npm run sync`)
+# 源在 cloudfunctions/shared/，副本是部署前生成的，不要直接编辑
+cloudfunctions/*/shared/
+
+# Node
+node_modules/
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/

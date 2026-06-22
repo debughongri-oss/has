@@ -1,18 +1,15 @@
 <view class="edit-work">
-  <view class="form-block">
-    <view class="group">
-      <view class="row">
-        <text class="label">标题</text>
-        <input class="input" placeholder="输入作品标题" value="{{title}}" bindinput="onTitleInput" />
-      </view>
+  <!-- 作品信息 -->
+  <view class="card">
+    <view class="card-head"><text class="card-title">作品信息</text></view>
+    <view class="field">
+      <text class="field-key">标题</text>
+      <input class="field-val" placeholder="输入作品标题" placeholder-class="ph" value="{{title}}" bindinput="onTitleInput" />
     </view>
-  </view>
-
-  <view class="form-block">
-    <text class="form-title">分类</text>
+    <view class="divline"></view>
     <view class="chips">
       <view
-        class="chip tappable {{category === item.key ? 'chip--on' : ''}}"
+        class="chip {{category === item.key ? 'chip--on' : ''}} tappable"
         wx:for="{{categories}}"
         wx:key="key"
         bindtap="onCategoryPick"
@@ -21,52 +18,63 @@
     </view>
   </view>
 
-  <view class="form-block">
-    <text class="form-title">图片（最多9张）</text>
-    <view class="img-grid">
-      <view class="img-item" wx:for="{{images}}" wx:key="index">
-        <image class="img-preview" src="{{item}}" mode="aspectFill" />
-        <view class="img-del tappable" bindtap="removeImage" data-index="{{index}}"></view>
+  <!-- 作品图片 -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">作品图片</text>
+      <text class="card-meta">{{images.length}} / 9</text>
+    </view>
+    <view class="grid">
+      <view class="cell" wx:for="{{images}}" wx:key="index">
+        <image class="cell-img" src="{{item}}" mode="aspectFill" />
+        <view class="cell-del tappable" bindtap="removeImage" data-index="{{index}}"></view>
       </view>
-      <view class="img-add tappable" wx:if="{{images.length < 9}}" bindtap="chooseImages">
-        <text class="img-add-icon">+</text>
+      <view class="add tappable" wx:if="{{images.length < 9}}" bindtap="chooseImages">
+        <text class="add-plus">+</text>
+        <text class="add-t">添加</text>
       </view>
     </view>
   </view>
 
-  <view class="form-block">
-    <text class="form-title">妆前对比照（可选）</text>
-    <view class="before-img-area" wx:if="{{!beforeImage}}">
-      <view class="before-img-add tappable" bindtap="chooseBeforeImage">
-        <view class="before-img-add-icon"></view>
-        <text class="before-img-add-text">上传妆前照片</text>
-      </view>
+  <!-- 妆前对比照 -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">妆前对比照</text>
+      <text class="card-meta">选填</text>
     </view>
-    <view class="before-img-card" wx:else>
-      <image class="before-img-preview" src="{{beforeImage}}" mode="aspectFill" />
-      <view class="before-img-del tappable" bindtap="removeBeforeImage"></view>
+    <text class="hint">上传妆前照片，作品详情页会展示「妆前 / 妆后」对比滑块</text>
+    <view class="before-empty tappable" wx:if="{{!beforeImage}}" bindtap="chooseBeforeImage">
+      <text class="before-plus">+</text>
+      <text class="before-t">上传妆前照片</text>
     </view>
-  </view>
-
-  <view class="form-block">
-    <view class="group">
-      <view class="row col">
-        <text class="label">描述</text>
-        <textarea class="textarea" placeholder="描述一下这个作品..." value="{{description}}" bindinput="onDescInput" maxlength="500" />
-      </view>
+    <view class="before-card" wx:else>
+      <image class="before-img" src="{{beforeImage}}" mode="aspectFill" />
+      <view class="before-del tappable" bindtap="removeBeforeImage"></view>
     </view>
   </view>
 
-  <view class="form-block">
-    <view class="group">
-      <view class="row row--switch">
-        <text class="label">精选（显示在首页）</text>
-        <switch checked="{{isFeatured}}" bindchange="onFeaturedChange" color="#9C7A5A" />
+  <!-- 作品描述 -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">作品描述</text>
+      <text class="card-meta">{{description.length}} / 500</text>
+    </view>
+    <textarea class="ta" placeholder="描述一下这个作品..." placeholder-class="ph" value="{{description}}" bindinput="onDescInput" maxlength="500" />
+  </view>
+
+  <!-- 展示设置 -->
+  <view class="card">
+    <view class="card-head"><text class="card-title">展示设置</text></view>
+    <view class="switch-row">
+      <view class="switch-main">
+        <text class="switch-title">设为精选</text>
+        <text class="switch-note">精选作品会展示在首页的精选作品区</text>
       </view>
+      <switch checked="{{isFeatured}}" bindchange="onFeaturedChange" color="#FF6F8B" />
     </view>
   </view>
 
   <view class="save-bar">
-    <button class="save-btn" bindtap="saveWork" disabled="{{saving}}">{{saving ? '保存中...' : '保存'}}</button>
+    <button class="save-btn" bindtap="saveWork" disabled="{{saving}}">{{saving ? '保存中...' : '保存作品'}}</button>
   </view>
 </view>

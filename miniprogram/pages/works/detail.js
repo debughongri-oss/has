@@ -22,6 +22,15 @@ Page({
     }
   },
 
+  goBack: function () {
+    const pages = getCurrentPages()
+    if (pages.length > 1) {
+      wx.navigateBack()
+    } else {
+      wx.switchTab({ url: '/pages/works/list' })
+    }
+  },
+
   loadDetail: function (id) {
     this.setData({ loading: true })
     worksService.getWorkDetail(id)
@@ -40,6 +49,11 @@ Page({
 
   onSwiperChange: function (e) {
     this.setData({ currentImage: e.detail.current })
+  },
+
+  onThumbTap: function (e) {
+    const index = e.currentTarget.dataset.index
+    this.setData({ currentImage: index })
   },
 
   onPreviewImage: function (e) {

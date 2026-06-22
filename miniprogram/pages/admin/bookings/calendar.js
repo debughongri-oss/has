@@ -3,6 +3,17 @@ const authService = require('../../../services/auth')
 
 const BUSY_DAY_THRESHOLD = 3  // per D-22
 
+const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
+// "2026-06-25" → "6月25日 周三"
+const formatDateLabel = (dateStr) => {
+  if (!dateStr) return ''
+  const parts = String(dateStr).split('-')
+  if (parts.length !== 3) return dateStr
+  const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]))
+  return `${Number(parts[1])}月${Number(parts[2])}日 ${WEEKDAYS[d.getDay()]}`
+}
+
 Page({
   data: {
     calendarValue: Date.now(),  // 当前选中日期（timestamp）
@@ -11,6 +22,7 @@ Page({
     grouped: {},                // 按日期分组的预约数据
     loading: true,
     selectedDate: '',           // 当前选中日期字符串 YYYY-MM-DD
+    selectedDateLabel: '',      // 友好日期 6月25日 周三
     dayBookings: [],            // 选中日期的预约列表
     isBusyDay: false,           // 是否紧凑日程
     busyCount: 0                // 紧凑日程预约数
@@ -43,6 +55,7 @@ Page({
           grouped[b.booking_date].push(b)
         })
         this.setData({ grouped, loading: false })
+        this.selectDay(new Date())  // 自动选中今天，进入即展示当日预约
       })
       .catch(err => {
         console.error('加载日历数据失败:', err)
@@ -70,8 +83,12 @@ Page({
 
   // 日期选择事件（per D-15）
   onSelectDate: function (e) {
-    const timestamp = e.detail.value
-    const d = new Date(timestamp)
+    this.selectDay(new Date(e.detail.value))
+  },
+
+  // 选中某一天，展示当日预约
+  selectDay: function (dateObj) {
+    const d = dateObj
     const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 
     const dayBookings = (this.data.grouped[dateStr] || [])
@@ -84,6 +101,7 @@ Page({
 
     this.setData({
       selectedDate: dateStr,
+      selectedDateLabel: formatDateLabel(dateStr),
       dayBookings,
       isBusyDay: dayBookings.length >= BUSY_DAY_THRESHOLD,
       busyCount: dayBookings.length

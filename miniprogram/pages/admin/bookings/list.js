@@ -1,6 +1,13 @@
 const bookingsService = require('../../../services/bookings')
 const authService = require('../../../services/auth')
 
+// "2026-06-25" → "6/25"
+const formatDateShort = (dateStr) => {
+  if (!dateStr) return ''
+  const parts = String(dateStr).split('-')
+  return parts.length === 3 ? `${Number(parts[1])}/${Number(parts[2])}` : dateStr
+}
+
 Page({
   data: {
     bookings: [],
@@ -38,7 +45,8 @@ Page({
         const bookings = result.list.map(b => ({
           ...b,
           statusLabel: bookingsService.getStatusLabel(b.status),
-          statusColor: bookingsService.getStatusColor(b.status)
+          statusColor: bookingsService.getStatusColor(b.status),
+          dateShort: formatDateShort(b.booking_date)
         }))
         this.setData({
           bookings,

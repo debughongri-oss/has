@@ -1,36 +1,71 @@
 <view class="edit-service">
-  <view class="group">
-    <view class="row">
-      <text class="key">名称</text>
-      <input class="val" placeholder="如：新娘妆" value="{{name}}" bindinput="onNameInput" />
+  <!-- 基本信息 -->
+  <view class="card">
+    <view class="card-head"><text class="card-title">基本信息</text></view>
+    <view class="field">
+      <text class="field-key">名称</text>
+      <input class="field-val" placeholder="如：韩式新娘妆" placeholder-class="ph" value="{{name}}" bindinput="onNameInput" />
     </view>
-    <view class="row">
-      <text class="key">价格</text>
-      <input class="val" placeholder="¥500-800" value="{{price}}" bindinput="onPriceInput" />
-    </view>
-    <view class="row">
-      <text class="key">时长</text>
-      <input class="val" type="number" placeholder="分钟" value="{{duration}}" bindinput="onDurationInput" />
-    </view>
-    <view class="row">
-      <text class="key">排序</text>
-      <input class="val" type="number" placeholder="0" value="{{sortOrder}}" bindinput="onSortInput" />
+    <view class="divline"></view>
+    <view class="duo">
+      <view class="box">
+        <text class="box-label">价格</text>
+        <view class="box-row">
+          <text class="box-affix">¥</text>
+          <input class="box-input" placeholder="面议" placeholder-class="box-ph" value="{{price}}" bindinput="onPriceInput" />
+        </view>
+      </view>
+      <view class="box">
+        <text class="box-label">时长</text>
+        <view class="box-row">
+          <input class="box-input" type="number" placeholder="0" placeholder-class="box-ph" value="{{duration}}" bindinput="onDurationInput" />
+          <text class="box-affix">分钟</text>
+        </view>
+      </view>
     </view>
   </view>
 
-  <view class="form-title">分类</view>
-  <view class="chips-wrap">
-    <view class="chip tappable {{category === item.key ? 'chip--on' : ''}}" wx:for="{{categories}}" wx:key="key" bindtap="onCategoryPick" data-key="{{item.key}}">{{item.label}}</view>
+  <!-- 服务分类 -->
+  <view class="card">
+    <view class="card-head"><text class="card-title">服务分类</text></view>
+    <view class="chips">
+      <view
+        class="chip {{category === item.key ? 'chip--on' : ''}} tappable"
+        wx:for="{{categories}}"
+        wx:key="key"
+        bindtap="onCategoryPick"
+        data-key="{{item.key}}"
+      >{{item.label}}</view>
+    </view>
   </view>
 
-  <view class="form-title">描述</view>
-  <view class="group">
-    <view class="row row--textarea">
-      <textarea class="textarea" placeholder="描述服务内容..." value="{{description}}" bindinput="onDescInput" maxlength="500" />
+  <!-- 服务描述 -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">服务描述</text>
+      <text class="card-meta">{{description.length}} / 500</text>
     </view>
+    <textarea
+      class="ta"
+      placeholder="描述服务内容、包含的项目、适合的场景等..."
+      placeholder-class="ph"
+      value="{{description}}"
+      bindinput="onDescInput"
+      maxlength="500"
+    />
+  </view>
+
+  <!-- 显示设置 -->
+  <view class="card">
+    <view class="card-head"><text class="card-title">显示设置</text></view>
+    <view class="field">
+      <text class="field-key">排序</text>
+      <input class="field-val" type="number" placeholder="0" placeholder-class="ph" value="{{sortOrder}}" bindinput="onSortInput" />
+    </view>
+    <text class="hint">数字越小越靠前，默认为 0</text>
   </view>
 
   <view class="save-bar">
-    <button class="save-btn" bindtap="saveService" disabled="{{saving}}">{{saving ? '保存中...' : '保存'}}</button>
+    <button class="save-btn" bindtap="saveService" disabled="{{saving}}">{{saving ? '保存中...' : '保存服务'}}</button>
   </view>
 </view>

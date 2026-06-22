@@ -1,30 +1,36 @@
-<view class="page-review-create">
-  <!-- 预约摘要 per D-05: 顶部显示预约信息 -->
-  <view class="booking-summary" wx:if="{{booking}}">
+<view class="page-review">
+  <!-- 评价对象 -->
+  <view class="card summary" wx:if="{{booking}}">
+    <text class="summary-eyebrow">评价对象</text>
     <text class="summary-svc">{{booking.service_name}}</text>
     <text class="summary-time">{{booking.booking_date}} {{booking.booking_time}}</text>
   </view>
 
-  <!-- 评分 per D-06 -->
-  <view class="form-section">
-    <text class="form-label">服务评分</text>
-    <t-rate value="{{rating}}" size="48rpx" color="var(--gold)" variant="filled" bind:change="onRateChange" />
+  <!-- 评分 -->
+  <view class="card rate-card">
+    <text class="rate-title">服务评分</text>
+    <view class="rate-stars">
+      <t-rate value="{{rating}}" size="64rpx" gap="16" color="var(--gold)" variant="filled" bind:change="onRateChange" />
+    </view>
+    <text class="rate-feedback {{rating ? 'rate-feedback--on' : ''}}">{{rating ? ratingLabel : '轻触星星打分'}}</text>
   </view>
 
-  <!-- 文字评价 per D-06: 原生 textarea + 字数统计 -->
-  <view class="form-section">
-    <text class="form-label">文字评价（选填）</text>
+  <!-- 文字评价 -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">文字评价</text>
+      <text class="card-meta">{{contentLength}}/{{maxLength}}</text>
+    </view>
     <textarea
-      class="review-textarea"
-      placeholder="说说你的体验..."
+      class="ta"
+      placeholder="说说你的体验，帮助更多人了解（选填）..."
+      placeholder-class="ph"
       maxlength="{{maxLength}}"
       value="{{content}}"
       bindinput="onContentInput"
     />
-    <text class="char-count">{{contentLength}}/{{maxLength}}</text>
   </view>
 
-  <!-- 提交按钮 -->
   <button class="submit-btn" bindtap="onSubmit" disabled="{{submitting || rating === 0}}">
     {{submitting ? '提交中...' : '提交评价'}}
   </button>

@@ -1,6 +1,17 @@
 const bookingsService = require('../../../services/bookings')
 const authService = require('../../../services/auth')
 
+const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
+// "2026-06-25" → "6月25日 周三"
+const formatDateLabel = (dateStr) => {
+  if (!dateStr) return ''
+  const parts = String(dateStr).split('-')
+  if (parts.length !== 3) return dateStr
+  const d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]))
+  return `${Number(parts[1])}月${Number(parts[2])}日 ${WEEKDAYS[d.getDay()]}`
+}
+
 Page({
   data: {
     booking: null,
@@ -30,6 +41,7 @@ Page({
           const SKIN_LABELS = { dry: '干性', oily: '油性', combination: '混合性', sensitive: '敏感性', unknown: '不确定' }
           data.skin_type_label = SKIN_LABELS[data.skin_type] || data.skin_type
         }
+        data.dateLabel = formatDateLabel(data.booking_date)
         this.setData({
           booking: data,
           loading: false,

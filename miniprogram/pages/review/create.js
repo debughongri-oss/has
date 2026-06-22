@@ -6,6 +6,7 @@ Page({
     bookingId: '',
     booking: null,
     rating: 0,
+    ratingLabel: '',
     content: '',
     contentLength: 0,
     maxLength: 200,
@@ -52,7 +53,9 @@ Page({
    * t-rate bind:change — 评分变化 per D-06
    */
   onRateChange: function (e) {
-    this.setData({ rating: e.detail.value })
+    var v = e.detail.value
+    var LABELS = ['', '不满意', '一般', '还可以', '满意', '非常满意']
+    this.setData({ rating: v, ratingLabel: LABELS[v] || '' })
   },
 
   /**

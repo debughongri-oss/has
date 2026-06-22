@@ -1,5 +1,5 @@
 const cloud = require('wx-server-sdk')
-const { requireArtist } = require('../shared/auth')
+const { requireArtist } = require('./shared/auth')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command

@@ -14,14 +14,14 @@
   ],
   "window": {
     "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#F5F2EE",
+    "navigationBarBackgroundColor": "#F4F2F4",
     "navigationBarTitleText": "",
     "navigationBarTextStyle": "black"
   },
   "tabBar": {
-    "color": "#A8A098",
-    "selectedColor": "#9C7A5A",
-    "backgroundColor": "#FDFCF9",
+    "color": "#8E8A8E",
+    "selectedColor": "#E85575",
+    "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [
       {

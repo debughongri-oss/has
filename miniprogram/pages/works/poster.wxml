@@ -10,6 +10,14 @@
     </view>
   </view>
 
+  <!-- 离屏 Canvas — MUST live outside any wx:if so selectorQuery can resolve it
+       during the loading phase. CSS keeps it visually hidden. -->
+  <canvas
+    type="2d"
+    id="posterCanvas"
+    class="poster-canvas"
+  ></canvas>
+
   <!-- 加载状态 -->
   <view class="poster-loading" wx:if="{{loading}}">
     <t-loading theme="circular" size="80rpx" text="海报生成中..." />
@@ -23,13 +31,6 @@
 
   <!-- 海报预览区域 -->
   <view class="poster-content" wx:if="{{!loading && !error && posterImage}}">
-    <!-- 离屏 Canvas per D-22 -->
-    <canvas
-      type="2d"
-      id="posterCanvas"
-      class="poster-canvas"
-    ></canvas>
-
     <!-- 海报图片预览（用户看到的是导出的图片，不是 canvas 本身）per D-22 -->
     <view class="poster-preview">
       <image

@@ -1,5 +1,5 @@
 const cloud = require('wx-server-sdk')
-const { requireArtist } = require('../shared/auth')
+const { requireArtist } = require('./shared/auth')
 
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
@@ -124,9 +124,13 @@ exports.main = async (event, context) => {
         }
 
         // 生成小程序码 per D-05/D-06
+        // checkPath: false 跳过"page 必须已发布"校验（开发期必须）
+        // envVersion: 'develop' 扫码进入开发版（正式发布后改 'release'）
         const qrResult = await cloud.openapi.wxacode.getUnlimitedQRCode({
           scene: id,
           page: 'pages/works/detail',
+          checkPath: false,
+          envVersion: 'develop',
           width: 280,
           autoColor: false,
           lineColor: { r: 156, g: 122, b: 90 },
@@ -142,7 +146,12 @@ exports.main = async (event, context) => {
         return { errCode: 0, data: { fileID: uploadRes.fileID } }
       } catch (error) {
         console.error('生成小程序码失败:', error)
-        return { errCode: -1, errMsg: '生成小程序码失败' }
+        // 透传微信原始 errCode/ErrMsg，方便客户端诊断
+        // 常见: 48001(个人主体无权限) / 41030(无效 page) / 40097(无效 scene)
+        return {
+          errCode: error.errCode || -1,
+          errMsg: error.errMsg || '生成小程序码失败'
+        }
       }
     }
 

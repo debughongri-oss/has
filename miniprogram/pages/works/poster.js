@@ -32,7 +32,8 @@ Page({
 
     var sysInfo = wx.getSystemInfoSync()
     this.setData({ statusBarHeight: sysInfo.statusBarHeight })
-    this._dpr = wx.getWindowInfo().pixelRatio
+    // wx.getWindowInfo is base-lib 2.20.1+, fall back to getSystemInfoSync for older clients
+    this._dpr = (wx.getWindowInfo ? wx.getWindowInfo().pixelRatio : sysInfo.pixelRatio) || 1
 
     if (!options.id) {
       this.onClose()

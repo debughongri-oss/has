@@ -1,0 +1,20 @@
+{
+  "name": "hzs-deploy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloud function deploy helpers for the makeup-artist mini program",
+  "scripts": {
+    "sync": "node scripts/sync-shared.js",
+    "deploy:works": "node scripts/deploy-cloudfunction.js works",
+    "deploy:login": "node scripts/deploy-cloudfunction.js login",
+    "deploy:profile": "node scripts/deploy-cloudfunction.js profile",
+    "deploy:services": "node scripts/deploy-cloudfunction.js services",
+    "deploy:bookings": "node scripts/deploy-cloudfunction.js bookings",
+    "deploy:reviews": "node scripts/deploy-cloudfunction.js reviews",
+    "deploy:reminder": "node scripts/deploy-cloudfunction.js booking-reminder",
+    "deploy:all": "node scripts/deploy-cloudfunction.js all"
+  },
+  "devDependencies": {
+    "miniprogram-ci": "^2.1.34"
+  }
+}

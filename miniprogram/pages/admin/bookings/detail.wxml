@@ -4,75 +4,76 @@
   </view>
 
   <block wx:if="{{!loading && booking}}">
-    <view class="status-bar status-bar--{{booking.status}}">
-      <text class="status-text">{{statusLabel}}</text>
-    </view>
-
-    <view class="group">
-      <view class="row">
-        <text class="key">服务</text>
-        <text class="val">{{booking.service_name}}</text>
+    <!-- 概要 -->
+    <view class="card">
+      <text class="status-pill status-pill--{{booking.status}}">{{statusLabel}}</text>
+      <text class="h-svc">{{booking.service_name}}</text>
+      <view class="h-div"></view>
+      <view class="h-row">
+        <text class="h-key">日期</text>
+        <text class="h-val h-val--accent">{{booking.dateLabel}}</text>
       </view>
-      <view class="row">
-        <text class="key">日期</text>
-        <text class="val">{{booking.booking_date}}</text>
+      <view class="h-row">
+        <text class="h-key">时间</text>
+        <text class="h-val h-val--accent">{{booking.booking_time}}</text>
       </view>
-      <view class="row">
-        <text class="key">时间</text>
-        <text class="val">{{booking.booking_time}}</text>
-      </view>
-      <view class="row">
-        <text class="key">客户</text>
-        <text class="val">{{booking.user_info.nickname || '微信用户'}}</text>
-      </view>
-      <view class="row" wx:if="{{booking.skin_type}}">
-        <text class="key">肤质</text>
-        <text class="val">{{booking.skin_type_label || booking.skin_type}}</text>
-      </view>
-      <view class="row" wx:if="{{booking.special_needs}}">
-        <text class="key">特殊需求</text>
-        <text class="val val--wrap">{{booking.special_needs}}</text>
-      </view>
-      <view class="row" wx:if="{{booking.occasion}}">
-        <text class="key">场合说明</text>
-        <text class="val val--wrap">{{booking.occasion}}</text>
-      </view>
-      <view class="row" wx:if="{{booking.notes && !booking.skin_type}}">
-        <text class="key">留言</text>
-        <text class="val val--wrap">{{booking.notes}}</text>
+      <view class="h-row">
+        <text class="h-key">客户</text>
+        <text class="h-val">{{booking.user_info.nickname || '微信用户'}}</text>
       </view>
     </view>
 
-    <view class="group">
-      <view class="row row--col">
-        <text class="label">内部备注</text>
-        <textarea
-          class="textarea"
-          placeholder="添加备注..."
-          value="{{artistNotes}}"
-          bindinput="onNotesInput"
-          maxlength="500"
-        />
-        <text class="save-link" bindtap="saveNotes">保存备注</text>
+    <!-- 客户需求 -->
+    <view class="card" wx:if="{{booking.skin_type || booking.special_needs || booking.occasion || booking.notes}}">
+      <text class="card-title">客户需求</text>
+      <view class="dfield" wx:if="{{booking.skin_type}}">
+        <text class="dfield-key">肤质</text>
+        <text class="dfield-val">{{booking.skin_type_label || booking.skin_type}}</text>
+      </view>
+      <view class="dfield" wx:if="{{booking.special_needs}}">
+        <text class="dfield-key">特殊需求</text>
+        <text class="dfield-val">{{booking.special_needs}}</text>
+      </view>
+      <view class="dfield" wx:if="{{booking.occasion}}">
+        <text class="dfield-key">场合说明</text>
+        <text class="dfield-val">{{booking.occasion}}</text>
+      </view>
+      <view class="dfield" wx:if="{{booking.notes && !booking.skin_type}}">
+        <text class="dfield-key">留言</text>
+        <text class="dfield-val">{{booking.notes}}</text>
       </view>
     </view>
 
-    <view class="group" wx:if="{{booking.reject_reason}}">
-      <view class="row">
-        <text class="key">拒绝原因</text>
-        <text class="val val--red">{{booking.reject_reason}}</text>
-      </view>
+    <!-- 拒绝原因 -->
+    <view class="card" wx:if="{{booking.reject_reason}}">
+      <text class="card-title">拒绝原因</text>
+      <text class="reason">{{booking.reject_reason}}</text>
     </view>
 
-    <view class="action-bar" wx:if="{{booking.status === 'pending'}}">
-      <button class="act-btn act-btn--reject" bindtap="onReject">拒绝</button>
-      <button class="act-btn act-btn--accept" bindtap="onAccept">接受</button>
-    </view>
-
-    <view class="action-bar" wx:if="{{booking.status === 'accepted'}}">
-      <button class="act-btn act-btn--done" bindtap="onComplete">标记完成</button>
+    <!-- 内部备注 -->
+    <view class="card">
+      <text class="card-title">内部备注</text>
+      <textarea
+        class="ta"
+        placeholder="仅自己可见，记录沟通要点…"
+        placeholder-class="ta-ph"
+        value="{{artistNotes}}"
+        bindinput="onNotesInput"
+        maxlength="500"
+      />
+      <view class="save-mini tappable" bindtap="saveNotes">保存备注</view>
     </view>
   </block>
+
+  <!-- 操作栏 -->
+  <view class="action-bar" wx:if="{{!loading && booking.status === 'pending'}}">
+    <button class="act act-reject" bindtap="onReject">拒绝</button>
+    <button class="act act-accept" bindtap="onAccept">接受预约</button>
+  </view>
+
+  <view class="action-bar" wx:if="{{!loading && booking.status === 'accepted'}}">
+    <button class="act act-done" bindtap="onComplete">标记完成</button>
+  </view>
 
   <t-dialog
     visible="{{showRejectDialog}}"

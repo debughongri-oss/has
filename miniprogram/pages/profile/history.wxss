@@ -1,53 +1,81 @@
 .page-history {
   min-height: 100vh;
   background-color: var(--bg);
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
 }
 
 .list {
-  padding: 32rpx var(--page-pad);
   display: flex;
   flex-direction: column;
   gap: 16rpx;
+  padding: 24rpx var(--page-pad);
 }
 
 .card {
   background-color: var(--bg-elevated);
-  border-radius: var(--radius-lg);
-  padding: var(--page-pad);
+  border-radius: 24rpx;
+  padding: 22rpx;
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
 }
 
-.card-top {
+/* ===== 主行 ===== */
+.crow {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  gap: 20rpx;
+  align-items: center;
 }
 
-.card-left {
+.cdate {
+  width: 124rpx;
+  flex-shrink: 0;
+  background-color: var(--accent-soft);
+  border-radius: 18rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16rpx 0;
+}
+
+.cdate-d {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.1;
+}
+
+.cdate-t {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: 6rpx;
+}
+
+.cmain {
   flex: 1;
   min-width: 0;
 }
 
-.card-svc {
-  display: block;
-  font-size: var(--fs-sm);
-  font-weight: 600;
+.ctop {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.csvc {
+  flex: 1;
+  min-width: 0;
+  font-size: 30rpx;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
-.card-time {
-  display: block;
-  font-size: var(--fs-xs);
-  color: var(--text-secondary);
-  margin-top: 8rpx;
-}
-
 .badge {
-  font-size: var(--fs-xs);
-  font-weight: 500;
-  padding: 6rpx 18rpx;
-  border-radius: 999rpx;
   flex-shrink: 0;
-  margin-left: 16rpx;
+  font-size: 20rpx;
+  font-weight: 600;
+  padding: 5rpx 18rpx;
+  border-radius: 999rpx;
 }
 
 .badge--pending {
@@ -71,45 +99,70 @@
   color: var(--text-secondary);
 }
 
-.card-note {
+.cfulldate {
   display: block;
-  font-size: var(--fs-sm);
+  font-size: 22rpx;
   color: var(--text-secondary);
-  line-height: 1.7;
+  margin-top: 10rpx;
+}
+
+/* ===== 拒绝原因 / 备注 ===== */
+.creason {
+  font-size: 22rpx;
+  color: var(--red);
+  background-color: var(--red-bg);
+  border-radius: 14rpx;
+  padding: 14rpx 20rpx;
+  margin-top: 18rpx;
+  line-height: 1.5;
+}
+
+.cnote {
+  display: block;
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  margin-top: 18rpx;
+  line-height: 1.6;
+}
+
+/* ===== 操作 ===== */
+.cact {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14rpx;
   margin-top: 20rpx;
   padding-top: 20rpx;
   border-top: 1rpx solid var(--separator);
 }
 
-.card-reason {
-  display: block;
-  font-size: var(--fs-xs);
+.act-cancel {
+  padding: 12rpx 30rpx;
+  border-radius: 999rpx;
+  background-color: var(--fill-primary);
   color: var(--red);
-  margin-top: 16rpx;
-  padding: 12rpx 20rpx;
-  background-color: var(--red-bg);
-  border-radius: var(--radius-sm);
+  font-size: 24rpx;
+  font-weight: 600;
 }
 
-.card-action {
-  margin-top: 20rpx;
+.act-review {
+  padding: 12rpx 34rpx;
+  border-radius: 999rpx;
+  background-color: var(--accent);
+  color: #FFFFFF;
+  font-size: 24rpx;
+  font-weight: 700;
+  box-shadow: 0 6rpx 16rpx rgba(255, 111, 139, 0.32);
+}
+
+.act-reviewed {
   display: flex;
-  justify-content: flex-end;
-}
-
-.cancel {
-  color: var(--red);
-  font-size: var(--fs-sm);
-  font-weight: 500;
-}
-
-.review-btn {
-  color: var(--accent);
-  font-size: var(--fs-sm);
-  font-weight: 500;
-}
-
-.reviewed-mark {
+  align-items: center;
+  gap: 6rpx;
   color: var(--text-tertiary);
-  font-size: var(--fs-sm);
+  font-size: 24rpx;
+}
+
+.act-reviewed .star {
+  color: #B0883F;
 }

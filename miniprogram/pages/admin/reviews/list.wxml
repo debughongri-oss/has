@@ -5,15 +5,15 @@
 
   <view class="list" wx:if="{{!loading && reviews.length}}">
     <view class="card" wx:for="{{reviews}}" wx:key="_id">
-      <view class="card-top">
-        <text class="card-name">{{item.user_nickname || '匿名用户'}}</text>
-        <text class="card-time">{{item.timeLabel}}</text>
+      <view class="rtop">
+        <text class="rname">{{item.user_nickname || '匿名用户'}}</text>
+        <text class="rtime">{{item.timeLabel}}</text>
       </view>
-      <view class="card-service">
-        <text class="card-svc-label">{{item.service_name}}</text>
-        <t-rate value="{{item.rating}}" disabled size="24rpx" color="var(--gold)" variant="filled" />
+      <view class="rrate">
+        <t-rate value="{{item.rating}}" disabled size="28rpx" gap="6" color="var(--gold)" variant="filled" />
+        <text class="rsvc" wx:if="{{item.service_name}}">{{item.service_name}}</text>
       </view>
-      <text class="card-content" wx:if="{{item.content}}">{{item.content}}</text>
+      <text class="rcontent" wx:if="{{item.content}}">{{item.content}}</text>
     </view>
   </view>
 

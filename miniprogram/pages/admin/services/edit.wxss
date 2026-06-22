@@ -1,106 +1,187 @@
 .edit-service {
   min-height: 100vh;
   background-color: var(--bg);
-  padding-bottom: 200rpx;
+  padding-bottom: calc(200rpx + env(safe-area-inset-bottom));
 }
 
-.group {
+/* ===== 卡片 ===== */
+.card {
+  margin: 24rpx var(--page-pad) 0;
   background-color: var(--bg-elevated);
-  margin: 16rpx var(--page-pad) 0;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  border-radius: 26rpx;
+  padding: 26rpx 28rpx;
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
 }
 
-.row {
+.card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.card-title {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.card-meta {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+/* ===== 名称 / 排序 行 ===== */
+.field {
   display: flex;
   align-items: center;
-  padding: 0 var(--page-pad);
-  min-height: 96rpx;
-  border-bottom: 1rpx solid var(--separator);
+  min-height: 88rpx;
 }
 
-.row:last-child {
-  border-bottom: none;
-}
-
-.row--textarea {
-  padding: var(--page-pad);
-}
-
-.key {
-  font-size: var(--fs-sm);
-  color: var(--text-primary);
-  width: 100rpx;
+.field-key {
+  width: 120rpx;
+  font-size: 30rpx;
+  color: var(--text-secondary);
   flex-shrink: 0;
 }
 
-.val {
+.field-val {
   flex: 1;
-  height: 96rpx;
-  font-size: var(--fs-sm);
-  text-align: right;
+  height: 88rpx;
+  font-size: 30rpx;
   color: var(--text-primary);
   padding: 0;
 }
 
-.textarea {
-  width: 100%;
-  height: 200rpx;
-  font-size: var(--fs-sm);
-  color: var(--text-primary);
-  padding: 0;
-  line-height: 1.7;
+.ph {
+  color: var(--text-tertiary);
 }
 
-.form-title {
-  font-size: var(--fs-xs);
+.divline {
+  height: 1rpx;
+  background-color: var(--separator);
+  margin: 6rpx 0 22rpx;
+}
+
+/* ===== 价格 / 时长 双列 ===== */
+.duo {
+  display: flex;
+  gap: 16rpx;
+}
+
+.box {
+  flex: 1;
+  min-width: 0;
+  background-color: var(--fill-primary);
+  border-radius: 18rpx;
+  padding: 20rpx 22rpx;
+}
+
+.box-label {
+  display: block;
+  font-size: 22rpx;
   color: var(--text-secondary);
-  padding: 32rpx var(--page-pad) 12rpx;
+  margin-bottom: 12rpx;
 }
 
-.chips-wrap {
+.box-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+}
+
+.box-affix {
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.box-input {
+  flex: 1;
+  min-width: 0;
+  height: 52rpx;
+  font-size: 38rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+  padding: 0;
+}
+
+.box-ph {
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+/* ===== 分类 chips ===== */
+.chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 12rpx;
-  padding: 0 var(--page-pad);
+  gap: 14rpx;
 }
 
 .chip {
-  padding: 12rpx 32rpx;
-  background-color: var(--fill-secondary);
-  color: var(--text-primary);
-  font-size: var(--fs-xs);
+  padding: 14rpx 32rpx;
   border-radius: 999rpx;
-  text-align: center;
+  font-size: 24rpx;
+  background-color: var(--fill-primary);
+  color: var(--text-secondary);
+  border: 2rpx solid transparent;
 }
 
 .chip--on {
-  background-color: var(--accent);
-  color: #FDFBF8;
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
 }
 
+/* ===== 描述 ===== */
+.ta {
+  width: 100%;
+  min-height: 180rpx;
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+  color: var(--text-primary);
+  padding: 0;
+}
+
+/* ===== 显示设置 ===== */
+.hint {
+  display: block;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  line-height: 1.5;
+  margin-top: 6rpx;
+}
+
+/* ===== 保存栏 ===== */
 .save-bar {
   position: fixed;
-  bottom: 0;
   left: 0;
   right: 0;
-  padding: 24rpx var(--page-pad);
-  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  bottom: 0;
   background-color: var(--bg-elevated);
-  border-top: 1rpx solid var(--separator);
+  box-shadow: 0 -8rpx 26rpx rgba(0, 0, 0, 0.07);
+  padding: 18rpx var(--page-pad);
+  padding-bottom: calc(28rpx + env(safe-area-inset-bottom));
 }
 
 .save-btn {
   width: 100%;
-  height: 96rpx;
-  line-height: 96rpx;
-  background-color: var(--accent);
-  color: #FDFBF8;
-  border-radius: var(--radius-md);
-  font-size: var(--fs-sm);
-  font-weight: 500;
+  height: 100rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-dark);
+  color: #FFFFFF;
+  border-radius: 24rpx;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  letter-spacing: 4rpx;
   border: none;
-  transition: opacity 0.15s ease, transform 0.15s ease;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  box-shadow: 0 10rpx 24rpx rgba(232, 85, 117, 0.34);
 }
 
 .save-btn::after {
@@ -108,10 +189,10 @@
 }
 
 .save-btn:active {
-  opacity: 0.8;
-  transform: scale(0.97);
+  opacity: 0.9;
+  transform: scale(0.99);
 }
 
 .save-btn[disabled] {
-  opacity: 0.4;
+  opacity: 0.45;
 }

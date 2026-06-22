@@ -4,8 +4,8 @@
     "t-empty": "tdesign-miniprogram/empty/empty"
   },
   "navigationBarTitleText": "作品集",
-  "navigationBarBackgroundColor": "#F5F2EE",
+  "navigationBarBackgroundColor": "#F7F6F5",
   "navigationBarTextStyle": "black",
-  "backgroundColor": "#F5F2EE",
+  "backgroundColor": "#F7F6F5",
   "enablePullDownRefresh": true
 }

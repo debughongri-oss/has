@@ -1,19 +1,19 @@
 page {
-  --accent: #9C7A5A;
-  --accent-light: #F7F2EC;
-  --accent-soft: rgba(156, 122, 90, 0.06);
-  --accent-medium: rgba(156, 122, 90, 0.12);
-  --accent-dark: #7A5E42;
+  --accent: #FF6F8B;
+  --accent-light: #FFF0F2;
+  --accent-soft: rgba(255, 111, 139, 0.10);
+  --accent-medium: rgba(255, 111, 139, 0.18);
+  --accent-dark: #E85575;
 
-  --bg: #F5F2EE;
-  --bg-elevated: #FDFCF9;
+  --bg: #F4F2F4;
+  --bg-elevated: #FFFFFF;
 
-  --separator: rgba(0, 0, 0, 0.05);
-  --separator-opaque: #E8E4DF;
+  --separator: rgba(0, 0, 0, 0.06);
+  --separator-opaque: #E6E4E6;
 
-  --text-primary: #1F1B18;
-  --text-secondary: rgba(0, 0, 0, 0.42);
-  --text-tertiary: rgba(0, 0, 0, 0.22);
+  --text-primary: #17151A;
+  --text-secondary: rgba(0, 0, 0, 0.52);
+  --text-tertiary: rgba(0, 0, 0, 0.32);
   --text-link: var(--accent);
 
   --fill-primary: rgba(0, 0, 0, 0.04);
@@ -49,6 +49,14 @@ page {
 
   --page-pad: 32rpx;
   --section-gap: 40rpx;
+
+  --icon-arrow-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%238E8A8E' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m9 5l6 7l-6 7'/%3E%3C/svg%3E");
+  --icon-share: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23F5F5F5' stroke-width='1.5'%3E%3Ccircle cx='18' cy='5' r='3'/%3E%3Ccircle cx='6' cy='12' r='3'/%3E%3Ccircle cx='18' cy='19' r='3'/%3E%3Cpath stroke-linecap='round' d='M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98'/%3E%3C/g%3E%3C/svg%3E");
+  --icon-add-circle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%238E8A8E' stroke-width='1.5'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath stroke-linecap='round' d='M15 12h-3m0 0H9m3 0V9m0 3v3'/%3E%3C/g%3E%3C/svg%3E");
+  --icon-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%23F5F5F5' stroke-linecap='round' stroke-width='2.5' d='M18 6L6 18M6 6l12 12'/%3E%3C/svg%3E");
+  --icon-chat: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%238E8A8E' stroke-width='1.5' d='M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2S2 6.477 2 12c0 1.821.487 3.53 1.338 5L2.5 21.5l4.5-.838A9.955 9.955 0 0 0 12 22Z'/%3E%3C/svg%3E");
+  --icon-wechat: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' viewBox='0 0 24 24'%3E%3Cpath fill='%23FF6F8B' d='M8.5 13a1 1 0 1 0 0-2a1 1 0 0 0 0 2Zm-3 0a1 1 0 1 0 0-2a1 1 0 0 0 0 2ZM12 2C6.477 2 2 6.477 2 12c0 1.821.487 3.53 1.338 5L2.5 21.5l4.5-.838A9.955 9.955 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2Zm4 6c-3.314 0-6 2.239-6 5s2.686 5 6 5a7.1 7.1 0 0 0 2.5-.45l3 .56l-.64-2.72C21.56 14.47 22 13.28 22 12c0-2.761-2.686-5-6-5Zm-2 5.5a.75.75 0 1 1 0-1.5a.75.75 0 0 1 0 1.5Zm4 0a.75.75 0 1 1 0-1.5a.75.75 0 0 1 0 1.5Z'/%3E%3C/svg%3E");
+  --icon-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='%238E8A8E' stroke-linecap='round' stroke-width='1.5' d='M12 5v14m-7-7h14'/%3E%3C/svg%3E");
 
   background-color: var(--bg);
   font-size: var(--fs-sm);
@@ -91,14 +99,18 @@ page {
 
 .btn-primary {
   height: 96rpx;
-  line-height: 96rpx;
-  background-color: var(--accent);
-  color: #FDFBF8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent-dark);
+  color: #FFFFFF;
   border-radius: var(--radius-md);
   font-size: var(--fs-sm);
   font-weight: 500;
   border: none;
   padding: 0;
+  margin: 0;
+  line-height: 1;
   transition: opacity 0.15s ease;
 }
 
@@ -113,7 +125,9 @@ page {
 
 .btn-outline {
   height: 96rpx;
-  line-height: 96rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background-color: transparent;
   color: var(--accent);
   border-radius: var(--radius-md);
@@ -121,6 +135,8 @@ page {
   font-weight: 500;
   border: 2rpx solid var(--accent);
   padding: 0;
+  margin: 0;
+  line-height: 1;
   transition: opacity 0.15s ease;
 }
 

@@ -4,7 +4,7 @@
   </view>
 
   <block wx:if="{{!loading}}">
-    <!-- TDesign Calendar 内嵌模式（per D-12: usePopup=false, switchMode=month, readonly, single） -->
+    <!-- TDesign Calendar 内嵌模式 -->
     <view class="calendar-wrap">
       <t-calendar
         value="{{calendarValue}}"
@@ -12,42 +12,41 @@
         format="{{format}}"
         switchMode="month"
         type="single"
-        readonly="{{true}}"
         usePopup="{{false}}"
         bind:select="onSelectDate"
       />
     </view>
 
-    <!-- 选中日期的预约列表区域 -->
-    <view class="day-section" wx:if="{{selectedDate}}">
-      <view class="day-header">
-        <text class="day-title">{{selectedDate}}</text>
+    <!-- 选中日期的预约 -->
+    <view class="day" wx:if="{{selectedDate}}">
+      <view class="day-head">
+        <text class="day-title">{{selectedDateLabel}}</text>
         <text class="day-count" wx:if="{{dayBookings.length}}">{{dayBookings.length}} 个预约</text>
       </view>
 
-      <!-- 紧凑日程警告（per D-21: 3+ 预约显示橙色警告条） -->
-      <view class="busy-warning" wx:if="{{isBusyDay}}">
-        ⚠️ 紧凑日程：今日 {{dayBookings.length}} 个预约
-      </view>
+      <view class="busy" wx:if="{{isBusyDay}}">紧凑日程 · 当日 {{busyCount}} 个预约</view>
 
-      <!-- 预约列表（复用 list.wxss 的 card 样式 per D-15） -->
-      <view class="day-list" wx:if="{{dayBookings.length}}">
-        <view class="card tappable" wx:for="{{dayBookings}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
-          <view class="card-top">
-            <text class="card-svc">{{item.service_name}}</text>
-            <text class="badge badge--{{item.status}}">{{item.statusLabel}}</text>
+      <view class="dlist" wx:if="{{dayBookings.length}}">
+        <view
+          class="dcard tappable"
+          wx:for="{{dayBookings}}"
+          wx:key="_id"
+          bindtap="goToDetail"
+          data-id="{{item._id}}"
+        >
+          <view class="dtime">{{item.booking_time}}</view>
+          <view class="dmain">
+            <view class="dtop">
+              <text class="dsvc text-ellipsis">{{item.service_name}}</text>
+              <text class="badge badge--{{item.status}}">{{item.statusLabel}}</text>
+            </view>
+            <text class="dcust" wx:if="{{item.user_info.nickname}}">客户 · {{item.user_info.nickname}}</text>
           </view>
-          <view class="card-info">
-            <text>{{item.booking_time}}</text>
-            <text wx:if="{{item.user_info.nickname}}"> · {{item.user_info.nickname}}</text>
-          </view>
-          <text class="card-note" wx:if="{{item.special_needs}}">{{item.special_needs}}</text>
         </view>
       </view>
 
-      <!-- 无预约空状态 -->
       <view class="empty-day" wx:if="{{!dayBookings.length}}">
-        <text class="empty-day-text">该日无预约</text>
+        <text class="empty-day-text">该日暂无预约</text>
       </view>
     </view>
   </block>

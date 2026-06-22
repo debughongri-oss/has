@@ -1,119 +1,193 @@
 .edit-profile {
   min-height: 100vh;
   background-color: var(--bg);
-  padding-bottom: 200rpx;
+  padding-bottom: calc(200rpx + env(safe-area-inset-bottom));
 }
 
-.avatar-area {
-  margin-top: 16rpx;
-}
-
-.avatar-row {
+/* ===== 头像 ===== */
+.av-head {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: var(--page-pad);
-  background-color: var(--bg-elevated);
-  margin: 0 var(--page-pad);
-  border-radius: var(--radius-lg);
+  padding: 48rpx 0 8rpx;
 }
 
-.key {
-  font-size: 28rpx;
-  color: var(--text-primary);
-  flex-shrink: 0;
-  width: 100rpx;
-  letter-spacing: 1rpx;
+.av-wrap {
+  position: relative;
+  width: 168rpx;
+  height: 168rpx;
 }
 
-.avatar-picker {
-  display: flex;
-  align-items: center;
-}
-
-.avatar-preview {
-  width: 80rpx;
-  height: 80rpx;
+.av {
+  width: 168rpx;
+  height: 168rpx;
   border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--bg-elevated);
+  box-shadow: 0 0 0 4rpx #FFFFFF, 0 12rpx 30rpx rgba(0, 0, 0, 0.1);
+}
+
+.av-img {
+  width: 168rpx;
+  height: 168rpx;
   display: block;
 }
 
-.avatar-ph {
-  width: 80rpx;
-  height: 80rpx;
+.av-fallback {
+  width: 168rpx;
+  height: 168rpx;
+  background: linear-gradient(135deg, #FF8AA0, #E85575);
+}
+
+.av-badge {
+  position: absolute;
+  right: 6rpx;
+  bottom: 6rpx;
+  width: 54rpx;
+  height: 54rpx;
   border-radius: 50%;
-  background: var(--fill-secondary) var(--icon-plus) no-repeat center / 40rpx 40rpx;
+  border: 3rpx solid #FFFFFF;
+  background-color: var(--accent);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z'/%3E%3Ccircle cx='12' cy='13' r='4'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 26rpx 26rpx;
+  box-shadow: 0 4rpx 12rpx rgba(232, 85, 117, 0.4);
 }
 
-.avatar-ph-text {
-  display: none;
+.av-hint {
+  margin-top: 18rpx;
+  font-size: var(--fs-xs);
+  color: var(--text-tertiary);
 }
 
-.group {
+/* ===== 卡片 ===== */
+.card {
+  margin: 24rpx var(--page-pad) 0;
   background-color: var(--bg-elevated);
-  margin: 16rpx var(--page-pad) 0;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
+  border-radius: 26rpx;
+  padding: 8rpx 28rpx;
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
 }
 
-.row {
+.card-title {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  letter-spacing: 1rpx;
+  padding: 22rpx 0 6rpx;
+}
+
+/* ===== 行内字段 ===== */
+.field {
   display: flex;
   align-items: center;
-  padding: 0 var(--page-pad);
-  min-height: 96rpx;
+  min-height: 104rpx;
   border-bottom: 1rpx solid var(--separator);
 }
 
-.row:last-child {
+.field:last-child {
   border-bottom: none;
 }
 
-.row--col {
-  flex-direction: column;
-  align-items: stretch;
-  padding: var(--page-pad);
+.field-key {
+  width: 160rpx;
+  font-size: 30rpx;
+  color: var(--text-secondary);
+  flex-shrink: 0;
 }
 
-.val {
+.field-val {
   flex: 1;
-  height: 96rpx;
-  font-size: 28rpx;
-  text-align: right;
+  height: 104rpx;
+  font-size: 30rpx;
   color: var(--text-primary);
   padding: 0;
-  letter-spacing: 1rpx;
 }
 
-.label {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 16rpx;
-  letter-spacing: 1rpx;
+.ph {
+  color: var(--text-tertiary);
 }
 
-.textarea {
+/* ===== 纵向字段 ===== */
+.field-col {
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--separator);
+}
+
+.field-col:last-child {
+  border-bottom: none;
+}
+
+.field-col-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 18rpx;
+}
+
+.field-col-key {
+  font-size: 30rpx;
+  color: var(--text-secondary);
+}
+
+.field-col-count {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+.field-col-input {
   width: 100%;
-  height: 160rpx;
-  background-color: var(--fill-secondary);
-  border-radius: var(--radius-md);
-  padding: 20rpx;
-  font-size: 28rpx;
-  box-sizing: border-box;
-  line-height: 1.7;
-  border: none;
-  letter-spacing: 1rpx;
+  font-size: 30rpx;
+  color: var(--text-primary);
 }
 
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.tag {
+  padding: 13rpx 28rpx;
+  border-radius: 999rpx;
+  font-size: var(--fs-xs);
+  background-color: var(--fill-primary);
+  color: var(--text-secondary);
+  border: 2rpx solid transparent;
+}
+
+.tag--on {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.ta {
+  width: 100%;
+  min-height: 150rpx;
+  padding: 24rpx;
+  background-color: var(--fill-primary);
+  border-radius: 18rpx;
+  font-size: var(--fs-sm);
+  line-height: 1.7;
+  color: var(--text-primary);
+  border: none;
+  box-sizing: border-box;
+}
+
+/* ===== 保存栏 ===== */
 .save-bar {
   position: fixed;
-  bottom: 0;
   left: 0;
   right: 0;
-  padding: 24rpx var(--page-pad);
-  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  bottom: 0;
   background-color: var(--bg-elevated);
-  border-top: 1rpx solid var(--separator);
+  box-shadow: 0 -8rpx 26rpx rgba(0, 0, 0, 0.07);
+  padding: 18rpx var(--page-pad);
+  padding-bottom: calc(28rpx + env(safe-area-inset-bottom));
 }
 
 .save-btn {
@@ -122,45 +196,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--accent);
-  color: #fff;
-  border-radius: var(--radius-md);
-  font-size: 28rpx;
-  font-weight: 500;
-  letter-spacing: 2rpx;
+  background-color: var(--accent-dark);
+  color: #FFFFFF;
+  border-radius: 24rpx;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  letter-spacing: 4rpx;
   border: none;
   padding: 0;
   margin: 0;
   line-height: 1;
+  box-shadow: 0 10rpx 24rpx rgba(232, 85, 117, 0.34);
 }
 
 .save-btn::after {
   border: none;
 }
 
+.save-btn:active {
+  opacity: 0.9;
+  transform: scale(0.99);
+}
+
 .save-btn[disabled] {
-  opacity: 0.4;
-}
-
-.tag-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16rpx;
-  margin-top: 16rpx;
-}
-
-.tag-btn {
-  padding: 12rpx 28rpx;
-  border-radius: var(--radius-sm);
-  font-size: var(--fs-xs);
-  background-color: var(--fill-secondary);
-  color: var(--text-secondary);
-  border: 2rpx solid transparent;
-  transition: all 0.15s ease;
-}
-
-.tag-btn--on {
-  background-color: var(--accent-soft);
-  color: var(--accent);
-  border-color: var(--accent);
+  opacity: 0.45;
 }

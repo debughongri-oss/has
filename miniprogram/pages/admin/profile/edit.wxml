@@ -1,38 +1,49 @@
 <view class="edit-profile">
-  <view class="avatar-area">
-    <view class="avatar-row">
-      <text class="key">头像</text>
-      <view class="avatar-picker" bindtap="chooseAvatar">
-        <image wx:if="{{avatar}}" class="avatar-preview" src="{{avatar}}" mode="aspectFill" />
-        <view wx:else class="avatar-ph">
-          <text class="avatar-ph-text">+</text>
-        </view>
+  <!-- 头像 -->
+  <view class="av-head">
+    <view class="av-wrap" bindtap="chooseAvatar">
+      <view class="av">
+        <image wx:if="{{avatar}}" class="av-img" src="{{avatar}}" mode="aspectFill" />
+        <view wx:else class="av-fallback"></view>
       </view>
+      <view class="av-badge"></view>
+    </view>
+    <text class="av-hint">{{avatarUploading ? '上传中...' : '点击更换头像'}}</text>
+  </view>
+
+  <!-- 基本信息 -->
+  <view class="card">
+    <text class="card-title">基本信息</text>
+    <view class="field">
+      <text class="field-key">姓名</text>
+      <input class="field-val" placeholder="化妆师姓名" placeholder-class="ph" value="{{name}}" bindinput="onNameInput" />
+    </view>
+    <view class="field">
+      <text class="field-key">经验简述</text>
+      <input class="field-val" placeholder="如：资深新娘妆造师" placeholder-class="ph" value="{{experience}}" bindinput="onExperienceInput" />
+    </view>
+    <view class="field">
+      <text class="field-key">从业年数</text>
+      <input class="field-val" type="number" placeholder="如 6" placeholder-class="ph" value="{{experienceYears}}" bindinput="onExperienceYearsInput" />
+    </view>
+    <view class="field">
+      <text class="field-key">所在地区</text>
+      <input class="field-val" placeholder="如：上海 · 静安" placeholder-class="ph" value="{{location}}" bindinput="onLocationInput" />
     </view>
   </view>
 
-  <view class="group">
-    <view class="row">
-      <text class="key">姓名</text>
-      <input class="val" placeholder="化妆师姓名" value="{{name}}" bindinput="onNameInput" />
+  <!-- 擅长与风格 -->
+  <view class="card">
+    <text class="card-title">擅长与风格</text>
+    <view class="field-col">
+      <view class="field-col-label"><text class="field-col-key">擅长项目</text></view>
+      <input class="field-col-input" placeholder="用逗号分隔，如 新娘跟妆,韩系,自然裸妆" placeholder-class="ph" value="{{specialtiesText}}" bindinput="onSpecialtiesInput" />
     </view>
-    <view class="row">
-      <text class="key">经验</text>
-      <input class="val" placeholder="如：5年经验" value="{{experience}}" bindinput="onExperienceInput" />
-    </view>
-    <view class="row">
-      <text class="key">从业年数</text>
-      <input class="val" type="number" placeholder="数字，如 5" value="{{experienceYears}}" bindinput="onExperienceYearsInput" />
-    </view>
-    <view class="row">
-      <text class="key">擅长</text>
-      <input class="val" placeholder="逗号分隔" value="{{specialtiesText}}" bindinput="onSpecialtiesInput" />
-    </view>
-    <view class="row row--col">
-      <text class="label">擅长风格</text>
-      <view class="tag-group">
+    <view class="field-col">
+      <view class="field-col-label"><text class="field-col-key">擅长风格</text></view>
+      <view class="tags">
         <view
-          class="tag-btn {{item.selected ? 'tag-btn--on' : ''}} tappable"
+          class="tag {{item.selected ? 'tag--on' : ''}} tappable"
           wx:for="{{styleTagOptions}}"
           wx:key="key"
           bindtap="onToggleStyleTag"
@@ -42,28 +53,34 @@
         </view>
       </view>
     </view>
-    <view class="row">
-      <text class="key">地区</text>
-      <input class="val" placeholder="所在地区" value="{{location}}" bindinput="onLocationInput" />
+  </view>
+
+  <!-- 联系方式 -->
+  <view class="card">
+    <text class="card-title">联系方式</text>
+    <view class="field">
+      <text class="field-key">微信号</text>
+      <input class="field-val" placeholder="方便客户添加" placeholder-class="ph" value="{{wechat}}" bindinput="onWechatInput" />
     </view>
-    <view class="row">
-      <text class="key">微信</text>
-      <input class="val" placeholder="微信号" value="{{wechat}}" bindinput="onWechatInput" />
-    </view>
-    <view class="row">
-      <text class="key">手机</text>
-      <input class="val" type="number" placeholder="手机号" value="{{phone}}" bindinput="onPhoneInput" />
+    <view class="field">
+      <text class="field-key">手机号</text>
+      <input class="field-val" type="number" placeholder="用于客户联系（选填）" placeholder-class="ph" value="{{phone}}" bindinput="onPhoneInput" />
     </view>
   </view>
 
-  <view class="group">
-    <view class="row row--col">
-      <text class="label">简介</text>
-      <textarea class="textarea" placeholder="介绍一下自己..." value="{{bio}}" bindinput="onBioInput" maxlength="200" />
+  <!-- 个人简介 -->
+  <view class="card">
+    <text class="card-title">个人简介</text>
+    <view class="field-col">
+      <view class="field-col-label">
+        <text class="field-col-key">简介</text>
+        <text class="field-col-count">{{bio.length}}/200</text>
+      </view>
+      <textarea class="ta" placeholder="介绍一下自己，让客户更了解你..." placeholder-class="ph" value="{{bio}}" bindinput="onBioInput" maxlength="200" />
     </view>
   </view>
 
   <view class="save-bar">
-    <button class="save-btn" bindtap="saveProfile" disabled="{{saving}}">{{saving ? '保存中...' : '保存'}}</button>
+    <button class="save-btn" bindtap="saveProfile" disabled="{{saving}}">{{saving ? '保存中...' : '保存资料'}}</button>
   </view>
 </view>

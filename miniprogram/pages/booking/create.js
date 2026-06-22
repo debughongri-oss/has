@@ -1,14 +1,40 @@
 const servicesService = require('../../services/services')
 const bookingsService = require('../../services/bookings')
 const authService = require('../../services/auth')
-const { SUBSCRIBE_TEMPLATE_ID, SKIN_TYPE_OPTIONS } = require('../../utils/constants')
+const { SUBSCRIBE_TEMPLATE_ID, SKIN_TYPE_OPTIONS, SERVICE_CATEGORIES } = require('../../utils/constants')
+
+const CATEGORY_MAP = {}
+SERVICE_CATEGORIES.forEach(c => { CATEGORY_MAP[c.key] = c.label })
+
+// 服务分类 → 图标色调（对应 app.wxss 调色板）
+const TONE_MAP = {
+  bridal: 'rose',
+  bridesmaid: 'purple',
+  engagement: 'gold',
+  daily: 'green',
+  creative: 'blue'
+}
+
+const MONTH_NAMES = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+const BOOKING_WINDOW = 30
+
+const formatDate = (d) => {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+// "2026-06-25" → "6月25日"
+const formatDateLabel = (dateStr) => {
+  if (!dateStr) return ''
+  const parts = dateStr.split('-')
+  return parts.length === 3 ? `${Number(parts[1])}月${Number(parts[2])}日` : dateStr
+}
 
 Page({
   data: {
     services: [],
     selectedService: null,
-    dateList: [],
     selectedDate: '',
+    selectedDateLabel: '',
     timeSlots: [],
     selectedTime: '',
     loadingSlots: false,
@@ -19,7 +45,13 @@ Page({
     occasion: '',
     skinTypeOptions: [],
     loading: true,
-    submitting: false
+    submitting: false,
+    calYear: 0,
+    calMonth: 0,
+    calMonthLabel: '',
+    calCells: [],
+    calCanPrev: false,
+    calCanNext: false
   },
 
   onLoad: function () {
@@ -29,11 +61,41 @@ Page({
     this.loadServices()
   },
 
+  // 从服务菜单跳来时，预选对应服务
+  onShow: function () {
+    const app = getApp()
+    const pid = app.globalData && app.globalData.pendingServiceId
+    if (pid) {
+      app.globalData.pendingServiceId = null
+      this._pendingServiceId = pid
+      this.applyPendingService()
+    }
+  },
+
+  applyPendingService: function () {
+    if (!this._pendingServiceId || !this.data.services.length) return
+    const svc = this.data.services.find(s => s._id === this._pendingServiceId)
+    if (svc) {
+      this._pendingServiceId = null
+      this.selectService(svc)
+    }
+  },
+
   loadServices: function () {
     this.setData({ loading: true })
     servicesService.getServicesList()
       .then(data => {
-        this.setData({ services: data, loading: false })
+        const services = (data || []).map(s => {
+          const categoryLabel = CATEGORY_MAP[s.category] || s.category || ''
+          return {
+            ...s,
+            categoryLabel,
+            icon: categoryLabel.charAt(0) || '妆',
+            tone: TONE_MAP[s.category] || 'rose'
+          }
+        })
+        this.setData({ services, loading: false })
+        this.applyPendingService()
       })
       .catch(err => {
         console.error('加载服务失败:', err)
@@ -41,37 +103,113 @@ Page({
       })
   },
 
-  generateDateList: function () {
-    const dates = []
-    const weekdays = ['日', '一', '二', '三', '四', '五', '六']
-    for (let i = 1; i <= 14; i++) {
-      const d = new Date()
-      d.setDate(d.getDate() + i)
-      const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-      dates.push({
+  generateCalendar: function (year, month, selectedDate) {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const maxDate = new Date()
+    maxDate.setDate(maxDate.getDate() + BOOKING_WINDOW)
+    maxDate.setHours(23, 59, 59, 999)
+
+    const firstDay = new Date(year, month, 1)
+    const lastDay = new Date(year, month + 1, 0)
+    const startWeekday = firstDay.getDay()
+    const daysInMonth = lastDay.getDate()
+    const todayStr = formatDate(today)
+
+    const cells = []
+
+    for (let i = 0; i < startWeekday; i++) {
+      cells.push({ day: 0, date: '', selectable: false, isToday: false, isSelected: false })
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+      const cellDate = new Date(year, month, d)
+      const dateStr = formatDate(cellDate)
+      cells.push({
+        day: d,
         date: dateStr,
-        weekday: '周' + weekdays[d.getDay()],
-        day: d.getDate(),
-        month: (d.getMonth() + 1) + '月'
+        selectable: cellDate >= today && cellDate <= maxDate,
+        isToday: dateStr === todayStr,
+        isSelected: dateStr === selectedDate
       })
     }
-    return dates
+
+    const remaining = cells.length % 7
+    if (remaining > 0) {
+      for (let i = 0; i < 7 - remaining; i++) {
+        cells.push({ day: 0, date: '', selectable: false, isToday: false, isSelected: false })
+      }
+    }
+
+    return cells
+  },
+
+  renderCalendar: function (year, month, selectedDate) {
+    const selDate = selectedDate !== undefined ? selectedDate : this.data.selectedDate
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+
+    const maxDate = new Date()
+    maxDate.setDate(maxDate.getDate() + BOOKING_WINDOW)
+
+    const calCanPrev = year > today.getFullYear() || (year === today.getFullYear() && month > today.getMonth())
+    const calCanNext = year < maxDate.getFullYear() || (year === maxDate.getFullYear() && month < maxDate.getMonth())
+
+    const calCells = this.generateCalendar(year, month, selDate)
+    const calMonthLabel = year + '年' + MONTH_NAMES[month]
+
+    this.setData({
+      calYear: year,
+      calMonth: month,
+      calMonthLabel,
+      calCells,
+      calCanPrev,
+      calCanNext
+    })
+  },
+
+  prevMonth: function () {
+    if (!this.data.calCanPrev) return
+    let y = this.data.calYear
+    let m = this.data.calMonth - 1
+    if (m < 0) { m = 11; y-- }
+    this.renderCalendar(y, m)
+  },
+
+  nextMonth: function () {
+    if (!this.data.calCanNext) return
+    let y = this.data.calYear
+    let m = this.data.calMonth + 1
+    if (m > 11) { m = 0; y++ }
+    this.renderCalendar(y, m)
   },
 
   onSelectService: function (e) {
     const index = e.currentTarget.dataset.index
-    const service = this.data.services[index]
+    this.selectService(this.data.services[index])
+  },
+
+  selectService: function (service) {
+    if (!service) return
+    const today = new Date()
     this.setData({
       selectedService: service,
       selectedDate: '',
-      selectedTime: '',
-      dateList: this.generateDateList()
+      selectedDateLabel: '',
+      selectedTime: ''
     })
+    this.renderCalendar(today.getFullYear(), today.getMonth(), '')
   },
 
   onSelectDate: function (e) {
     const date = e.currentTarget.dataset.date
-    this.setData({ selectedDate: date, selectedTime: '', loadingSlots: true })
+    const selectable = e.currentTarget.dataset.selectable
+    if (!selectable || !date) return
+
+    this.setData({ selectedDate: date, selectedDateLabel: formatDateLabel(date), selectedTime: '', loadingSlots: true })
+    this.renderCalendar(this.data.calYear, this.data.calMonth, date)
+
     bookingsService.getAvailableSlots(date)
       .then(data => {
         const slots = data.all.map(time => ({

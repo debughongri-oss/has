@@ -1,0 +1,35 @@
+<view class="page-demo-ui">
+  <view class="section hero-section">
+    <view class="hero-content">
+      <view class="hero-avatar-wrap">
+        <image class="hero-avatar" src="/images/tab-profile-active.png" mode="aspectFill" />
+      </view>
+      <text class="hero-name">王小美</text>
+      <text class="hero-bio">资深化妆师，擅长新娘妆、时尚写真及日常通勤妆，致力于为每一位客户打造专属美丽。</text>
+      <view class="hero-tags">
+        <text class="tag">新娘妆</text>
+        <text class="tag">时尚写真</text>
+        <text class="tag">日常通勤</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section featured-works-section">
+    <view class="section-head">
+      <text class="section-title">精选作品</text>
+      <text class="view-all tappable">查看全部</text>
+    </view>
+    <view class="featured-work-card tappable">
+      <image class="card-img" src="/images/tab-works-active.png" mode="aspectFill" lazy-load />
+      <view class="card-info">
+        <text class="card-title">明媚新娘妆</text>
+        <text class="card-category">新娘妆</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section actions-section">
+    <button class="btn-primary-demo">预约化妆</button>
+    <button class="btn-secondary-demo">在线咨询</button>
+  </view>
+</view>

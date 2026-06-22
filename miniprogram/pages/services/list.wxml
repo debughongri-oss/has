@@ -3,36 +3,54 @@
     <t-loading theme="circular" size="80rpx" text="加载中..." />
   </view>
 
-  <view class="header" wx:if="{{!loading && services.length}}">
-    <text class="header-title">服务项目</text>
-    <text class="header-sub">选择适合你的妆容服务</text>
-  </view>
+  <block wx:if="{{!loading && serviceGroups.length}}">
+    <view class="head">
+      <text class="head-title">服务菜单</text>
+      <text class="head-sub">选择心仪的妆容，点击即可在线预约 · 共 {{totalCount}} 项</text>
+    </view>
 
-  <view class="list" wx:if="{{!loading && services.length}}">
-    <view class="svc" wx:for="{{services}}" wx:key="_id">
-      <view class="svc-top">
-        <view class="svc-left">
-          <text class="svc-name">{{item.name}}</text>
-          <view class="svc-meta" wx:if="{{item.duration || item.category}}">
-            <text wx:if="{{item.duration}}">{{item.duration}}分钟</text>
-            <text class="svc-sep" wx:if="{{item.duration && item.category}}">·</text>
-            <text wx:if="{{item.category}}">{{item.category}}</text>
+    <block wx:for="{{serviceGroups}}" wx:key="key" wx:for-item="group">
+      <view class="sec-head">
+        <view class="sec-dot sec-dot--{{group.tone}}"></view>
+        <text class="sec-label">{{group.label}}</text>
+        <text class="sec-count">{{group.services.length}} 项</text>
+      </view>
+
+      <view class="cards">
+        <view
+          class="card tappable"
+          wx:for="{{group.services}}"
+          wx:key="_id"
+          wx:for-item="service"
+          bindtap="goToBook"
+          data-id="{{service._id}}"
+        >
+          <view class="card-top">
+            <view class="svc-ic svc-ic--{{service.tone}}">{{service.icon}}</view>
+            <view class="card-body">
+              <text class="card-name">{{service.name}}</text>
+              <text class="card-desc text-ellipsis-2" wx:if="{{service.description}}">{{service.description}}</text>
+            </view>
+          </view>
+          <view class="card-foot">
+            <text class="dur" wx:if="{{service.duration}}">{{service.duration}}分钟</text>
+            <view class="foot-r">
+              <view class="price">
+                <text class="price-sym">¥</text>
+                <text class="price-num">{{service.price}}</text>
+              </view>
+              <view class="book">
+                <text>预约</text>
+                <view class="book-arr"></view>
+              </view>
+            </view>
           </view>
         </view>
-        <view class="svc-price-wrap">
-          <text class="svc-price">{{item.price}}</text>
-          <text class="svc-price-unit">元</text>
-        </view>
       </view>
-      <text class="svc-desc" wx:if="{{item.description}}">{{item.description}}</text>
-    </view>
-  </view>
+    </block>
+  </block>
 
-  <view class="empty-container" wx:if="{{!loading && !services.length}}">
+  <view class="empty-container" wx:if="{{!loading && !serviceGroups.length}}">
     <t-empty icon="shop" description="暂无服务项目" />
-  </view>
-
-  <view class="bottom-cta" wx:if="{{!loading && services.length}}">
-    <button class="cta-btn" bindtap="goToBook">预约服务</button>
   </view>
 </view>

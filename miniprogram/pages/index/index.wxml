@@ -6,108 +6,146 @@
   </view>
 
   <block wx:if="{{!loading && artist}}">
-    <view class="hero">
-      <view class="hero-top">
-        <view class="hero-avatar">
-          <t-image
-            wx:if="{{artist.avatar}}"
-            src="{{artist.avatar}}"
-            mode="circle"
-            width="120rpx"
-            height="120rpx"
-            shape="circle"
-          />
-          <view class="avatar-fallback" wx:else>
-            <text>{{artist.name[0] || '妆'}}</text>
-          </view>
-        </view>
-        <view class="hero-info">
-          <text class="hero-name">{{artist.name}}</text>
-          <view class="hero-meta">
-            <text class="hero-sub" wx:if="{{artist.experience_years}}">{{artist.experience_years}}年经验</text>
-            <text class="hero-sub" wx:elif="{{artist.experience}}">{{artist.experience}}</text>
-            <text class="hero-sep" wx:if="{{(artist.experience_years || artist.experience) && artist.contact_info.location}}">·</text>
-            <text class="hero-sub" wx:if="{{artist.contact_info.location}}">{{artist.contact_info.location}}</text>
-          </view>
+    <!-- 身份条 -->
+    <view class="identity">
+      <view class="identity-avatar">
+        <t-image
+          wx:if="{{artist.avatar}}"
+          src="{{artist.avatar}}"
+          mode="aspectFill"
+          width="92rpx"
+          height="92rpx"
+          shape="circle"
+        />
+        <view class="avatar-fallback" wx:else>
+          <text>{{artist.name[0] || '妆'}}</text>
         </view>
       </view>
-      <text class="hero-bio" wx:if="{{artist.bio}}">{{artist.bio}}</text>
-      <view class="hero-tags" wx:if="{{artist.specialties.length || artist.style_tags.length}}">
-        <text class="tag" wx:for="{{artist.specialties}}" wx:key="index">{{item}}</text>
-        <text class="tag tag--style" wx:for="{{artist.style_tags}}" wx:key="index">{{item}}</text>
+      <view class="identity-main">
+        <text class="identity-eyebrow">MAKEUP ARTIST</text>
+        <text class="identity-name">{{artist.name}}</text>
+        <view class="identity-meta">
+          <text wx:if="{{artist.experience_years || artist.experience}}">{{artist.experience_years ? artist.experience_years + '年经验' : artist.experience}}</text>
+          <text class="dot" wx:if="{{(artist.experience_years || artist.experience) && artist.contact_info.location}}">·</text>
+          <text wx:if="{{artist.contact_info.location}}">{{artist.contact_info.location}}</text>
+        </view>
+      </view>
+      <view class="identity-rating" wx:if="{{reviewStats && reviewStats.total > 0}}">
+        <text class="identity-rating-star">★</text>
+        <text class="identity-rating-num">{{reviewStats.average}}</text>
       </view>
     </view>
 
-    <!-- 客户评价模块 per D-13 -->
-    <view class="reviews" wx:if="{{reviewStats && reviewStats.total > 0}}">
-      <view class="reviews-head">
-        <text class="reviews-title">客户评价</text>
-        <view class="reviews-summary">
-          <t-rate value="{{reviewStats.average}}" disabled size="28rpx" color="var(--gold)" variant="filled" />
-          <text class="reviews-avg">{{reviewStats.average}}</text>
-          <text class="reviews-count">({{reviewStats.total}}条评价)</text>
+    <!-- 分类快捷入口 -->
+    <scroll-view class="chips" scroll-x enhanced show-scrollbar="{{false}}">
+      <view
+        class="chip tappable"
+        wx:for="{{categories}}"
+        wx:key="key"
+        bindtap="goToCategory"
+        data-key="{{item.key}}"
+      >{{item.label}}</view>
+    </scroll-view>
+
+    <!-- 精选大图 -->
+    <view
+      class="featured tappable"
+      wx:if="{{heroWork}}"
+      bindtap="goToWorkDetail"
+      data-id="{{heroWork._id}}"
+    >
+      <image class="featured-img" src="{{heroWork.images[0]}}" mode="aspectFill" lazy-load />
+      <view class="featured-scrim">
+        <text class="featured-cat" wx:if="{{heroWork.categoryLabel}}">{{heroWork.categoryLabel}}</text>
+        <text class="featured-title text-ellipsis">{{heroWork.title}}</text>
+      </view>
+    </view>
+
+    <!-- 精选作品：等比双列网格 -->
+    <view class="gallery" wx:if="{{gridWorks.length}}">
+      <view class="section-head">
+        <text class="section-label">精选作品</text>
+        <view class="section-more tappable" bindtap="goToWorks">
+          <text>全部</text>
+          <view class="section-more-arrow"></view>
         </view>
       </view>
-      <view class="reviews-list">
-        <view class="review-item" wx:for="{{reviewStats.recent}}" wx:key="index">
-          <view class="review-item-top">
-            <t-rate value="{{item.rating}}" disabled size="24rpx" color="var(--gold)" variant="filled" />
-            <text class="review-item-name">{{item.user_nickname || '匿名用户'}}</text>
+      <view class="grid">
+        <view
+          class="g-card tappable"
+          wx:for="{{gridWorks}}"
+          wx:key="_id"
+          bindtap="goToWorkDetail"
+          data-id="{{item._id}}"
+        >
+          <image class="g-img" src="{{item.images[0]}}" mode="aspectFill" lazy-load />
+          <view class="g-info">
+            <text class="g-title text-ellipsis">{{item.title}}</text>
+            <text class="g-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
           </view>
-          <text class="review-item-content text-ellipsis" wx:if="{{item.content}}">{{item.content}}</text>
         </view>
       </view>
     </view>
 
-    <view class="portfolio" wx:if="{{featuredWorks.length}}">
-      <view class="portfolio-head">
-        <text class="portfolio-title">精选作品</text>
-        <view class="portfolio-action tappable" bindtap="goToWorks">
-          <text class="portfolio-action-text">查看全部</text>
+    <!-- 热门服务：横滑价格卡 -->
+    <view class="svc" wx:if="{{services.length}}">
+      <view class="section-head">
+        <text class="section-label">热门服务</text>
+        <view class="section-more tappable" bindtap="goToServices">
+          <text>全部</text>
+          <view class="section-more-arrow"></view>
         </view>
       </view>
-      <scroll-view scroll-x enhanced show-scrollbar="{{false}}">
-        <view class="portfolio-track">
-          <view
-            class="portfolio-card tappable"
-            wx:for="{{featuredWorks}}"
-            wx:key="_id"
-            bindtap="goToWorkDetail"
-            data-id="{{item._id}}"
-          >
-            <image class="portfolio-card-img" src="{{item.images[0]}}" mode="aspectFill" lazy-load />
-            <view class="portfolio-card-info">
-              <text class="portfolio-card-title text-ellipsis">{{item.title}}</text>
-              <text class="portfolio-card-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
+      <view class="svc-list">
+        <view
+          class="svc-row tappable"
+          wx:for="{{services}}"
+          wx:key="_id"
+          bindtap="goToServices"
+        >
+          <view class="svc-ic svc-ic--{{item.tone}}">{{item.icon}}</view>
+          <view class="svc-main">
+            <text class="svc-name text-ellipsis">{{item.name}}</text>
+            <text class="svc-meta">{{item.meta}}</text>
+          </view>
+          <view class="svc-pricebox">
+            <view class="svc-price">
+              <text class="svc-price-sym">¥</text>
+              <text class="svc-price-num">{{item.price}}</text>
             </view>
+            <text class="svc-from">起</text>
           </view>
         </view>
-      </scroll-view>
-    </view>
-
-    <view class="entries">
-      <view class="entry tappable" bindtap="goToWorks">
-        <view class="entry-content">
-          <text class="entry-title">浏览全部作品</text>
-          <text class="entry-desc">探索更多妆容灵感</text>
-        </view>
-        <view class="entry-arrow"></view>
-      </view>
-      <view class="entry tappable" bindtap="goToServices">
-        <view class="entry-content">
-          <text class="entry-title">服务与价格</text>
-          <text class="entry-desc">了解服务内容与收费标准</text>
-        </view>
-        <view class="entry-arrow"></view>
       </view>
     </view>
 
-    <view class="hero-btns">
-      <button class="btn-accent" bindtap="goToBooking">预约化妆</button>
-      <button class="btn-ghost" open-type="contact">在线咨询</button>
-      <button class="btn-wechat tappable" bindtap="copyWechat" wx:if="{{artist.contact_info.wechat}}">
-        <text class="btn-wechat-text">微信</text>
-      </button>
+    <!-- 客户评价 -->
+    <view class="reviews" wx:if="{{reviewStats && reviewStats.total > 0}}">
+      <view class="section-head">
+        <text class="section-label">客户评价</text>
+      </view>
+      <view class="review-card">
+        <view class="review-top">
+          <text class="review-avg">{{reviewStats.average}}</text>
+          <view class="review-meta">
+            <t-rate value="{{reviewStats.average}}" disabled size="28rpx" color="var(--accent)" variant="filled" />
+            <text class="review-count">{{reviewStats.total}} 条真实评价</text>
+          </view>
+        </view>
+        <view class="review-quote" wx:if="{{reviewStats.recent[0] && reviewStats.recent[0].content}}">
+          <text class="review-quote-text">"{{reviewStats.recent[0].content}}"</text>
+          <text class="review-quote-from">— {{reviewStats.recent[0].user_nickname || '匿名客户'}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 预约 CTA -->
+    <view class="cta">
+      <button class="cta-book" bindtap="goToBooking">预约化妆</button>
+      <view class="cta-row">
+        <button class="cta-sub" open-type="contact">在线咨询</button>
+        <button class="cta-sub" bindtap="copyWechat" wx:if="{{artist.contact_info.wechat}}">复制微信</button>
+      </view>
     </view>
   </block>
 

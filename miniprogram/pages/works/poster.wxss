@@ -39,7 +39,7 @@
 .navbar-title {
   font-size: var(--fs-base);
   font-weight: 500;
-  color: #F5F0EB;
+  color: #F5F5F5;
 }
 
 .navbar-placeholder {
@@ -119,6 +119,6 @@
 
 .poster-save-btn[disabled] {
   opacity: 0.5;
-  background-color: var(--accent);
-  color: #FDFBF8;
+  background-color: var(--accent-dark);
+  color: #FFFFFF;
 }

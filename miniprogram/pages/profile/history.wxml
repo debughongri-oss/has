@@ -5,22 +5,29 @@
 
   <view class="list" wx:if="{{!loading && bookings.length}}">
     <view class="card" wx:for="{{bookings}}" wx:key="_id">
-      <view class="card-top">
-        <view class="card-left">
-          <text class="card-svc">{{item.service_name}}</text>
-          <text class="card-time">{{item.booking_date}} {{item.booking_time}}</text>
+      <view class="crow">
+        <view class="cdate">
+          <text class="cdate-d">{{item.dateShort}}</text>
+          <text class="cdate-t">{{item.booking_time}}</text>
         </view>
-        <text class="badge badge--{{item.status}}">{{item.statusLabel}}</text>
+        <view class="cmain">
+          <view class="ctop">
+            <text class="csvc text-ellipsis">{{item.service_name}}</text>
+            <text class="badge badge--{{item.status}}">{{item.statusLabel}}</text>
+          </view>
+          <text class="cfulldate">{{item.dateLabel}}</text>
+        </view>
       </view>
-      <text class="card-note" wx:if="{{item.notes}}">{{item.notes}}</text>
-      <text class="card-reason" wx:if="{{item.reject_reason}}">拒绝原因: {{item.reject_reason}}</text>
-      <view class="card-action" wx:if="{{item.status === 'pending'}}">
-        <text class="cancel" bindtap="cancelBooking" data-id="{{item._id}}">取消预约</text>
-      </view>
-      <!-- D-04: completed 状态的评价入口 -->
-      <view class="card-action" wx:if="{{item.status === 'completed'}}">
-        <text class="review-btn" wx:if="{{!reviewMap[item._id]}}" bindtap="goToReview" data-id="{{item._id}}">去评价</text>
-        <text class="reviewed-mark" wx:if="{{reviewMap[item._id]}}">已评价 ⭐</text>
+
+      <view class="creason" wx:if="{{item.reject_reason}}">拒绝原因：{{item.reject_reason}}</view>
+      <text class="cnote" wx:if="{{item.notes}}">{{item.notes}}</text>
+
+      <view class="cact" wx:if="{{item.status === 'pending' || item.status === 'completed'}}">
+        <view class="act-cancel" wx:if="{{item.status === 'pending'}}" bindtap="cancelBooking" data-id="{{item._id}}">取消预约</view>
+        <view class="act-review" wx:if="{{item.status === 'completed' && !reviewMap[item._id]}}" bindtap="goToReview" data-id="{{item._id}}">去评价</view>
+        <view class="act-reviewed" wx:if="{{item.status === 'completed' && reviewMap[item._id]}}">
+          <text class="star">★</text>已评价
+        </view>
       </view>
     </view>
   </view>

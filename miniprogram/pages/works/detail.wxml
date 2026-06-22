@@ -5,6 +5,9 @@
 
   <block wx:if="{{!loading && work}}">
     <view class="gallery">
+      <!-- Top gradient scrim: improves status-bar text legibility under custom nav -->
+      <view class="gallery-scrim-top"></view>
+
       <!-- Before/After comparison mode (has before_image) -->
       <block wx:if="{{work.before_image}}">
         <before-after-slider
@@ -36,41 +39,67 @@
             />
           </swiper-item>
         </swiper>
-
-        <view class="gallery-counter" wx:if="{{work.images.length > 1}}">
-          <text class="counter-current">{{currentImage + 1}}</text>
-          <text class="counter-sep">/</text>
-          <text class="counter-total">{{work.images.length}}</text>
-        </view>
       </block>
 
-      <view class="gallery-share">
-        <button class="share-btn" open-type="share">
-          <view class="share-icon"></view>
-        </button>
+      <!-- Image counter pill (swiper mode, multi-image only) -->
+      <view class="gallery-counter" wx:if="{{!work.before_image && work.images.length > 1}}">
+        <text class="counter-current">{{currentImage + 1}}</text>
+        <text class="counter-sep">/</text>
+        <text class="counter-total">{{work.images.length}}</text>
+      </view>
+
+      <!-- Top-left back button — custom nav mode has no native back arrow -->
+      <view class="gallery-back tappable" bindtap="goBack"></view>
+
+      <!-- Top-right action cluster: poster (artist only) + share -->
+      <!-- Sits below status bar AND below the slider's own fullscreen button -->
+      <view class="gallery-actions">
+        <button wx:if="{{isArtist}}" class="gallery-action-btn gallery-action-btn--poster tappable" bindtap="goToPoster"></button>
+        <button class="gallery-action-btn gallery-action-btn--share tappable" open-type="share"></button>
       </view>
     </view>
 
+    <!-- Thumbnail strip (swiper mode, multi-image only) — direct jump to any image -->
+    <scroll-view
+      wx:if="{{!work.before_image && work.images.length > 1}}"
+      class="thumb-strip"
+      scroll-x
+      show-scrollbar="{{false}}"
+    >
+      <view
+        wx:for="{{work.images}}"
+        wx:key="index"
+        class="thumb tappable {{currentImage === index ? 'thumb--active' : ''}}"
+        bindtap="onThumbTap"
+        data-index="{{index}}"
+      >
+        <image class="thumb-img" src="{{item}}" mode="aspectFill" />
+      </view>
+    </scroll-view>
+
     <view class="detail-body">
       <view class="detail-head">
-        <view class="detail-title-group">
-          <text class="detail-cat" wx:if="{{work.categoryLabel || work.category}}">{{work.categoryLabel || work.category}}</text>
-          <text class="detail-title">{{work.title}}</text>
+        <text class="detail-eyebrow" wx:if="{{work.categoryLabel || work.category}}">{{work.categoryLabel || work.category}}</text>
+        <text class="detail-title">{{work.title}}</text>
+        <view class="detail-meta" wx:if="{{work.created_at}}">
+          <view class="detail-meta-icon"></view>
+          <text class="detail-meta-text">{{work.created_at}}</text>
         </view>
-        <text class="detail-date">{{work.created_at}}</text>
       </view>
 
-      <view class="detail-desc" wx:if="{{work.description}}">
-        <text>{{work.description}}</text>
+      <view class="detail-story" wx:if="{{work.description}}">
+        <text class="detail-story-label">作品故事</text>
+        <text class="detail-story-text">{{work.description}}</text>
       </view>
+    </view>
 
-      <view class="detail-action">
-        <button class="action-poster btn-outline" wx:if="{{isArtist}}" bindtap="goToPoster">生成海报</button>
-        <button class="action-book" bindtap="goToBooking">预约此妆容</button>
-        <button class="action-chat tappable" open-type="contact">
-          <text class="action-chat-text">咨询</text>
-        </button>
-      </view>
+    <!-- 悬浮预约条 -->
+    <view class="detail-bar">
+      <button class="bar-chat tappable" open-type="contact">
+        <view class="bar-chat-icon"></view>
+        <text class="bar-chat-text">咨询</text>
+      </button>
+      <button class="bar-book" bindtap="goToBooking">预约此妆容</button>
     </view>
   </block>
 

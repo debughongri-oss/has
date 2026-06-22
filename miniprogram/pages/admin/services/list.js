@@ -1,5 +1,18 @@
 const servicesService = require('../../../services/services')
 const authService = require('../../../services/auth')
+const { SERVICE_CATEGORIES } = require('../../../utils/constants')
+
+const CATEGORY_MAP = {}
+SERVICE_CATEGORIES.forEach(c => { CATEGORY_MAP[c.key] = c.label })
+
+// 服务分类 → 图标色调（对应 app.wxss 调色板）
+const TONE_MAP = {
+  bridal: 'rose',
+  bridesmaid: 'purple',
+  engagement: 'gold',
+  daily: 'green',
+  creative: 'blue'
+}
 
 Page({
   data: {
@@ -29,7 +42,16 @@ Page({
     this.setData({ loading: true })
     servicesService.getAllServices()
       .then(data => {
-        this.setData({ services: data, loading: false })
+        const services = data.map(s => {
+          const categoryLabel = CATEGORY_MAP[s.category] || s.category || ''
+          return {
+            ...s,
+            categoryLabel,
+            icon: categoryLabel.charAt(0) || '妆',
+            tone: TONE_MAP[s.category] || 'rose'
+          }
+        })
+        this.setData({ services, loading: false })
       })
       .catch(err => {
         console.error('加载服务列表失败:', err)

@@ -1,15 +1,15 @@
 <view class="page-works">
-  <view class="nav">
+  <view class="cat-bar">
     <scroll-view scroll-x enhanced show-scrollbar="{{false}}">
-      <view class="nav-track">
+      <view class="cat-track">
         <view
-          class="nav-item tappable {{currentCategory === item.key ? 'nav-item--active' : ''}}"
+          class="cat-chip tappable {{currentCategory === item.key ? 'cat-chip--active' : ''}}"
           wx:for="{{categories}}"
           wx:key="key"
           bindtap="onCategoryChange"
           data-key="{{item.key}}"
         >
-          <text class="nav-label">{{item.label}}</text>
+          <text class="cat-chip-text">{{item.label}}</text>
         </view>
       </view>
     </scroll-view>
@@ -19,63 +19,103 @@
     <t-loading theme="circular" size="80rpx" text="加载中..." />
   </view>
 
-  <view class="waterfall" wx:if="{{works.length}}">
-    <view class="waterfall-col">
-      <view
-        class="item tappable {{index % 4 === 0 ? 'item--large' : ''}}"
-        wx:for="{{works}}"
-        wx:key="_id"
-        wx:if="{{index % 2 === 0}}"
-        bindtap="goToDetail"
-        data-id="{{item._id}}"
-      >
-        <view class="item-cover">
-          <image
-            class="item-cover-img"
-            src="{{item.images[0]}}"
-            mode="aspectFill"
-            lazy-load
-          />
-        </view>
-        <view class="item-info">
-          <text class="item-title text-ellipsis">{{item.title}}</text>
-          <text class="item-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
+  <block wx:if="{{works.length}}">
+    <view
+      class="hero tappable"
+      wx:if="{{heroWork}}"
+      bindtap="goToDetail"
+      data-id="{{heroWork._id}}"
+    >
+      <view class="hero-media">
+        <image
+          class="hero-img"
+          src="{{heroWork.images[0]}}"
+          mode="aspectFill"
+          lazy-load
+        />
+        <view class="hero-badge" wx:if="{{heroWork.hasBeforeAfter}}">
+          <text class="hero-badge-text">前后对比</text>
         </view>
       </view>
-    </view>
-    <view class="waterfall-col">
-      <view
-        class="item tappable {{index % 4 === 1 ? 'item--large' : ''}}"
-        wx:for="{{works}}"
-        wx:key="_id"
-        wx:if="{{index % 2 === 1}}"
-        bindtap="goToDetail"
-        data-id="{{item._id}}"
-      >
-        <view class="item-cover">
-          <image
-            class="item-cover-img"
-            src="{{item.images[0]}}"
-            mode="aspectFill"
-            lazy-load
-          />
-        </view>
-        <view class="item-info">
-          <text class="item-title text-ellipsis">{{item.title}}</text>
-          <text class="item-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
-        </view>
+      <view class="hero-meta">
+        <text class="hero-eyebrow" wx:if="{{heroWork.categoryLabel}}">{{heroWork.categoryLabel}}</text>
+        <text class="hero-title text-ellipsis-2">{{heroWork.title}}</text>
       </view>
     </view>
-  </view>
+
+    <block wx:if="{{works.length > 1}}">
+      <view class="gallery-head">
+        <text class="gallery-label">{{galleryTitle}}</text>
+        <text class="gallery-count">{{works.length}} 件作品</text>
+      </view>
+
+      <view class="masonry">
+        <view class="masonry-col">
+          <view
+            class="card tappable"
+            wx:for="{{leftColumn}}"
+            wx:key="_id"
+            bindtap="goToDetail"
+            data-id="{{item._id}}"
+          >
+            <view class="card-media">
+              <image
+                class="card-img"
+                src="{{item.images[0]}}"
+                mode="aspectFill"
+                lazy-load
+              />
+              <view class="card-badge" wx:if="{{item.hasBeforeAfter}}">
+                <text class="card-badge-text">对比</text>
+              </view>
+            </view>
+            <view class="card-meta">
+              <text class="card-eyebrow" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
+              <text class="card-title text-ellipsis">{{item.title}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="masonry-col">
+          <view
+            class="card tappable"
+            wx:for="{{rightColumn}}"
+            wx:key="_id"
+            bindtap="goToDetail"
+            data-id="{{item._id}}"
+          >
+            <view class="card-media">
+              <image
+                class="card-img"
+                src="{{item.images[0]}}"
+                mode="aspectFill"
+                lazy-load
+              />
+              <view class="card-badge" wx:if="{{item.hasBeforeAfter}}">
+                <text class="card-badge-text">对比</text>
+              </view>
+            </view>
+            <view class="card-meta">
+              <text class="card-eyebrow" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
+              <text class="card-title text-ellipsis">{{item.title}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="load-more" wx:if="{{hasMore}}">
+        <t-loading wx:if="{{loadingMore}}" theme="circular" size="40rpx" />
+        <view wx:else class="load-more-trigger tappable" bindtap="loadMore">
+          <text class="load-more-hint">展开更多</text>
+        </view>
+      </view>
+      <view class="list-end" wx:else>
+        <view class="list-end-rule"></view>
+        <text class="list-end-text">已展示全部作品</text>
+      </view>
+    </block>
+  </block>
 
   <view class="empty-container" wx:if="{{!loading && !works.length}}">
     <t-empty icon="image" description="暂无作品" />
-  </view>
-
-  <view class="load-more" wx:if="{{works.length && hasMore}}">
-    <t-loading wx:if="{{loadingMore}}" theme="circular" size="48rpx" />
-    <view wx:else class="load-more-btn tappable" bindtap="loadMore">
-      <text class="load-more-text">查看更多</text>
-    </view>
   </view>
 </view>

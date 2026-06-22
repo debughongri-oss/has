@@ -1,88 +1,145 @@
 .admin-works {
   min-height: 100vh;
   background-color: var(--bg);
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
 }
 
-.top-bar {
-  padding: var(--page-pad) var(--page-pad) 0;
-}
-
-.add-btn {
-  text-align: center;
-  padding: 24rpx;
-  background-color: var(--accent);
-  color: #FDFBF8;
-  border-radius: var(--radius-md);
-  font-size: var(--fs-sm);
-  font-weight: 500;
-}
-
-.list {
-  padding: 24rpx var(--page-pad);
-}
-
-.item {
+/* ===== 头部 ===== */
+.whead {
   display: flex;
   align-items: center;
-  background-color: var(--bg-elevated);
-  border-radius: var(--radius-lg);
-  padding: 20rpx;
-  margin-bottom: 12rpx;
+  justify-content: space-between;
+  padding: 36rpx var(--page-pad) 20rpx;
 }
 
-.item-img {
-  width: 120rpx;
-  height: 120rpx;
-  border-radius: var(--radius-md);
-  flex-shrink: 0;
-}
-
-.item-body {
-  flex: 1;
-  padding: 0 24rpx;
-  min-width: 0;
-}
-
-.item-title {
-  display: block;
-  font-size: var(--fs-sm);
-  font-weight: 500;
+.wcount {
+  font-size: 30rpx;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
-.item-meta {
-  display: block;
-  font-size: var(--fs-xs);
-  color: var(--text-secondary);
-  margin-top: 4rpx;
+.wcount-n {
+  color: var(--accent);
 }
 
-.item-btns {
+.wadd {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  height: 74rpx;
+  padding: 0 34rpx;
+  background-color: var(--accent-dark);
+  color: #FFFFFF;
+  border-radius: 999rpx;
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  box-shadow: 0 8rpx 18rpx rgba(232, 85, 117, 0.32);
+}
+
+.wadd .plus {
+  font-size: 34rpx;
+  font-weight: 400;
+  line-height: 1;
+}
+
+/* ===== 作品卡 ===== */
+.list {
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  gap: 16rpx;
+  padding: 0 var(--page-pad);
+}
+
+.wcard {
+  display: flex;
+  gap: 24rpx;
+  background-color: var(--bg-elevated);
+  border-radius: 26rpx;
+  padding: 22rpx;
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
+}
+
+.wthumb {
+  width: 168rpx;
+  height: 168rpx;
+  border-radius: 18rpx;
   flex-shrink: 0;
+  overflow: hidden;
+  background-color: var(--fill-primary);
 }
 
-.item-edit {
+.wthumb-img {
+  width: 168rpx;
+  height: 168rpx;
+  display: block;
+}
+
+.wbody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 168rpx;
+}
+
+.wtop {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.wtitle {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.wbadge {
+  flex-shrink: 0;
+  font-size: 20rpx;
+  color: #B0883F;
+  background-color: rgba(201, 169, 110, 0.16);
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+  font-weight: 700;
+}
+
+.wmeta {
   font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  margin-top: 10rpx;
+}
+
+.wacts {
+  display: flex;
+  gap: 14rpx;
+  margin-top: auto;
+}
+
+.wedit {
+  padding: 12rpx 32rpx;
+  border-radius: 999rpx;
+  border: 2rpx solid var(--accent);
   color: var(--accent);
-  font-weight: 500;
-  padding: 8rpx 20rpx;
-  text-align: center;
+  font-weight: 600;
+  font-size: 24rpx;
 }
 
-.item-del {
-  font-size: var(--fs-xs);
+.wdel {
+  padding: 12rpx 32rpx;
+  border-radius: 999rpx;
+  background-color: var(--red-bg);
   color: var(--red);
-  font-weight: 500;
-  padding: 8rpx 20rpx;
-  text-align: center;
+  font-weight: 600;
+  font-size: 24rpx;
 }
 
+/* ===== 空态 ===== */
 .empty-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 40vh;
+  height: 50vh;
 }

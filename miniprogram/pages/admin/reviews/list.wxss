@@ -1,61 +1,62 @@
 .admin-reviews {
   min-height: 100vh;
   background-color: var(--bg);
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
 }
 
 .list {
-  padding: 24rpx var(--page-pad);
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  gap: 16rpx;
+  padding: 24rpx var(--page-pad);
 }
 
 .card {
   background-color: var(--bg-elevated);
-  border-radius: var(--radius-lg);
-  padding: var(--page-pad);
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.03);
+  border-radius: 24rpx;
+  padding: 26rpx;
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
 }
 
-.card-top {
+.rtop {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.card-name {
-  font-size: var(--fs-sm);
-  font-weight: 600;
+.rname {
+  font-size: 30rpx;
+  font-weight: 700;
   color: var(--text-primary);
 }
 
-.card-time {
-  font-size: var(--fs-xs);
+.rtime {
+  font-size: 22rpx;
   color: var(--text-tertiary);
 }
 
-.card-service {
+.rrate {
   display: flex;
   align-items: center;
-  gap: 12rpx;
-  margin-top: 12rpx;
+  gap: 16rpx;
+  margin-top: 14rpx;
 }
 
-.card-svc-label {
-  font-size: var(--fs-xs);
-  color: var(--text-secondary);
-  background-color: var(--fill-secondary);
-  padding: 4rpx 16rpx;
+.rsvc {
+  font-size: 20rpx;
+  color: var(--accent);
+  background-color: var(--accent-soft);
+  padding: 5rpx 16rpx;
   border-radius: 999rpx;
 }
 
-.card-content {
+.rcontent {
   display: block;
   font-size: var(--fs-sm);
   color: var(--text-secondary);
   line-height: 1.7;
-  margin-top: 16rpx;
-  padding-top: 16rpx;
+  margin-top: 18rpx;
+  padding-top: 18rpx;
   border-top: 1rpx solid var(--separator);
 }
 
@@ -63,5 +64,5 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 40vh;
+  height: 50vh;
 }

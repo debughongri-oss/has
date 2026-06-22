@@ -1,6 +1,10 @@
 const worksService = require('../../../services/works')
 const storageService = require('../../../services/storage')
 const authService = require('../../../services/auth')
+const { SERVICE_CATEGORIES } = require('../../../utils/constants')
+
+const CATEGORY_MAP = {}
+SERVICE_CATEGORIES.forEach(c => { CATEGORY_MAP[c.key] = c.label })
 
 Page({
   data: {
@@ -30,7 +34,12 @@ Page({
     this.setData({ loading: true })
     worksService.getWorksList('all', 1, 100)
       .then(result => {
-        this.setData({ works: result.list, loading: false })
+        const works = (result.list || []).map(w => ({
+          ...w,
+          categoryLabel: CATEGORY_MAP[w.category] || w.category || '未分类',
+          imageCount: (w.images || []).length
+        }))
+        this.setData({ works, loading: false })
       })
       .catch(err => {
         console.error('加载作品列表失败:', err)

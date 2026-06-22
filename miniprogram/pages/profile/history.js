@@ -1,6 +1,24 @@
 const bookingsService = require('../../services/bookings')
 const reviewsService = require('../../services/reviews')
 
+var WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
+// "2026-06-25" → "6/25"
+function formatDateShort(dateStr) {
+  if (!dateStr) return ''
+  var parts = String(dateStr).split('-')
+  return parts.length === 3 ? Number(parts[1]) + '/' + Number(parts[2]) : dateStr
+}
+
+// "2026-06-25" → "6月25日 周三"
+function formatDateLabel(dateStr) {
+  if (!dateStr) return ''
+  var parts = String(dateStr).split('-')
+  if (parts.length !== 3) return dateStr
+  var d = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]))
+  return Number(parts[1]) + '月' + Number(parts[2]) + '日 ' + WEEKDAYS[d.getDay()]
+}
+
 Page({
   data: {
     bookings: [],
@@ -46,7 +64,9 @@ Page({
         var bookings = result.list.map(function (b) {
           return Object.assign({}, b, {
             statusLabel: bookingsService.getStatusLabel(b.status),
-            statusColor: bookingsService.getStatusColor(b.status)
+            statusColor: bookingsService.getStatusColor(b.status),
+            dateShort: formatDateShort(b.booking_date),
+            dateLabel: formatDateLabel(b.booking_date)
           })
         })
 

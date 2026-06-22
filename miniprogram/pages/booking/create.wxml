@@ -4,26 +4,28 @@
   </view>
 
   <block wx:if="{{!loading}}">
-    <view class="steps">
-      <view class="step {{selectedService ? 'step--done' : 'step--on'}}">
-        <text class="step-num">1</text>
-        <text class="step-label">服务</text>
+    <!-- 进度 -->
+    <view class="progress">
+      <view class="pstep {{selectedService ? 'done' : 'on'}}">
+        <text class="pdot">{{selectedService ? '✓' : '1'}}</text>
+        <text class="plabel">服务</text>
       </view>
-      <view class="step-line {{selectedService ? 'step-line--done' : ''}}"></view>
-      <view class="step {{selectedDate ? 'step--done' : (selectedService ? 'step--on' : '')}}">
-        <text class="step-num">2</text>
-        <text class="step-label">日期</text>
+      <view class="pline {{selectedService ? 'done' : ''}}"></view>
+      <view class="pstep {{selectedDate ? 'done' : (selectedService ? 'on' : '')}}">
+        <text class="pdot">{{selectedDate ? '✓' : '2'}}</text>
+        <text class="plabel">日期</text>
       </view>
-      <view class="step-line {{selectedDate ? 'step-line--done' : ''}}"></view>
-      <view class="step {{selectedTime ? 'step--done' : (selectedDate ? 'step--on' : '')}}">
-        <text class="step-num">3</text>
-        <text class="step-label">时间</text>
+      <view class="pline {{selectedDate ? 'done' : ''}}"></view>
+      <view class="pstep {{selectedTime ? 'done' : (selectedDate ? 'on' : '')}}">
+        <text class="pdot">{{selectedTime ? '✓' : '3'}}</text>
+        <text class="plabel">时间</text>
       </view>
     </view>
 
-    <view class="form-block">
-      <text class="form-title">选择服务</text>
-      <view class="svc-list" wx:if="{{services.length}}">
+    <!-- 选择服务 -->
+    <view class="card">
+      <view class="card-head"><text class="card-title">选择服务</text></view>
+      <view class="svc" wx:if="{{services.length}}">
         <view
           class="svc-row tappable {{selectedService && selectedService._id === item._id ? 'svc-row--on' : ''}}"
           wx:for="{{services}}"
@@ -31,12 +33,15 @@
           bindtap="onSelectService"
           data-index="{{index}}"
         >
-          <view class="svc-info">
+          <view class="svc-ic svc-ic--{{item.tone}}">{{item.icon}}</view>
+          <view class="svc-main">
             <text class="svc-name">{{item.name}}</text>
-            <text class="svc-dur" wx:if="{{item.duration}}">{{item.duration}}分钟</text>
+            <view class="svc-meta">
+              <text class="svc-price">¥{{item.price}}</text>
+              <text wx:if="{{item.duration}}"> · {{item.duration}}分钟</text>
+            </view>
           </view>
-          <text class="svc-price">{{item.price}}</text>
-          <view class="svc-check" wx:if="{{selectedService && selectedService._id === item._id}}"></view>
+          <view class="svc-radio"></view>
         </view>
       </view>
       <view wx:if="{{!services.length}}" class="empty-pad">
@@ -44,39 +49,51 @@
       </view>
     </view>
 
-    <view class="form-block" wx:if="{{selectedService}}">
-      <text class="form-title">选择日期</text>
-      <scroll-view scroll-x enhanced show-scrollbar="{{false}}">
-        <view class="date-track">
-          <view
-            class="date tappable {{selectedDate === item.date ? 'date--on' : ''}}"
-            wx:for="{{dateList}}"
-            wx:key="date"
-            bindtap="onSelectDate"
-            data-date="{{item.date}}"
-          >
-            <text class="date-wk">{{item.weekday}}</text>
-            <text class="date-num">{{item.day}}</text>
-            <text class="date-mo">{{item.month}}</text>
-          </view>
+    <!-- 选择日期 -->
+    <view class="card" wx:if="{{selectedService}}">
+      <view class="card-head"><text class="card-title">选择日期</text></view>
+      <view class="cal-nav">
+        <view class="cal-arrow l tappable {{calCanPrev ? '' : 'cal-arrow--disabled'}}" bindtap="prevMonth">
+          <view class="cal-arrow-icon"></view>
         </view>
-      </scroll-view>
+        <text class="cal-month">{{calMonthLabel}}</text>
+        <view class="cal-arrow r tappable {{calCanNext ? '' : 'cal-arrow--disabled'}}" bindtap="nextMonth">
+          <view class="cal-arrow-icon"></view>
+        </view>
+      </view>
+
+      <view class="cal-wd">
+        <text>日</text><text>一</text><text>二</text><text>三</text><text>四</text><text>五</text><text>六</text>
+      </view>
+
+      <view class="cal-grid">
+        <view
+          class="cal-cell {{cell.day === 0 ? 'cal-cell--blank' : ''}} {{!cell.selectable ? 'cal-cell--disabled' : 'tappable'}} {{cell.isSelected ? 'cal-cell--on' : ''}} {{cell.isToday ? 'cal-cell--today' : ''}}"
+          wx:for="{{calCells}}"
+          wx:for-item="cell"
+          wx:key="index"
+          bindtap="onSelectDate"
+          data-date="{{cell.date}}"
+          data-selectable="{{cell.selectable}}"
+        >
+          <text class="cal-day" wx:if="{{cell.day}}">{{cell.day}}</text>
+        </view>
+      </view>
     </view>
 
-    <view class="form-block" wx:if="{{selectedDate}}">
-      <text class="form-title">选择时间</text>
-      <view class="slots-hint" wx:if="{{!loadingSlots && availableCount > 0}}">
-        剩余 {{availableCount}} 个可用时段
-      </view>
-      <view class="slots-hint slots-hint--full" wx:if="{{!loadingSlots && allBooked}}">
-        该日期已约满，请选择其他日期
+    <!-- 选择时间 -->
+    <view class="card" wx:if="{{selectedDate}}">
+      <view class="card-head">
+        <text class="card-title">选择时间</text>
+        <text class="card-hint" wx:if="{{!loadingSlots && availableCount > 0}}">剩余 {{availableCount}} 个时段</text>
+        <text class="card-hint card-hint--full" wx:if="{{!loadingSlots && allBooked}}">该日期已约满</text>
       </view>
       <view class="slot-load" wx:if="{{loadingSlots}}">
         <t-loading theme="circular" size="48rpx" />
       </view>
       <view class="time-grid" wx:if="{{!loadingSlots}}">
         <view
-          class="time tappable {{item.available ? (selectedTime === item.time ? 'time--on' : 'time--off') : 'time--no'}}"
+          class="slot tappable {{item.available ? (selectedTime === item.time ? 'slot--on' : '') : 'slot--no'}}"
           wx:for="{{timeSlots}}"
           wx:key="time"
           bindtap="onSelectTime"
@@ -88,52 +105,57 @@
       </view>
     </view>
 
-    <view class="form-block" wx:if="{{selectedTime}}">
-      <text class="form-title">肤质类型</text>
-      <view class="skin-group">
-        <view
-          class="skin-btn tappable {{item.selected ? 'skin-btn--on' : ''}}"
-          wx:for="{{skinTypeOptions}}"
-          wx:key="key"
-          bindtap="onSelectSkinType"
-          data-key="{{item.key}}"
-        >
-          {{item.label}}
+    <!-- 补充信息 -->
+    <view class="card" wx:if="{{selectedTime}}">
+      <view class="card-head"><text class="card-title">补充信息</text><text class="card-opt">选填</text></view>
+
+      <view class="field">
+        <text class="field-label">肤质类型</text>
+        <view class="chips">
+          <view
+            class="chip tappable {{item.selected ? 'chip--on' : ''}}"
+            wx:for="{{skinTypeOptions}}"
+            wx:key="key"
+            bindtap="onSelectSkinType"
+            data-key="{{item.key}}"
+          >
+            {{item.label}}
+          </view>
         </view>
       </view>
-    </view>
 
-    <view class="form-block" wx:if="{{selectedTime}}">
-      <text class="form-title">特殊需求</text>
-      <textarea
-        class="note"
-        placeholder="过敏史、皮肤问题等..."
-        value="{{specialNeeds}}"
-        bindinput="onSpecialNeedsInput"
-        maxlength="200"
-      />
-    </view>
-
-    <view class="form-block" wx:if="{{selectedTime}}">
-      <text class="form-title">场合说明</text>
-      <textarea
-        class="note"
-        placeholder="婚礼主题、活动类型等..."
-        value="{{occasion}}"
-        bindinput="onOccasionInput"
-        maxlength="200"
-      />
-    </view>
-
-    <view class="submit" wx:if="{{selectedTime}}">
-      <view class="submit-summary">
-        <text class="submit-service">{{selectedService.name}}</text>
-        <text class="submit-dot">·</text>
-        <text>{{selectedDate}} {{selectedTime}}</text>
+      <view class="field">
+        <text class="field-label">特殊需求</text>
+        <textarea
+          class="ta"
+          placeholder="过敏史、皮肤问题等..."
+          value="{{specialNeeds}}"
+          bindinput="onSpecialNeedsInput"
+          maxlength="200"
+        />
       </view>
-      <button class="submit-btn" bindtap="submitBooking" disabled="{{submitting}}">
-        {{submitting ? '提交中...' : '确认预约'}}
-      </button>
+
+      <view class="field">
+        <text class="field-label">场合说明</text>
+        <textarea
+          class="ta"
+          placeholder="婚礼主题、活动类型等..."
+          value="{{occasion}}"
+          bindinput="onOccasionInput"
+          maxlength="200"
+        />
+      </view>
     </view>
   </block>
+
+  <!-- 提交栏 -->
+  <view class="dock" wx:if="{{!loading && selectedTime}}">
+    <view class="dock-info">
+      <text class="dock-svc">{{selectedService.name}} · <text class="dock-price">¥{{selectedService.price}}</text></text>
+      <text class="dock-when">{{selectedDateLabel}} {{selectedTime}}</text>
+    </view>
+    <button class="dock-btn" bindtap="submitBooking" disabled="{{submitting}}">
+      {{submitting ? '提交中...' : '确认预约'}}
+    </button>
+  </view>
 </view>

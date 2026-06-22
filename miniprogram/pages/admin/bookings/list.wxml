@@ -4,7 +4,8 @@
   </view>
 
   <block wx:if="{{!loading}}">
-    <view class="filter-bar">
+    <!-- 状态筛选（吸顶） -->
+    <view class="filter">
       <scroll-view scroll-x enhanced show-scrollbar="{{false}}">
         <view class="seg-track">
           <view
@@ -21,28 +22,39 @@
       </scroll-view>
     </view>
 
-    <!-- 日历视图入口（per D-16） -->
-    <view class="calendar-entry tappable" bindtap="goToCalendar">
-      <text class="calendar-entry-icon">📅</text>
-      <text class="calendar-entry-text">日历视图</text>
-    </view>
-    <!-- 评价管理入口 per D-21 -->
-    <view class="calendar-entry tappable" bindtap="goToReviews">
-      <text class="calendar-entry-icon">⭐</text>
-      <text class="calendar-entry-text">评价管理</text>
+    <!-- 快捷入口 -->
+    <view class="entries">
+      <view class="entry tappable" bindtap="goToCalendar">
+        <view class="entry-ic entry-ic--cal"></view>
+        <text class="entry-label">日历视图</text>
+      </view>
+      <view class="entry tappable" bindtap="goToReviews">
+        <view class="entry-ic entry-ic--star"></view>
+        <text class="entry-label">评价管理</text>
+      </view>
     </view>
 
+    <!-- 预约列表 -->
     <view class="list" wx:if="{{bookings.length}}">
-      <view class="card tappable" wx:for="{{bookings}}" wx:key="_id" bindtap="goToDetail" data-id="{{item._id}}">
-        <view class="card-top">
-          <text class="card-svc">{{item.service_name}}</text>
-          <text class="badge badge--{{item.status}}">{{item.statusLabel}}</text>
+      <view
+        class="bcard tappable"
+        wx:for="{{bookings}}"
+        wx:key="_id"
+        bindtap="goToDetail"
+        data-id="{{item._id}}"
+      >
+        <view class="bdate">
+          <text class="bdate-d">{{item.dateShort}}</text>
+          <text class="bdate-t">{{item.booking_time}}</text>
         </view>
-        <view class="card-info">
-          <text>{{item.booking_date}} {{item.booking_time}}</text>
-          <text wx:if="{{item.user_info.nickname}}"> · {{item.user_info.nickname}}</text>
+        <view class="bmain">
+          <view class="btop">
+            <text class="bsvc text-ellipsis">{{item.service_name}}</text>
+            <text class="badge badge--{{item.status}}">{{item.statusLabel}}</text>
+          </view>
+          <text class="bcust" wx:if="{{item.user_info.nickname}}">客户 · {{item.user_info.nickname}}</text>
+          <text class="bnote text-ellipsis-2" wx:if="{{item.notes}}">备注：{{item.notes}}</text>
         </view>
-        <text class="card-note" wx:if="{{item.notes}}">{{item.notes}}</text>
       </view>
     </view>
 

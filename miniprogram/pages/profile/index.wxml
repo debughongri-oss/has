@@ -1,32 +1,46 @@
 <view class="page-profile">
-  <view class="user-block">
-    <button class="user-avatar" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar">
-      <image
-        wx:if="{{userInfo.avatar_url}}"
-        class="avatar-img"
-        src="{{userInfo.avatar_url}}"
-        mode="aspectFill"
-      />
-      <view wx:else class="avatar-fallback">
-        <text>{{userInfo.nickname ? userInfo.nickname[0] : '用'}}</text>
+  <view class="hero">
+    <view class="hero-row">
+      <view class="hero-av">
+        <view class="hero-avatar">
+          <image
+            wx:if="{{userInfo.avatar_url}}"
+            class="hero-avatar-img"
+            src="{{userInfo.avatar_url}}"
+            mode="aspectFill"
+          />
+          <view wx:else class="hero-avatar-fallback">
+            <text>{{userInfo.nickname ? userInfo.nickname[0] : '用'}}</text>
+          </view>
+        </view>
+        <button class="hero-avatar-hit" open-type="chooseAvatar" bind:chooseavatar="onChooseAvatar"></button>
+        <view class="hero-edit"></view>
       </view>
-    </button>
-    <view class="user-info">
-      <input
-        class="user-name"
-        type="nickname"
-        placeholder="点击设置昵称"
-        value="{{userInfo.nickname || ''}}"
-        bindblur="onNicknameInput"
-      />
-      <text class="user-sub">微信用户</text>
+      <view class="hero-info">
+        <input
+          class="hero-name"
+          type="nickname"
+          placeholder="点击设置昵称"
+          placeholder-class="hero-name-ph"
+          value="{{userInfo.nickname || ''}}"
+          bindblur="onNicknameInput"
+        />
+        <view class="hero-sub">
+          <view wx:if="{{isArtist}}" class="role">化妆师</view>
+          <text class="hero-sub-text">{{isArtist ? '管理你的妆容工作室' : '微信用户'}}</text>
+        </view>
+      </view>
     </view>
   </view>
 
   <view class="section" wx:if="{{isArtist}}">
-    <text class="section-title">化妆师管理</text>
+    <view class="section-header">
+      <text class="section-title">化妆师管理</text>
+      <text class="section-tag">工作室</text>
+    </view>
     <view class="group">
       <view class="menu-item tappable" bindtap="goToAdminWorks">
+        <view class="menu-icon menu-icon--gold"></view>
         <view class="menu-left">
           <text class="menu-text">作品管理</text>
           <text class="menu-note">上传/编辑作品</text>
@@ -34,6 +48,7 @@
         <view class="menu-arrow"></view>
       </view>
       <view class="menu-item tappable" bindtap="goToAdminServices">
+        <view class="menu-icon menu-icon--orange"></view>
         <view class="menu-left">
           <text class="menu-text">服务管理</text>
           <text class="menu-note">管理服务项目</text>
@@ -41,6 +56,7 @@
         <view class="menu-arrow"></view>
       </view>
       <view class="menu-item tappable" bindtap="goToAdminBookings">
+        <view class="menu-icon menu-icon--purple"></view>
         <view class="menu-left">
           <text class="menu-text">预约管理</text>
           <text class="menu-note">处理预约请求</text>
@@ -48,6 +64,7 @@
         <view class="menu-arrow"></view>
       </view>
       <view class="menu-item menu-item--last tappable" bindtap="goToAdminProfile">
+        <view class="menu-icon menu-icon--rose"></view>
         <view class="menu-left">
           <text class="menu-text">个人资料</text>
           <text class="menu-note">编辑个人简介</text>
@@ -58,9 +75,12 @@
   </view>
 
   <view class="section">
-    <text class="section-title">我的</text>
+    <view class="section-header">
+      <text class="section-title">我的</text>
+    </view>
     <view class="group">
       <view class="menu-item menu-item--last tappable" bindtap="goToBookingHistory">
+        <view class="menu-icon menu-icon--green"></view>
         <view class="menu-left">
           <text class="menu-text">预约记录</text>
           <text class="menu-note">查看预约历史</text>

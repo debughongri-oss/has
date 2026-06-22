@@ -1,5 +1,5 @@
 const cloud = require('wx-server-sdk')
-const { requireArtist, sanitizeProfileUpdate } = require('../shared/auth')
+const { requireArtist, sanitizeProfileUpdate } = require('./shared/auth')
 
 cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
