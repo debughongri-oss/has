@@ -1,3 +1,5 @@
+@import "styles/tdesign-icon-font.wxss";
+
 page {
   --accent: #FF6F8B;
   --accent-light: #FFF0F2;

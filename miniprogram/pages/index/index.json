@@ -2,8 +2,7 @@
   "usingComponents": {
     "t-image": "tdesign-miniprogram/image/image",
     "t-loading": "tdesign-miniprogram/loading/loading",
-    "privacy-popup": "/components/privacy/privacy",
-    "t-rate": "tdesign-miniprogram/rate/rate"
+    "privacy-popup": "/components/privacy/privacy"
   },
   "navigationBarTitleText": ""
 }

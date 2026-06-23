@@ -1,7 +1,4 @@
 {
-  "usingComponents": {
-    "t-loading": "tdesign-miniprogram/loading/loading",
-    "t-toast": "tdesign-miniprogram/toast/toast"
-  },
+  "usingComponents": {},
   "navigationBarTitleText": "编辑作品"
 }

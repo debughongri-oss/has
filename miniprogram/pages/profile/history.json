@@ -1,8 +1,6 @@
 {
   "usingComponents": {
-    "t-loading": "tdesign-miniprogram/loading/loading",
-    "t-empty": "tdesign-miniprogram/empty/empty",
-    "t-rate": "tdesign-miniprogram/rate/rate"
+    "t-loading": "tdesign-miniprogram/loading/loading"
   },
   "navigationBarTitleText": "预约记录",
   "enablePullDownRefresh": true

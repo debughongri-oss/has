@@ -1,7 +1,6 @@
 {
   "usingComponents": {
-    "t-loading": "tdesign-miniprogram/loading/loading",
-    "t-empty": "tdesign-miniprogram/empty/empty"
+    "t-loading": "tdesign-miniprogram/loading/loading"
   },
   "navigationBarTitleText": "作品集",
   "navigationBarBackgroundColor": "#F7F6F5",

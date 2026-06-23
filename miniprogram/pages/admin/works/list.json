@@ -1,7 +1,6 @@
 {
   "usingComponents": {
     "t-loading": "tdesign-miniprogram/loading/loading",
-    "t-empty": "tdesign-miniprogram/empty/empty",
     "t-dialog": "tdesign-miniprogram/dialog/dialog"
   },
   "navigationBarTitleText": "作品管理"
