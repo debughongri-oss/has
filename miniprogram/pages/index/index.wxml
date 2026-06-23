@@ -128,7 +128,10 @@
         <view class="review-top">
           <text class="review-avg">{{reviewStats.average}}</text>
           <view class="review-meta">
-            <t-rate value="{{reviewStats.average}}" disabled size="28rpx" color="var(--accent)" variant="filled" />
+            <view class="stars">
+              <text class="stars-bg">★★★★★</text>
+              <text class="stars-fg" style="width:{{reviewStats.average / 5 * 100}}%">★★★★★</text>
+            </view>
             <text class="review-count">{{reviewStats.total}} 条真实评价</text>
           </view>
         </view>

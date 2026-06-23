@@ -33,6 +33,9 @@
   </view>
 
   <view class="empty-container" wx:if="{{!loading && !bookings.length}}">
-    <t-empty icon="calendar" description="暂无预约记录" />
+    <view class="empty">
+      <view class="empty-icon"></view>
+      <text class="empty-text">暂无预约记录</text>
+    </view>
   </view>
 </view>

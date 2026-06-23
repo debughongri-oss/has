@@ -104,6 +104,9 @@
   </block>
 
   <view class="empty-container" wx:if="{{!loading && !work}}">
-    <t-empty icon="image" description="作品不存在或已被删除" />
+    <view class="empty">
+      <view class="empty-icon"></view>
+      <text class="empty-text">作品不存在或已被删除</text>
+    </view>
   </view>
 </view>

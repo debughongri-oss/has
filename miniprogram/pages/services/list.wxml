@@ -51,6 +51,9 @@
   </block>
 
   <view class="empty-container" wx:if="{{!loading && !serviceGroups.length}}">
-    <t-empty icon="shop" description="暂无服务项目" />
+    <view class="empty">
+      <view class="empty-icon"></view>
+      <text class="empty-text">暂无服务项目</text>
+    </view>
   </view>
 </view>

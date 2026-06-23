@@ -8,9 +8,7 @@
           wx:key="key"
           bindtap="onCategoryChange"
           data-key="{{item.key}}"
-        >
-          <text class="cat-chip-text">{{item.label}}</text>
-        </view>
+        >{{item.label}}</view>
       </view>
     </scroll-view>
   </view>
@@ -20,25 +18,17 @@
   </view>
 
   <block wx:if="{{works.length}}">
+    <!-- 精选大图 -->
     <view
       class="hero tappable"
       wx:if="{{heroWork}}"
       bindtap="goToDetail"
       data-id="{{heroWork._id}}"
     >
-      <view class="hero-media">
-        <image
-          class="hero-img"
-          src="{{heroWork.images[0]}}"
-          mode="aspectFill"
-          lazy-load
-        />
-        <view class="hero-badge" wx:if="{{heroWork.hasBeforeAfter}}">
-          <text class="hero-badge-text">前后对比</text>
-        </view>
-      </view>
-      <view class="hero-meta">
-        <text class="hero-eyebrow" wx:if="{{heroWork.categoryLabel}}">{{heroWork.categoryLabel}}</text>
+      <image class="hero-img" src="{{heroWork.images[0]}}" mode="aspectFill" lazy-load />
+      <view class="hero-badge" wx:if="{{heroWork.hasBeforeAfter}}">前后对比</view>
+      <view class="hero-scrim">
+        <text class="hero-cat" wx:if="{{heroWork.categoryLabel}}">{{heroWork.categoryLabel}}</text>
         <text class="hero-title text-ellipsis-2">{{heroWork.title}}</text>
       </view>
     </view>
@@ -59,19 +49,12 @@
             data-id="{{item._id}}"
           >
             <view class="card-media">
-              <image
-                class="card-img"
-                src="{{item.images[0]}}"
-                mode="aspectFill"
-                lazy-load
-              />
-              <view class="card-badge" wx:if="{{item.hasBeforeAfter}}">
-                <text class="card-badge-text">对比</text>
-              </view>
+              <image class="card-img" src="{{item.images[0]}}" mode="aspectFill" lazy-load />
+              <view class="card-badge" wx:if="{{item.hasBeforeAfter}}">对比</view>
             </view>
             <view class="card-meta">
-              <text class="card-eyebrow" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
               <text class="card-title text-ellipsis">{{item.title}}</text>
+              <text class="card-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
             </view>
           </view>
         </view>
@@ -84,19 +67,12 @@
             data-id="{{item._id}}"
           >
             <view class="card-media">
-              <image
-                class="card-img"
-                src="{{item.images[0]}}"
-                mode="aspectFill"
-                lazy-load
-              />
-              <view class="card-badge" wx:if="{{item.hasBeforeAfter}}">
-                <text class="card-badge-text">对比</text>
-              </view>
+              <image class="card-img" src="{{item.images[0]}}" mode="aspectFill" lazy-load />
+              <view class="card-badge" wx:if="{{item.hasBeforeAfter}}">对比</view>
             </view>
             <view class="card-meta">
-              <text class="card-eyebrow" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
               <text class="card-title text-ellipsis">{{item.title}}</text>
+              <text class="card-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
             </view>
           </view>
         </view>
@@ -104,18 +80,18 @@
 
       <view class="load-more" wx:if="{{hasMore}}">
         <t-loading wx:if="{{loadingMore}}" theme="circular" size="40rpx" />
-        <view wx:else class="load-more-trigger tappable" bindtap="loadMore">
-          <text class="load-more-hint">展开更多</text>
-        </view>
+        <view wx:else class="load-more-btn tappable" bindtap="loadMore">展开更多</view>
       </view>
       <view class="list-end" wx:else>
-        <view class="list-end-rule"></view>
         <text class="list-end-text">已展示全部作品</text>
       </view>
     </block>
   </block>
 
   <view class="empty-container" wx:if="{{!loading && !works.length}}">
-    <t-empty icon="image" description="暂无作品" />
+    <view class="empty">
+      <view class="empty-icon"></view>
+      <text class="empty-text">暂无作品</text>
+    </view>
   </view>
 </view>

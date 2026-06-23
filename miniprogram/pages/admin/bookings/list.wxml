@@ -6,20 +6,18 @@
   <block wx:if="{{!loading}}">
     <!-- 状态筛选（吸顶） -->
     <view class="filter">
-      <scroll-view scroll-x enhanced show-scrollbar="{{false}}">
-        <view class="seg-track">
-          <view
-            class="seg tappable {{currentStatus === item.key ? 'seg--on' : ''}}"
-            wx:for="{{statusFilters}}"
-            wx:key="key"
-            bindtap="onFilterChange"
-            data-key="{{item.key}}"
-          >
-            <text>{{item.label}}</text>
-            <text class="seg-count" wx:if="{{item.count}}">{{item.count}}</text>
-          </view>
+      <view class="segs">
+        <view
+          class="seg tappable {{currentStatus === item.key ? 'seg--on' : ''}}"
+          wx:for="{{statusFilters}}"
+          wx:key="key"
+          bindtap="onFilterChange"
+          data-key="{{item.key}}"
+        >
+          <text class="seg-count {{!item.count ? 'is-zero' : ''}} {{item.key === 'pending' && item.count ? 'is-alert' : ''}}">{{item.count}}</text>
+          <text class="seg-label">{{item.label}}</text>
         </view>
-      </scroll-view>
+      </view>
     </view>
 
     <!-- 快捷入口 -->
@@ -59,7 +57,10 @@
     </view>
 
     <view class="empty-container" wx:if="{{!bookings.length}}">
-      <t-empty icon="calendar" description="暂无预约" />
+      <view class="empty">
+        <view class="empty-icon"></view>
+        <text class="empty-text">暂无预约</text>
+      </view>
     </view>
   </block>
 </view>

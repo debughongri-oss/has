@@ -2,6 +2,13 @@ const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 
+// reviews 集合尚未创建（还没有任何评价）时，查询会抛错，视为「空数据」处理
+const isCollectionMissing = (error) => {
+  if (!error) return false
+  const msg = error.errMsg || error.message || ''
+  return error.errCode === -502005 || /not exist|COLLECTION_NOT_EXIST|ResourceNotFound/i.test(msg)
+}
+
 /**
  * reviews 云函数 — 评价系统
  * Actions: create, list, getStats, getByBooking
@@ -43,10 +50,17 @@ exports.main = async (event, context) => {
         }
 
         // D-11 双重防护 Step 2: 查询 reviews 集合，该 booking_id 无已有评价
-        const existingReview = await db.collection('reviews')
-          .where({ booking_id: booking_id })
-          .limit(1)
-          .get()
+        let existingReview
+        try {
+          existingReview = await db.collection('reviews')
+            .where({ booking_id: booking_id })
+            .limit(1)
+            .get()
+        } catch (e) {
+          // 集合还没创建（第一条评价）→ 视为无重复，继续写入（add 会自动建集合）
+          if (!isCollectionMissing(e)) throw e
+          existingReview = { data: [] }
+        }
 
         if (existingReview.data.length > 0) {
           return { errCode: -1, errMsg: '该预约已评价，不能重复评价' }
@@ -121,6 +135,9 @@ exports.main = async (event, context) => {
           }
         }
       } catch (error) {
+        if (isCollectionMissing(error)) {
+          return { errCode: 0, data: { list: [], total: 0, page, pageSize, hasMore: false } }
+        }
         console.error('获取评价列表失败:', error)
         return { errCode: -1, errMsg: '获取评价列表失败' }
       }
@@ -158,6 +175,9 @@ exports.main = async (event, context) => {
           data: { average, total, recent }
         }
       } catch (error) {
+        if (isCollectionMissing(error)) {
+          return { errCode: 0, data: { average: '0.0', total: 0, recent: [] } }
+        }
         console.error('获取评价统计失败:', error)
         return { errCode: -1, errMsg: '获取评价统计失败' }
       }
@@ -183,6 +203,9 @@ exports.main = async (event, context) => {
           data: data.length > 0 ? data[0] : null
         }
       } catch (error) {
+        if (isCollectionMissing(error)) {
+          return { errCode: 0, data: null }
+        }
         console.error('查询预约评价失败:', error)
         return { errCode: -1, errMsg: '查询评价失败' }
       }

@@ -10,7 +10,15 @@
   <view class="card rate-card">
     <text class="rate-title">服务评分</text>
     <view class="rate-stars">
-      <t-rate value="{{rating}}" size="64rpx" gap="16" color="var(--gold)" variant="filled" bind:change="onRateChange" />
+      <view class="rate-input">
+        <text
+          class="rate-star {{rating >= item ? 'rate-star--on' : ''}}"
+          wx:for="{{stars}}"
+          wx:key="*this"
+          bindtap="onRateStar"
+          data-value="{{item}}"
+        >★</text>
+      </view>
     </view>
     <text class="rate-feedback {{rating ? 'rate-feedback--on' : ''}}">{{rating ? ratingLabel : '轻触星星打分'}}</text>
   </view>

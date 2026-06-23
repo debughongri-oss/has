@@ -76,6 +76,21 @@
   margin: 28rpx 0 20rpx;
 }
 
+.rate-input {
+  display: flex;
+  gap: 18rpx;
+}
+
+.rate-star {
+  font-size: 72rpx;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.14);
+}
+
+.rate-star--on {
+  color: var(--gold);
+}
+
 .rate-feedback {
   font-size: 26rpx;
   color: var(--text-tertiary);

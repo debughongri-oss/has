@@ -32,7 +32,10 @@
     </view>
 
     <view class="empty-container" wx:if="{{!works.length}}">
-      <t-empty icon="image" description="还没有作品，点击右上角添加" />
+      <view class="empty">
+        <view class="empty-icon"></view>
+        <text class="empty-text">还没有作品，点击右上角添加</text>
+      </view>
     </view>
   </block>
 

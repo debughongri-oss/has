@@ -14,11 +14,11 @@ Page({
     loading: true,
     currentStatus: '',
     statusFilters: [
-      { key: '', label: '全部' },
+      { key: '', label: '全部', count: 0 },
       { key: 'pending', label: '待确认', count: 0 },
-      { key: 'accepted', label: '已确认' },
-      { key: 'rejected', label: '已拒绝' },
-      { key: 'completed', label: '已完成' }
+      { key: 'accepted', label: '已确认', count: 0 },
+      { key: 'rejected', label: '已拒绝', count: 0 },
+      { key: 'completed', label: '已完成', count: 0 }
     ]
   },
 
@@ -48,11 +48,13 @@ Page({
           statusColor: bookingsService.getStatusColor(b.status),
           dateShort: formatDateShort(b.booking_date)
         }))
-        this.setData({
-          bookings,
-          loading: false,
-          'statusFilters[1].count': bookings.filter(b => b.status === 'pending').length
-        })
+        const counts = result.statusCounts || {}
+        const total = Object.values(counts).reduce((sum, n) => sum + n, 0)
+        const statusFilters = this.data.statusFilters.map(f => ({
+          ...f,
+          count: f.key === '' ? total : (counts[f.key] || 0)
+        }))
+        this.setData({ bookings, loading: false, statusFilters })
       })
       .catch(err => {
         console.error('加载预约失败:', err)

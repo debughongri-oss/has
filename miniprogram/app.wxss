@@ -157,3 +157,52 @@ page {
   opacity: 0.7;
   transform: scale(0.97);
 }
+
+/* ===== 空状态（替代 t-empty，去除 TDesign 网络图标字体依赖） ===== */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 0;
+  gap: 28rpx;
+}
+
+.empty-icon {
+  width: 140rpx;
+  height: 140rpx;
+  border-radius: 50%;
+  background-color: var(--accent-soft);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%23FF6F8B' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 12h-6l-2 3h-4l-2-3H2'/%3E%3Cpath d='M5.45 5.11L2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 60rpx 60rpx;
+}
+
+.empty-text {
+  font-size: var(--fs-sm);
+  color: var(--text-tertiary);
+}
+
+/* ===== 星级展示（替代 t-rate disabled，纯 ★ 字符无需图标字体） ===== */
+.stars {
+  position: relative;
+  display: inline-block;
+  font-size: 28rpx;
+  line-height: 1;
+  letter-spacing: 4rpx;
+  white-space: nowrap;
+}
+
+.stars-bg {
+  color: rgba(0, 0, 0, 0.12);
+}
+
+.stars-fg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--gold);
+  overflow: hidden;
+  white-space: nowrap;
+}

@@ -3,6 +3,7 @@ const { requireArtist } = require('./shared/auth')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const _ = db.command
+const $ = db.command.aggregate
 
 const TIME_SLOTS = ['09:00', '10:30', '12:00', '13:30', '15:00', '16:30']
 const TEMPLATE_ID = '-i6OevJwdS5fGFXCsB9Xux4zaaxUkXTR0xfLg5T48jM'
@@ -99,14 +100,9 @@ exports.main = async (event, context) => {
     case 'list': {
       const { status, page = 1, pageSize = 10 } = event
       try {
-        let query = db.collection('bookings')
-        const conditions = {}
-        if (status) {
-          conditions.status = status
-        }
-        if (Object.keys(conditions).length > 0) {
-          query = query.where(conditions)
-        }
+        // 「全部」排除已取消（已取消＝客户撤回的待确认单，不在管理端展示）
+        const filter = status ? { status } : { status: _.neq('cancelled') }
+        const query = db.collection('bookings').where(filter)
         const total = (await query.count()).total
         const data = await query
           .orderBy('booking_date', 'desc')
@@ -114,9 +110,17 @@ exports.main = async (event, context) => {
           .skip((page - 1) * pageSize)
           .limit(pageSize)
           .get()
+        // 各状态计数（不受当前筛选影响、不含已取消），供管理端 tab 展示
+        const countsAgg = await db.collection('bookings')
+          .aggregate()
+          .match({ status: _.neq('cancelled') })
+          .group({ _id: '$status', count: $.sum(1) })
+          .end()
+        const statusCounts = {}
+        countsAgg.list.forEach(g => { statusCounts[g._id] = g.count })
         return {
           errCode: 0,
-          data: { list: data.data, total, page, pageSize, hasMore: page * pageSize < total }
+          data: { list: data.data, total, page, pageSize, hasMore: page * pageSize < total, statusCounts }
         }
       } catch (error) {
         console.error('获取预约列表失败:', error)

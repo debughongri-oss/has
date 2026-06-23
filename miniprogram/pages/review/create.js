@@ -7,6 +7,7 @@ Page({
     booking: null,
     rating: 0,
     ratingLabel: '',
+    stars: [1, 2, 3, 4, 5],
     content: '',
     contentLength: 0,
     maxLength: 200,
@@ -52,8 +53,8 @@ Page({
   /**
    * t-rate bind:change — 评分变化 per D-06
    */
-  onRateChange: function (e) {
-    var v = e.detail.value
+  onRateStar: function (e) {
+    var v = e.currentTarget.dataset.value
     var LABELS = ['', '不满意', '一般', '还可以', '满意', '非常满意']
     this.setData({ rating: v, ratingLabel: LABELS[v] || '' })
   },

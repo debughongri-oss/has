@@ -13,49 +13,58 @@
   padding: 20rpx var(--page-pad) 12rpx;
 }
 
-.seg-track {
-  display: inline-flex;
-  gap: 12rpx;
-  white-space: nowrap;
+.segs {
+  display: flex;
+  gap: 10rpx;
 }
 
 .seg {
-  display: inline-flex;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 8rpx;
-  height: 60rpx;
-  padding: 0 28rpx;
-  font-size: 24rpx;
-  color: var(--text-secondary);
+  padding: 16rpx 4rpx;
   background-color: var(--bg-elevated);
-  border-radius: 999rpx;
+  border-radius: var(--radius-lg);
   border: 1rpx solid var(--separator);
-  flex-shrink: 0;
   box-sizing: border-box;
+}
+
+.seg-count {
+  font-size: 36rpx;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.seg-count.is-zero {
+  color: var(--text-tertiary);
+}
+
+.seg-count.is-alert {
+  color: var(--orange);
+}
+
+.seg-label {
+  font-size: 22rpx;
+  line-height: 1;
+  color: var(--text-secondary);
 }
 
 .seg--on {
   background-color: var(--accent);
-  color: #FFFFFF;
   border-color: var(--accent);
-  font-weight: 600;
 }
 
-.seg-count {
-  font-size: 18rpx;
-  font-weight: 700;
-  background-color: var(--red);
+.seg--on .seg-count,
+.seg--on .seg-count.is-zero,
+.seg--on .seg-count.is-alert,
+.seg--on .seg-label {
   color: #FFFFFF;
-  padding: 0 9rpx;
-  border-radius: 999rpx;
-  min-width: 30rpx;
-  height: 30rpx;
-  line-height: 30rpx;
-  text-align: center;
-}
-
-.seg--on .seg-count {
-  background-color: rgba(255, 255, 255, 0.3);
 }
 
 /* ===== 快捷入口 ===== */

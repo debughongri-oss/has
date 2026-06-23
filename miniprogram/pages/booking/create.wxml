@@ -45,7 +45,10 @@
         </view>
       </view>
       <view wx:if="{{!services.length}}" class="empty-pad">
-        <t-empty icon="shop" description="暂无可用服务" />
+        <view class="empty">
+          <view class="empty-icon"></view>
+          <text class="empty-text">暂无可用服务</text>
+        </view>
       </view>
     </view>
 

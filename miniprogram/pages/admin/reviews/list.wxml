@@ -10,7 +10,10 @@
         <text class="rtime">{{item.timeLabel}}</text>
       </view>
       <view class="rrate">
-        <t-rate value="{{item.rating}}" disabled size="28rpx" gap="6" color="var(--gold)" variant="filled" />
+        <view class="stars">
+          <text class="stars-bg">★★★★★</text>
+          <text class="stars-fg" style="width:{{item.rating / 5 * 100}}%">★★★★★</text>
+        </view>
         <text class="rsvc" wx:if="{{item.service_name}}">{{item.service_name}}</text>
       </view>
       <text class="rcontent" wx:if="{{item.content}}">{{item.content}}</text>
@@ -18,6 +21,9 @@
   </view>
 
   <view class="empty-container" wx:if="{{!loading && !reviews.length}}">
-    <t-empty icon="chat" description="暂无评价" />
+    <view class="empty">
+      <view class="empty-icon"></view>
+      <text class="empty-text">暂无评价</text>
+    </view>
   </view>
 </view>
