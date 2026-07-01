@@ -20,7 +20,15 @@ Page({
     saving: false
   },
 
-  onLoad: function () {
+  onLoad: async function () {
+    // SEC-03: 等待登录态就绪后再判身份，消除冷启动竞态
+    try {
+      await authService.ensureLogin()
+    } catch (e) {
+      wx.showToast({ title: '无权限访问', icon: 'none' })
+      setTimeout(() => wx.navigateBack(), 1500)
+      return
+    }
     if (!authService.isArtist()) {
       wx.showToast({ title: '无权限访问', icon: 'none' })
       setTimeout(() => wx.navigateBack(), 1500)
@@ -134,6 +142,11 @@ Page({
 
     avatarPromise.then(() => {
       return profileService.updateArtistProfile(saveData)
+    }).then(() => {
+      // SEC-06: profile 更新成功后刷新客户端缓存，下游页面读到最新昵称/头像
+      return authService.refreshUserInfo().catch(err => {
+        console.error('刷新缓存失败（不影响保存结果）:', err)
+      })
     }).then(() => {
       this.setData({ saving: false })
       wx.showToast({ title: '保存成功', icon: 'success' })
