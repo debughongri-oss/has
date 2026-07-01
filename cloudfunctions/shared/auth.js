@@ -3,11 +3,12 @@
  * 供云函数 require 引入 — 不是独立云函数
  *
  * 提供两个功能：
- * 1. requireArtist(wxContext) — isArtist 身份验证
+ * 1. requireArtist(wxContext, db) — isArtist 身份验证（查 artist_profile._openid 权威源）
  * 2. sanitizeProfileUpdate(data) — profile update 字段白名单过滤
+ *
+ * SEC-04 (Phase 11): 化妆师身份由 artist_profile._openid 单一权威源，
+ *                    移除硬编码 ARTIST_OPENID magic constant。
  */
-
-const ARTIST_OPENID = 'oDmtI48gecuF3n9OkEBJN91BJliI'
 
 // profile update 允许的字段白名单 (per D-13)
 const PROFILE_ALLOWED_FIELDS = [
@@ -17,16 +18,25 @@ const PROFILE_ALLOWED_FIELDS = [
 
 /**
  * 验证调用者是否为化妆师身份
+ * SEC-04: 查询 artist_profile 集合的 _openid 字段作为单一权威源
+ *
  * @param {object} wxContext - cloud.getWXContext() 返回值
- * @returns {{ ok: boolean, response?: object }} ok=true 通过，ok=false 时 response 为错误响应
+ * @param {object} db - 已初始化的 cloud.database() 实例（由调用方传入，避免每个副本各自 cloud.init）
+ * @returns {Promise<{ ok: boolean, response?: object }>} ok=true 通过，ok=false 时 response 为错误响应
  */
-function requireArtist(wxContext) {
-  if (wxContext.OPENID === ARTIST_OPENID) {
-    return { ok: true }
-  }
-  return {
-    ok: false,
-    response: { errCode: -1, errMsg: '无权限操作' }
+async function requireArtist(wxContext, db) {
+  try {
+    const { data } = await db.collection('artist_profile').limit(1).get()
+    if (data.length === 0) {
+      return { ok: false, response: { errCode: -1, errMsg: '化妆师资料未初始化' } }
+    }
+    if (wxContext.OPENID === data[0]._openid) {
+      return { ok: true }
+    }
+    return { ok: false, response: { errCode: -1, errMsg: '无权限操作' } }
+  } catch (err) {
+    console.error('requireArtist 查询失败:', err)
+    return { ok: false, response: { errCode: -1, errMsg: '身份验证失败' } }
   }
 }
 

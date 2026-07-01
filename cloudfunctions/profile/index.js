@@ -51,8 +51,9 @@ exports.main = async (event, context) => {
 
     case 'update': {
       try {
-        // 服务端身份验证 — 只有化妆师可以更新资料
-        const authCheck = requireArtist(wxContext)
+        // SEC-04: 服务端身份验证 — 只有化妆师可以更新资料
+        // requireArtist 改为 async（查 artist_profile._openid 权威源）
+        const authCheck = await requireArtist(wxContext, db)
         if (!authCheck.ok) return authCheck.response
 
         // 字段白名单过滤 (per D-13)
@@ -82,17 +83,15 @@ exports.main = async (event, context) => {
 
     case 'init': {
       try {
-        // 服务端身份验证 — 只有化妆师可以初始化资料
-        const authCheck = requireArtist(wxContext)
-        if (!authCheck.ok) return authCheck.response
-
-        // 初始化默认资料 — 首次使用时调用
+        // SEC-04 bootstrap: init 不再调用 requireArtist（鸡生蛋问题——artist_profile
+        // 不存在时 requireArtist 永远失败）。改为幂等创建：artist_profile 已存在则
+        // 拒绝（防抢占），不存在时允许当前调用者创建，_openid 由云开发自动注入锁定。
         const existing = await db.collection('artist_profile')
           .limit(1)
           .get()
 
         if (existing.data.length > 0) {
-          return { errCode: 0, data: existing.data[0], message: '资料已存在' }
+          return { errCode: -1, errMsg: '化妆师资料已存在，无法重复初始化' }
         }
 
         const defaultProfile = getDefaultProfile()

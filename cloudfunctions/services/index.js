@@ -47,7 +47,7 @@ exports.main = async (event, context) => {
 
     case 'create': {
       try {
-        const authCheck = requireArtist(wxContext)
+        const authCheck = await requireArtist(wxContext, db)
         if (!authCheck.ok) return authCheck.response
 
         const data = {
@@ -66,7 +66,7 @@ exports.main = async (event, context) => {
 
     case 'update': {
       try {
-        const authCheck = requireArtist(wxContext)
+        const authCheck = await requireArtist(wxContext, db)
         if (!authCheck.ok) return authCheck.response
 
         const data = { ...event.data, updated_at: db.serverDate() }
@@ -80,7 +80,7 @@ exports.main = async (event, context) => {
 
     case 'delete': {
       try {
-        const authCheck = requireArtist(wxContext)
+        const authCheck = await requireArtist(wxContext, db)
         if (!authCheck.ok) return authCheck.response
 
         await db.collection('services').doc(event.id).remove()

@@ -59,7 +59,8 @@ exports.main = async (event, context) => {
     }
 
     case 'create': {
-      const { service_id, service_name, booking_date, booking_time, service_mode, service_mode_label, service_address, contact_info, skin_type, special_needs, occasion, user_info } = event
+      // SEC-05: 移除对 event.user_info 的信任，改由服务端按 openid 查 users 集合取权威值
+      const { service_id, service_name, booking_date, booking_time, service_mode, service_mode_label, service_address, contact_info, skin_type, special_needs, occasion } = event
       try {
         const mode = service_mode === 'home' ? 'home' : 'store'
         const address = String(service_address || '').trim()
@@ -86,9 +87,17 @@ exports.main = async (event, context) => {
           return { errCode: -1, errMsg: '该时段已被预约，请选择其他时间' }
         }
 
+        // SEC-05: 服务端权威读取用户昵称/头像，客户端传入被忽略
+        const userRes = await db.collection('users').where({ _openid: openid }).limit(1).get()
+        const user = userRes.data[0] || {}
+        const userInfo = {
+          nickname: user.nickname || '',
+          avatar_url: user.avatar_url || ''
+        }
+
         const booking = {
           user_openid: openid,
-          user_info: user_info || {},
+          user_info: userInfo,
           service_id,
           service_name,
           booking_date,
@@ -178,7 +187,7 @@ exports.main = async (event, context) => {
     case 'updateStatus': {
       const { id, status, artist_notes, reject_reason } = event
       try {
-        const authCheck = requireArtist(wxContext)
+        const authCheck = await requireArtist(wxContext, db)
         if (!authCheck.ok) return authCheck.response
 
         const updateData = { status, updated_at: db.serverDate() }
@@ -218,7 +227,7 @@ exports.main = async (event, context) => {
     case 'getCalendarData': {
       const { year, month } = event
       try {
-        const authCheck = requireArtist(wxContext)
+        const authCheck = await requireArtist(wxContext, db)
         if (!authCheck.ok) return authCheck.response
 
         // 构造该月的日期范围

@@ -24,7 +24,8 @@ exports.main = async (event, context) => {
 
   switch (event.action) {
     case 'create': {
-      const { booking_id, rating, content, user_nickname, user_avatar } = event
+      // SEC-05: 移除对 event.user_nickname/user_avatar 的信任，改由服务端按 openid 查 users 集合取权威值
+      const { booking_id, rating, content } = event
       try {
         // 参数校验
         if (!booking_id) {
@@ -88,12 +89,18 @@ exports.main = async (event, context) => {
           }
         }
 
+        // SEC-05: 服务端权威读取用户昵称/头像，客户端传入被忽略
+        const userRes = await db.collection('users').where({ _openid: openid }).limit(1).get()
+        const user = userRes.data[0] || {}
+        const userNickname = user.nickname || ''
+        const userAvatar = user.avatar_url || ''
+
         // D-02: 写入 reviews 集合
         const reviewData = {
           booking_id: booking_id,
           user_openid: openid,
-          user_nickname: user_nickname || '',
-          user_avatar: user_avatar || '',
+          user_nickname: userNickname,
+          user_avatar: userAvatar,
           service_id: booking.data.service_id || '',
           service_name: booking.data.service_name || '',
           rating: rating,

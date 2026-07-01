@@ -59,7 +59,7 @@ exports.main = async (event, context) => {
     case 'create': {
       const { data } = event
       try {
-        const authCheck = requireArtist(wxContext)
+        const authCheck = await requireArtist(wxContext, db)
         if (!authCheck.ok) return authCheck.response
 
         const workData = {
@@ -78,7 +78,7 @@ exports.main = async (event, context) => {
     case 'update': {
       const { id, data } = event
       try {
-        const authCheck = requireArtist(wxContext)
+        const authCheck = await requireArtist(wxContext, db)
         if (!authCheck.ok) return authCheck.response
 
         const updateData = { ...data, updated_at: db.serverDate() }
@@ -93,7 +93,7 @@ exports.main = async (event, context) => {
     case 'delete': {
       const { id } = event
       try {
-        const authCheck = requireArtist(wxContext)
+        const authCheck = await requireArtist(wxContext, db)
         if (!authCheck.ok) return authCheck.response
 
         await db.collection('works').doc(id).remove()
@@ -108,7 +108,7 @@ exports.main = async (event, context) => {
       const { id } = event
       try {
         // 权限验证 per D-26
-        const authCheck = requireArtist(wxContext)
+        const authCheck = await requireArtist(wxContext, db)
         if (!authCheck.ok) return authCheck.response
 
         // 尝试从云存储获取已缓存的 QR 码 per D-07
