@@ -44,7 +44,7 @@ v1.2 是技术债/安全/发布卫生加固里程碑，不引入新功能。2026
 
 **Milestone Goal:** 清偿 v1.0/v1.1 已发布代码中的安全、正确性、发布卫生与一致性债务，使代码具备安全上线条件
 
-- [ ] **Phase 11: Auth & Security 修复** — 登录竞态、身份源硬编码统一、身份信息服务端权威、缓存统一
+- [x] **Phase 11: Auth & Security 修复** — 登录竞态、身份源硬编码统一、身份信息服务端权威、缓存统一 (completed 2026-07-01)
 - [ ] **Phase 12: 发布卫生** — private config 出库、移除 demo 页、sitemap 收敛、统一 errCode 契约、去重错误提示
 - [ ] **Phase 13: 一致性 & 打磨** — booking tab UX、设计 token 状态色、缓存守卫、并发上传、错误上报、聚合统计、配置外部化
 
@@ -60,7 +60,9 @@ v1.2 是技术债/安全/发布卫生加固里程碑，不引入新功能。2026
   2. 化妆师身份 openid 由单一服务端数据源管理，前端与云函数不再各自硬编码同一 magic constant
   3. 评价与预约的昵称/头像由云函数按 openid 从 users 集合权威读取，客户端传入的同名字段被忽略
   4. 用户信息存在单一权威缓存，profile 更新昵称/头像后预约/评价等下游读取到最新值
-**Plans**: TBD (via `/gsd-plan-phase 11`)
+**Plans**:
+- `11-01-PLAN.md` (Wave 1): 服务端权威源 — artist_profile._openid 取代 6 份 ARTIST_OPENID magic constant；bookings/reviews 服务端取用户信息 (SEC-04, SEC-05)
+- `11-02-PLAN.md` (Wave 2): 客户端登录态就绪 + 缓存统一 — ensureLogin/refreshUserInfo；13 处守卫消除冷启动竞态；移除 globalData 双写 (SEC-03, SEC-06)
 **UI hint**: no（后端 + 应用层逻辑，无视觉变更）
 
 ### Phase 12: 发布卫生
@@ -100,6 +102,6 @@ Phases execute in numeric order: 11 → 12 → 13
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 11. Auth & Security 修复 | v1.2 | 0/TBD | Pending | — |
+| 11. Auth & Security 修复 | v1.2 | 2/2 | Complete    | 2026-07-01 |
 | 12. 发布卫生 | v1.2 | 0/TBD | Pending | — |
 | 13. 一致性 & 打磨 | v1.2 | 0/TBD | Pending | — |

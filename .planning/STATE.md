@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: 上线前加固
-status: planning
-stopped_at: v1.2 milestone created from 2026-06-23 全项目 review; phases defined, awaiting planning
-last_updated: "2026-06-23T00:00:00.000Z"
-last_activity: 2026-06-23 -- v1.2 hardening milestone created (3 phases, 16 requirements)
+status: Milestone defined, phases 11/12/13 ready for `/gsd-plan-phase`
+stopped_at: v1.2 milestone artifacts created (REQUIREMENTS.md, ROADMAP.md, STATE.md, PROJECT.md updated)
+last_updated: "2026-07-01T14:05:13.378Z"
+last_activity: 2026-07-01
 progress:
   total_phases: 3
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  completed_phases: 1
+  total_plans: 2
+  completed_plans: 2
+  percent: 100
 ---
 
 # Project State
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-06-23)
 
 ## Current Position
 
-Phase: 11 of 13 (Auth & Security 修复) — Pending planning
+Phase: 12 of 13 (发布卫生)
 Milestone: v1.2 上线前加固 🚧
 Status: Milestone defined, phases 11/12/13 ready for `/gsd-plan-phase`
-Last activity: 2026-06-23 -- v1.2 milestone created from full project review
+Last activity: 2026-07-01
 
 Progress: [ ] 0% (v1.2)
 
