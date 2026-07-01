@@ -9,7 +9,13 @@ Page({
     page: 1
   },
 
-  onLoad: function () {
+  onLoad: async function () {
+    // SEC-03: 等待登录态就绪后再判身份，消除冷启动竞态
+    try { await authService.ensureLogin() } catch (e) {
+      wx.showToast({ title: '无权限访问', icon: 'none' })
+      setTimeout(function () { wx.navigateBack() }, 1500)
+      return
+    }
     if (!authService.isArtist()) {
       wx.showToast({ title: '无权限访问', icon: 'none' })
       setTimeout(function () { wx.navigateBack() }, 1500)

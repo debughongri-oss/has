@@ -9,7 +9,9 @@ Page({
     isLoggedIn: false
   },
 
-  onShow: function () {
+  onShow: async function () {
+    // SEC-03: 等待登录态就绪后再读身份，消除冷启动竞态（入口可能不显示）
+    try { await authService.ensureLogin() } catch (e) {}
     this.refreshUserState()
   },
 

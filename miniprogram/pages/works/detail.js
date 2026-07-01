@@ -13,7 +13,9 @@ Page({
     isArtist: false
   },
 
-  onLoad: function (options) {
+  onLoad: async function (options) {
+    // SEC-03: 等待登录态就绪后再读身份，消除冷启动竞态（按钮可能不显示）
+    try { await authService.ensureLogin() } catch (e) {}
     this.setData({ isArtist: authService.isArtist() })
     if (options.id) {
       this.loadDetail(options.id)

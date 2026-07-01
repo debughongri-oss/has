@@ -21,7 +21,14 @@ Page({
   _dpr: 1,
   _workId: '',
 
-  onLoad: function (options) {
+  onLoad: async function (options) {
+    // SEC-03: 等待登录态就绪后再判身份，消除冷启动竞态
+    try { await authService.ensureLogin() } catch (e) {
+      wx.showToast({ title: '无权限访问', icon: 'none' })
+      var self0 = this
+      setTimeout(function () { self0.onClose() }, 1500)
+      return
+    }
     // 权限检查 per D-02
     if (!authService.isArtist()) {
       wx.showToast({ title: '无权限访问', icon: 'none' })
