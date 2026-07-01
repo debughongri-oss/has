@@ -49,11 +49,15 @@ exports.main = async (event, context) => {
           })
         }
 
+        // SEC-04: is_artist 由 artist_profile._openid 权威源判定，客户端不再用 magic constant
+        const isArtist = await checkIsArtist(db, openid)
+
         return {
           errCode: 0,
           data: {
             openid: openid,
             role: userInfo.role,
+            is_artist: isArtist,
             nickname: userInfo.nickname || '',
             avatar_url: userInfo.avatar_url || '',
             isNew: userQuery.data.length === 0
@@ -80,11 +84,15 @@ exports.main = async (event, context) => {
         }
 
         const user = userQuery.data[0]
+        // SEC-04: is_artist 由 artist_profile._openid 权威源判定
+        const isArtist = await checkIsArtist(db, openid)
+
         return {
           errCode: 0,
           data: {
             openid: openid,
             role: user.role,
+            is_artist: isArtist,
             nickname: user.nickname || '',
             avatar_url: user.avatar_url || ''
           }
@@ -118,5 +126,22 @@ exports.main = async (event, context) => {
 
     default:
       return { errCode: -1, errMsg: '未知操作' }
+  }
+}
+
+/**
+ * SEC-04: 检查当前 openid 是否为化妆师（查 artist_profile._openid 权威源）
+ * @param {object} db - cloud.database() 实例
+ * @param {string} openid - 待检查的 openid
+ * @returns {Promise<boolean>}
+ */
+async function checkIsArtist(db, openid) {
+  try {
+    const { data } = await db.collection('artist_profile').limit(1).get()
+    if (data.length === 0) return false
+    return data[0]._openid === openid
+  } catch (err) {
+    console.error('checkIsArtist 查询失败:', err)
+    return false
   }
 }

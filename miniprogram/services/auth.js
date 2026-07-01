@@ -1,20 +1,23 @@
 /**
- * 认证服务 — 处理微信静默登录和角色判断
+ * 认证服务 — 处理微信静默登录、登录态就绪与角色判断
  *
  * AUTH-01: 用户通过 wx.login 静默获取身份标识
- * 角色判断: 通过比较 openid 与 ARTIST_OPENID 判断是否为化妆师
+ * SEC-03 (Phase 11): ensureLogin() 提供登录态就绪 Promise，消除冷启动竞态
+ * SEC-04 (Phase 11): isArtist 改读服务端权威 is_artist 字段，移除 ARTIST_OPENID 比对
+ * SEC-06 (Phase 11): _userInfo 是客户端唯一权威缓存，refreshUserInfo 强制刷新
  */
 
 const { callCloudFunction } = require('./api')
-const { ARTIST_OPENID } = require('../utils/constants')
 
-// 缓存用户信息
+// 客户端唯一用户信息缓存（SEC-06: 消除 globalData 双写）
 let _userInfo = null
+// 幂等 Promise：并发 ensureLogin 复用同一次 wx.login（SEC-03）
+let _loginPromise = null
 
 /**
  * 静默登录
  * 调用 wx.login 获取 code → 云函数换取 openid → 缓存用户信息
- * @returns {Promise<Object>} 用户信息 { openid, role, isNew }
+ * @returns {Promise<Object>} 用户信息 { openid, role, is_artist, nickname, avatar_url, isNew }
  */
 const silentLogin = async () => {
   try {
@@ -50,7 +53,42 @@ const silentLogin = async () => {
 }
 
 /**
- * 获取当前用户信息
+ * SEC-03: 确保登录态就绪
+ * 幂等：已登录直接 resolve，登录中复用同一 Promise，未登录触发 silentLogin
+ * 所有身份相关页面应在 onLoad 中 await ensureLogin() 后再读 isArtist()
+ * @returns {Promise<Object>} 用户信息
+ */
+const ensureLogin = () => {
+  if (_userInfo) return Promise.resolve(_userInfo)
+  if (_loginPromise) return _loginPromise
+  _loginPromise = silentLogin().finally(() => {
+    _loginPromise = null
+  })
+  return _loginPromise
+}
+
+/**
+ * SEC-06: 强制刷新用户信息缓存
+ * profile 更新昵称/头像后调用，从服务端 users 集合拉取最新数据
+ * @returns {Promise<Object>} 刷新后的用户信息
+ */
+const refreshUserInfo = async () => {
+  try {
+    const result = await callCloudFunction('login', { action: 'getUser' })
+    if (result.errCode === 0) {
+      _userInfo = result.data
+      return _userInfo
+    }
+    throw new Error(result.errMsg)
+  } catch (error) {
+    console.error('刷新用户信息失败:', error)
+    throw error
+  }
+}
+
+/**
+ * 获取当前用户信息（同步读缓存）
+ * 注意：冷启动时可能为 null，应先 await ensureLogin()
  * @returns {Object|null} 缓存的用户信息
  */
 const getUserInfo = () => {
@@ -58,14 +96,14 @@ const getUserInfo = () => {
 }
 
 /**
- * 判断当前用户是否为化妆师
- * 通过比较 openid 与 constants 中存储的 ARTIST_OPENID
+ * SEC-04: 判断当前用户是否为化妆师
+ * 读 _userInfo.is_artist（由 login 云函数查 artist_profile 权威判定）
+ * 注意：调用前必须 await ensureLogin()，否则 _userInfo 可能为 null
  * @returns {boolean}
  */
 const isArtist = () => {
-  if (!_userInfo || !_userInfo.openid) return false
-  if (!ARTIST_OPENID) return false
-  return _userInfo.openid === ARTIST_OPENID
+  if (!_userInfo) return false
+  return _userInfo.is_artist === true
 }
 
 /**
@@ -85,6 +123,8 @@ const clearUserInfo = () => {
 
 module.exports = {
   silentLogin,
+  ensureLogin,
+  refreshUserInfo,
   getUserInfo,
   isArtist,
   isLoggedIn,

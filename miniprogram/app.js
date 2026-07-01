@@ -3,7 +3,8 @@ const { CLOUD_ENV } = require('./utils/constants')
 
 App({
   globalData: {
-    userInfo: null,
+    // SEC-06 (Phase 11): 用户信息不再缓存在 globalData，统一由 authService 管理
+    // isOpen 保留作为登录态标志（其他页面可能读取）
     isOpen: false
   },
 
@@ -17,9 +18,8 @@ App({
       env: CLOUD_ENV
     })
 
-    // 静默登录 — AUTH-01
-    authService.silentLogin().then(userInfo => {
-      this.globalData.userInfo = userInfo
+    // SEC-03: 预热登录，具体等待由各页面 ensureLogin() 处理
+    authService.silentLogin().then(() => {
       this.globalData.isOpen = true
     }).catch(err => {
       console.error('登录失败:', err)
