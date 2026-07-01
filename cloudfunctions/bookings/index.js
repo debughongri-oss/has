@@ -59,8 +59,21 @@ exports.main = async (event, context) => {
     }
 
     case 'create': {
-      const { service_id, service_name, booking_date, booking_time, skin_type, special_needs, occasion, user_info } = event
+      const { service_id, service_name, booking_date, booking_time, service_mode, service_mode_label, service_address, contact_info, skin_type, special_needs, occasion, user_info } = event
       try {
+        const mode = service_mode === 'home' ? 'home' : 'store'
+        const address = String(service_address || '').trim()
+        const contact = contact_info || {}
+        const phone = String(contact.phone || '').trim()
+        const wechat = String(contact.wechat || '').trim()
+
+        if (mode === 'home' && !address) {
+          return { errCode: -1, errMsg: '请填写上门地址' }
+        }
+        if (!phone && !wechat) {
+          return { errCode: -1, errMsg: '请填写联系方式' }
+        }
+
         const existing = await db.collection('bookings')
           .where({
             booking_date,
@@ -80,6 +93,10 @@ exports.main = async (event, context) => {
           service_name,
           booking_date,
           booking_time,
+          service_mode: mode,
+          service_mode_label: service_mode_label || (mode === 'home' ? '上门' : '到店'),
+          service_address: mode === 'home' ? address : '',
+          contact_info: { phone, wechat },
           skin_type: skin_type || '',
           special_needs: special_needs || '',
           occasion: occasion || '',

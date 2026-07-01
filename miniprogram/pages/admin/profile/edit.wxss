@@ -184,10 +184,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--bg-elevated);
+  z-index: 20;
+  background-color: #FFFFFF;
   box-shadow: 0 -8rpx 26rpx rgba(0, 0, 0, 0.07);
   padding: 18rpx var(--page-pad);
   padding-bottom: calc(28rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
 }
 
 .save-btn {
@@ -219,5 +221,8 @@
 }
 
 .save-btn[disabled] {
-  opacity: 0.45;
+  opacity: 1;
+  background-color: #EFA4B3;
+  color: #FFFFFF;
+  box-shadow: none;
 }

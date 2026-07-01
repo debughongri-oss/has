@@ -204,10 +204,32 @@
   color: var(--text-secondary);
 }
 
+.bmeta-row {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-top: 10rpx;
+}
+
+.mode-tag {
+  flex-shrink: 0;
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+  background-color: var(--fill-primary);
+  color: var(--text-secondary);
+  font-size: 20rpx;
+  font-weight: 700;
+}
+
+.mode-tag--home {
+  background-color: var(--blue-bg);
+  color: var(--blue);
+}
+
 .bcust {
+  min-width: 0;
   font-size: 24rpx;
   color: var(--text-secondary);
-  margin-top: 10rpx;
 }
 
 .bnote {

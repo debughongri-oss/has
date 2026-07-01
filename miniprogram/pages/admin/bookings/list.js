@@ -8,6 +8,11 @@ const formatDateShort = (dateStr) => {
   return parts.length === 3 ? `${Number(parts[1])}/${Number(parts[2])}` : dateStr
 }
 
+const getServiceModeLabel = (booking) => {
+  if (booking.service_mode_label) return booking.service_mode_label
+  return booking.service_mode === 'home' ? '上门' : '到店'
+}
+
 Page({
   data: {
     bookings: [],
@@ -46,6 +51,8 @@ Page({
           ...b,
           statusLabel: bookingsService.getStatusLabel(b.status),
           statusColor: bookingsService.getStatusColor(b.status),
+          serviceModeLabel: getServiceModeLabel(b),
+          isHomeService: b.service_mode === 'home',
           dateShort: formatDateShort(b.booking_date)
         }))
         const counts = result.statusCounts || {}

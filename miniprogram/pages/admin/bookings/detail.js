@@ -12,6 +12,17 @@ const formatDateLabel = (dateStr) => {
   return `${Number(parts[1])}月${Number(parts[2])}日 ${WEEKDAYS[d.getDay()]}`
 }
 
+const normalizeBookingMeta = (booking) => {
+  const mode = booking.service_mode || 'store'
+  const contactInfo = booking.contact_info || booking.user_info || {}
+  booking.serviceMode = mode
+  booking.serviceModeLabel = booking.service_mode_label || (mode === 'home' ? '上门' : '到店')
+  booking.serviceAddress = booking.service_address || ''
+  booking.contactPhone = contactInfo.phone || ''
+  booking.contactWechat = contactInfo.wechat || ''
+  return booking
+}
+
 Page({
   data: {
     booking: null,
@@ -42,6 +53,7 @@ Page({
           data.skin_type_label = SKIN_LABELS[data.skin_type] || data.skin_type
         }
         data.dateLabel = formatDateLabel(data.booking_date)
+        data = normalizeBookingMeta(data)
         this.setData({
           booking: data,
           loading: false,

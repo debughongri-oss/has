@@ -110,7 +110,55 @@
 
     <!-- 补充信息 -->
     <view class="card" wx:if="{{selectedTime}}">
-      <view class="card-head"><text class="card-title">补充信息</text><text class="card-opt">选填</text></view>
+      <view class="card-head"><text class="card-title">预约信息</text><text class="card-opt">必填</text></view>
+
+      <view class="field">
+        <text class="field-label">服务方式</text>
+        <view class="mode-grid">
+          <view
+            class="mode-card tappable {{item.selected ? 'mode-card--on' : ''}}"
+            wx:for="{{serviceModeOptions}}"
+            wx:key="key"
+            bindtap="onSelectServiceMode"
+            data-key="{{item.key}}"
+          >
+            <text class="mode-title">{{item.label}}</text>
+            <text class="mode-desc">{{item.desc}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="field" wx:if="{{serviceMode === 'home'}}">
+        <text class="field-label">上门地址</text>
+        <textarea
+          class="ta ta--address"
+          placeholder="填写详细地址，如小区/楼栋/门牌号"
+          value="{{serviceAddress}}"
+          bindinput="onServiceAddressInput"
+          maxlength="200"
+        />
+      </view>
+
+      <view class="field">
+        <text class="field-label">联系方式</text>
+        <view class="input-stack">
+          <input
+            class="line-input"
+            type="number"
+            placeholder="手机号"
+            placeholder-class="line-ph"
+            value="{{contactPhone}}"
+            bindinput="onContactPhoneInput"
+          />
+          <input
+            class="line-input"
+            placeholder="微信号（手机号和微信号至少填一个）"
+            placeholder-class="line-ph"
+            value="{{contactWechat}}"
+            bindinput="onContactWechatInput"
+          />
+        </view>
+      </view>
 
       <view class="field">
         <text class="field-label">肤质类型</text>
@@ -155,7 +203,7 @@
   <view class="dock" wx:if="{{!loading && selectedTime}}">
     <view class="dock-info">
       <text class="dock-svc">{{selectedService.name}} · <text class="dock-price">¥{{selectedService.price}}</text></text>
-      <text class="dock-when">{{selectedDateLabel}} {{selectedTime}}</text>
+      <text class="dock-when">{{selectedDateLabel}} {{selectedTime}} · {{serviceMode === 'home' ? '上门' : '到店'}}</text>
     </view>
     <button class="dock-btn" bindtap="submitBooking" disabled="{{submitting}}">
       {{submitting ? '提交中...' : '确认预约'}}

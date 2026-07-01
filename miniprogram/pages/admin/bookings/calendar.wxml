@@ -40,7 +40,10 @@
               <text class="dsvc text-ellipsis">{{item.service_name}}</text>
               <text class="badge badge--{{item.status}}">{{item.statusLabel}}</text>
             </view>
-            <text class="dcust" wx:if="{{item.user_info.nickname}}">客户 · {{item.user_info.nickname}}</text>
+            <view class="dmeta-row">
+              <text class="mode-tag {{item.isHomeService ? 'mode-tag--home' : ''}}">{{item.serviceModeLabel}}</text>
+              <text class="dcust" wx:if="{{item.user_info.nickname}}">客户 · {{item.user_info.nickname}}</text>
+            </view>
           </view>
         </view>
       </view>

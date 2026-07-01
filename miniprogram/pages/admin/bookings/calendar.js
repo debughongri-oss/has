@@ -14,6 +14,11 @@ const formatDateLabel = (dateStr) => {
   return `${Number(parts[1])}月${Number(parts[2])}日 ${WEEKDAYS[d.getDay()]}`
 }
 
+const getServiceModeLabel = (booking) => {
+  if (booking.service_mode_label) return booking.service_mode_label
+  return booking.service_mode === 'home' ? '上门' : '到店'
+}
+
 Page({
   data: {
     calendarValue: Date.now(),  // 当前选中日期（timestamp）
@@ -95,7 +100,9 @@ Page({
       .map(b => ({
         ...b,
         statusLabel: bookingsService.getStatusLabel(b.status),
-        statusColor: bookingsService.getStatusColor(b.status)
+        statusColor: bookingsService.getStatusColor(b.status),
+        serviceModeLabel: getServiceModeLabel(b),
+        isHomeService: b.service_mode === 'home'
       }))
       .sort((a, b) => a.booking_time.localeCompare(b.booking_time))
 

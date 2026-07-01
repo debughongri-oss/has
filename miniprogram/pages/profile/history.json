@@ -1,7 +1,4 @@
 {
-  "usingComponents": {
-    "t-loading": "tdesign-miniprogram/loading/loading"
-  },
   "navigationBarTitleText": "预约记录",
   "enablePullDownRefresh": true
 }

@@ -1,41 +1,138 @@
 <view class="page-history">
-  <view class="loading-container" wx:if="{{loading}}">
-    <t-loading theme="circular" size="80rpx" text="加载中..." />
-  </view>
-
-  <view class="list" wx:if="{{!loading && bookings.length}}">
-    <view class="card" wx:for="{{bookings}}" wx:key="_id">
-      <view class="crow">
-        <view class="cdate">
-          <text class="cdate-d">{{item.dateShort}}</text>
-          <text class="cdate-t">{{item.booking_time}}</text>
-        </view>
-        <view class="cmain">
-          <view class="ctop">
-            <text class="csvc text-ellipsis">{{item.service_name}}</text>
-            <text class="badge badge--{{item.status}}">{{item.statusLabel}}</text>
-          </view>
-          <text class="cfulldate">{{item.dateLabel}}</text>
-        </view>
+  <view class="history-hero" wx:if="{{!loading || bookings.length}}">
+    <view class="hero-copy">
+      <text class="hero-kicker">MY BOOKINGS</text>
+      <text class="hero-title">预约记录</text>
+      <text class="hero-sub">查看进度、取消待确认预约，完成后可提交评价。</text>
+    </view>
+    <view class="hero-stats">
+      <view class="stat stat--primary">
+        <text class="stat-num">{{stats.total}}</text>
+        <text class="stat-label">全部</text>
       </view>
-
-      <view class="creason" wx:if="{{item.reject_reason}}">拒绝原因：{{item.reject_reason}}</view>
-      <text class="cnote" wx:if="{{item.notes}}">{{item.notes}}</text>
-
-      <view class="cact" wx:if="{{item.status === 'pending' || item.status === 'completed'}}">
-        <view class="act-cancel" wx:if="{{item.status === 'pending'}}" bindtap="cancelBooking" data-id="{{item._id}}">取消预约</view>
-        <view class="act-review" wx:if="{{item.status === 'completed' && !reviewMap[item._id]}}" bindtap="goToReview" data-id="{{item._id}}">去评价</view>
-        <view class="act-reviewed" wx:if="{{item.status === 'completed' && reviewMap[item._id]}}">
-          <text class="star">★</text>已评价
-        </view>
+      <view class="stat">
+        <text class="stat-num">{{stats.upcoming}}</text>
+        <text class="stat-label">进行中</text>
+      </view>
+      <view class="stat">
+        <text class="stat-num">{{stats.completed}}</text>
+        <text class="stat-label">已完成</text>
       </view>
     </view>
   </view>
 
-  <view class="empty-container" wx:if="{{!loading && !bookings.length}}">
-    <view class="empty">
-      <view class="empty-icon"></view>
-      <text class="empty-text">暂无预约记录</text>
+  <view class="loading-panel" wx:if="{{loading && !bookings.length}}">
+    <view class="skeleton-card">
+      <view class="sk sk-date"></view>
+      <view class="sk-main">
+        <view class="sk sk-line sk-line--long"></view>
+        <view class="sk sk-line"></view>
+      </view>
+    </view>
+    <view class="skeleton-card skeleton-card--soft">
+      <view class="sk sk-date"></view>
+      <view class="sk-main">
+        <view class="sk sk-line sk-line--long"></view>
+        <view class="sk sk-line"></view>
+      </view>
+    </view>
+  </view>
+
+  <scroll-view class="filters" scroll-x enhanced show-scrollbar="{{false}}" wx:if="{{!loading && bookings.length}}">
+    <view class="filter-row">
+      <view
+        class="filter {{item.active ? 'filter--active' : ''}} tappable"
+        wx:for="{{statusFilters}}"
+        wx:key="key"
+        bindtap="onFilterTap"
+        data-status="{{item.key}}"
+      >
+        <text class="filter-label">{{item.label}}</text>
+        <text class="filter-count">{{item.count}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="list" wx:if="{{!loading && filteredBookings.length}}">
+    <view class="booking-card" wx:for="{{filteredBookings}}" wx:key="_id">
+      <view class="card-head">
+        <view class="date-tile">
+          <text class="date-day">{{item.dateShort}}</text>
+          <text class="date-time">{{item.booking_time}}</text>
+        </view>
+        <view class="booking-main">
+          <view class="title-row">
+            <text class="service-name text-ellipsis">{{item.service_name}}</text>
+            <text class="status-pill status-pill--{{item.statusTone}}">{{item.statusLabel}}</text>
+          </view>
+          <text class="status-step">{{item.statusStep}}</text>
+        </view>
+      </view>
+
+      <view class="meta-grid">
+        <view class="meta-item">
+          <text class="meta-label">预约日期</text>
+          <text class="meta-value">{{item.dateLabel}}</text>
+        </view>
+        <view class="meta-item">
+          <text class="meta-label">到店时间</text>
+          <text class="meta-value">{{item.booking_time}}</text>
+        </view>
+        <view class="meta-item meta-item--wide">
+          <text class="meta-label">服务方式</text>
+          <text class="meta-value">{{item.serviceModeLabel}}</text>
+        </view>
+        <view class="meta-item meta-item--wide" wx:if="{{item.serviceMode === 'home' && item.serviceAddress}}">
+          <text class="meta-label">上门地址</text>
+          <text class="meta-value meta-value--wrap">{{item.serviceAddress}}</text>
+        </view>
+        <view class="meta-item meta-item--wide" wx:if="{{item.contactPhone || item.contactWechat}}">
+          <text class="meta-label">联系方式</text>
+          <text class="meta-value meta-value--wrap">
+            <text wx:if="{{item.contactPhone}}">{{item.contactPhone}}</text>
+            <text wx:if="{{item.contactPhone && item.contactWechat}}"> / </text>
+            <text wx:if="{{item.contactWechat}}">微信：{{item.contactWechat}}</text>
+          </text>
+        </view>
+      </view>
+
+      <view class="reason-box" wx:if="{{item.reject_reason}}">
+        <text class="box-label">拒绝原因</text>
+        <text class="box-text">{{item.reject_reason}}</text>
+      </view>
+
+      <view class="note-box" wx:if="{{item.notes}}">
+        <text class="box-label">我的备注</text>
+        <text class="box-text">{{item.notes}}</text>
+      </view>
+
+      <view class="actions" wx:if="{{item.status === 'pending' || item.status === 'completed'}}">
+        <view class="action action--ghost tappable" wx:if="{{item.status === 'pending'}}" bindtap="cancelBooking" data-id="{{item._id}}">取消预约</view>
+        <view class="action action--primary tappable" wx:if="{{item.status === 'completed' && !reviewMap[item._id]}}" bindtap="goToReview" data-id="{{item._id}}">去评价</view>
+        <view class="reviewed" wx:if="{{item.status === 'completed' && reviewMap[item._id]}}">
+          <text class="reviewed-mark">已评价</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="load-tip" wx:if="{{hasMore}}">上滑加载更多记录</view>
+    <view class="load-tip load-tip--end" wx:else>已显示全部记录</view>
+  </view>
+
+  <view class="empty-panel" wx:if="{{!loading && bookings.length && !filteredBookings.length}}">
+    <view class="empty-card">
+      <view class="empty-mark"></view>
+      <text class="empty-title">当前分类暂无预约</text>
+      <text class="empty-sub">切换上方状态查看其他预约记录。</text>
+    </view>
+  </view>
+
+  <view class="empty-panel" wx:if="{{!loading && !bookings.length}}">
+    <view class="empty-card empty-card--primary">
+      <view class="empty-mark"></view>
+      <text class="empty-title">还没有预约记录</text>
+      <text class="empty-sub">选好服务和时间后，记录会自动出现在这里。</text>
+      <view class="empty-cta tappable" bindtap="goToBooking">去预约</view>
     </view>
   </view>
 </view>

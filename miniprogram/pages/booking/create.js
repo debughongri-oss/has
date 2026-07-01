@@ -17,6 +17,10 @@ const TONE_MAP = {
 
 const MONTH_NAMES = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
 const BOOKING_WINDOW = 30
+const SERVICE_MODE_OPTIONS = [
+  { key: 'store', label: '到店', desc: '前往化妆师工作室' },
+  { key: 'home', label: '上门', desc: '化妆师到指定地址' }
+]
 
 const formatDate = (d) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -43,6 +47,11 @@ Page({
     skinType: '',
     specialNeeds: '',
     occasion: '',
+    serviceMode: 'store',
+    serviceModeOptions: [],
+    serviceAddress: '',
+    contactPhone: '',
+    contactWechat: '',
     skinTypeOptions: [],
     loading: true,
     submitting: false,
@@ -56,6 +65,7 @@ Page({
 
   onLoad: function () {
     this.setData({
+      serviceModeOptions: SERVICE_MODE_OPTIONS.map(t => ({ ...t, selected: t.key === 'store' })),
       skinTypeOptions: SKIN_TYPE_OPTIONS.map(t => ({ ...t, selected: false }))
     })
     this.loadServices()
@@ -259,14 +269,49 @@ Page({
     this.setData({ occasion: e.detail.value })
   },
 
+  onSelectServiceMode: function (e) {
+    const key = e.currentTarget.dataset.key
+    this.setData({
+      serviceMode: key,
+      serviceModeOptions: SERVICE_MODE_OPTIONS.map(t => ({
+        ...t,
+        selected: t.key === key
+      }))
+    })
+  },
+
+  onServiceAddressInput: function (e) {
+    this.setData({ serviceAddress: e.detail.value })
+  },
+
+  onContactPhoneInput: function (e) {
+    this.setData({ contactPhone: e.detail.value })
+  },
+
+  onContactWechatInput: function (e) {
+    this.setData({ contactWechat: e.detail.value })
+  },
+
   submitBooking: function () {
-    const { selectedService, selectedDate, selectedTime, skinType, specialNeeds, occasion } = this.data
+    const { selectedService, selectedDate, selectedTime, skinType, specialNeeds, occasion, serviceMode, serviceAddress, contactPhone, contactWechat } = this.data
     if (!selectedService || !selectedDate || !selectedTime) {
       wx.showToast({ title: '请完成选择', icon: 'none' })
       return
     }
+    const cleanAddress = serviceAddress.trim()
+    const cleanPhone = contactPhone.trim()
+    const cleanWechat = contactWechat.trim()
+    if (serviceMode === 'home' && !cleanAddress) {
+      wx.showToast({ title: '请填写上门地址', icon: 'none' })
+      return
+    }
+    if (!cleanPhone && !cleanWechat) {
+      wx.showToast({ title: '请填写联系方式', icon: 'none' })
+      return
+    }
 
     const userInfo = authService.getUserInfo() || {}
+    const serviceModeLabel = serviceMode === 'home' ? '上门' : '到店'
     this.setData({ submitting: true })
 
     bookingsService.createBooking({
@@ -274,12 +319,20 @@ Page({
       service_name: selectedService.name,
       booking_date: selectedDate,
       booking_time: selectedTime,
+      service_mode: serviceMode,
+      service_mode_label: serviceModeLabel,
+      service_address: serviceMode === 'home' ? cleanAddress.slice(0, 200) : '',
       skin_type: skinType || '',
       special_needs: specialNeeds.trim().slice(0, 200),
       occasion: occasion.trim().slice(0, 200),
+      contact_info: {
+        phone: cleanPhone.slice(0, 30),
+        wechat: cleanWechat.slice(0, 60)
+      },
       user_info: {
         nickname: userInfo.nickname || '',
-        phone: ''
+        phone: cleanPhone.slice(0, 30),
+        wechat: cleanWechat.slice(0, 60)
       }
     }).then(result => {
       this.setData({ submitting: false })

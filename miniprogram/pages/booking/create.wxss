@@ -403,6 +403,66 @@
   font-weight: 600;
 }
 
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+.mode-card {
+  min-width: 0;
+  padding: 22rpx;
+  border-radius: 22rpx;
+  border: 2rpx solid var(--separator-opaque);
+  background-color: var(--bg-elevated);
+  box-sizing: border-box;
+}
+
+.mode-card--on {
+  border-color: var(--accent);
+  background-color: var(--accent-soft);
+}
+
+.mode-title {
+  display: block;
+  font-size: 30rpx;
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
+.mode-card--on .mode-title {
+  color: var(--accent-dark);
+}
+
+.mode-desc {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+.input-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.line-input {
+  width: 100%;
+  height: 88rpx;
+  padding: 0 24rpx;
+  border-radius: 18rpx;
+  background-color: var(--fill-primary);
+  color: var(--text-primary);
+  font-size: var(--fs-sm);
+  box-sizing: border-box;
+}
+
+.line-ph {
+  color: var(--text-tertiary);
+}
+
 .ta {
   width: 100%;
   height: 140rpx;
@@ -414,6 +474,10 @@
   line-height: 1.7;
   border: none;
   color: var(--text-primary);
+}
+
+.ta--address {
+  height: 132rpx;
 }
 
 /* ===== 提交栏 ===== */

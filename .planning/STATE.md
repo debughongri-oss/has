@@ -1,36 +1,44 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.1
-milestone_name: 品牌升级 & 体验增强
-status: complete
-stopped_at: Milestone v1.1 shipped — all phases complete
-last_updated: "2026-04-24T10:35:00.000Z"
-last_activity: 2026-04-24 -- v1.1 milestone closed and archived
+milestone: v1.2
+milestone_name: 上线前加固
+status: planning
+stopped_at: v1.2 milestone created from 2026-06-23 全项目 review; phases defined, awaiting planning
+last_updated: "2026-06-23T00:00:00.000Z"
+last_activity: 2026-06-23 -- v1.2 hardening milestone created (3 phases, 16 requirements)
 progress:
-  total_phases: 5
-  completed_phases: 5
-  total_plans: 11
-  completed_plans: 11
-  percent: 100
+  total_phases: 3
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
+  percent: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-04-24)
+See: .planning/PROJECT.md (updated 2026-06-23)
 
 **Core value:** 客户看到作品后能直接预约化妆服务——从"看到好看的作品"到"我要预约"的路径最短
-**Current focus:** v1.1 shipped — planning next milestone
+**Current focus:** v1.2 上线前加固 — 清偿 review 发现的 16 项技术债/安全/卫生问题
 
 ## Current Position
 
-Phase: 10 of 10 (QR Code & Poster Generation) ✅ Complete
-Milestone: v1.1 品牌升级 & 体验增强 ✅ Shipped 2026-04-24
-Status: All milestones complete
-Last activity: 2026-04-24 -- v1.1 milestone closed
+Phase: 11 of 13 (Auth & Security 修复) — Pending planning
+Milestone: v1.2 上线前加固 🚧
+Status: Milestone defined, phases 11/12/13 ready for `/gsd-plan-phase`
+Last activity: 2026-06-23 -- v1.2 milestone created from full project review
 
-Progress: [██████████] 100% (v1.1)
+Progress: [ ] 0% (v1.2)
+
+## v1.2 Phase Summary
+
+| Phase | Goal | Severity | Reqs |
+|-------|------|----------|------|
+| 11. Auth & Security 修复 | 登录竞态 + 身份源硬编码统一 + 身份权威 + 缓存统一 | High | SEC-03/04/05/06 |
+| 12. 发布卫生 | private config 出库 + demo 页清理 + sitemap + errCode + toast 去重 | Medium | HYG-01..05 |
+| 13. 一致性 & 打磨 | tab UX + 设计 token + 缓存守卫 + 并发上传 + 聚合统计 + 配置外部化 | Low | POL-01..07 |
 
 ## Deferred Items
 
@@ -51,6 +59,6 @@ Items acknowledged and deferred at milestone close for v2:
 
 ## Session Continuity
 
-Last session: 2026-04-24T10:35:00.000Z
-Stopped at: v1.1 milestone closed
-Next step: `/gsd-new-milestone` to plan v2.0
+Last session: 2026-06-23
+Stopped at: v1.2 milestone artifacts created (REQUIREMENTS.md, ROADMAP.md, STATE.md, PROJECT.md updated)
+Next step: `/gsd-plan-phase 11` to plan Phase 11 (Auth & Security 修复)

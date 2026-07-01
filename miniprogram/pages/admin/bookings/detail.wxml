@@ -21,6 +21,31 @@
         <text class="h-key">客户</text>
         <text class="h-val">{{booking.user_info.nickname || '微信用户'}}</text>
       </view>
+      <view class="h-row">
+        <text class="h-key">方式</text>
+        <text class="h-val h-val--accent">{{booking.serviceModeLabel}}</text>
+      </view>
+    </view>
+
+    <!-- 服务地点与联系 -->
+    <view class="card">
+      <text class="card-title">地点与联系</text>
+      <view class="dfield">
+        <text class="dfield-key">服务方式</text>
+        <text class="dfield-val">{{booking.serviceModeLabel}}</text>
+      </view>
+      <view class="dfield" wx:if="{{booking.serviceMode === 'home'}}">
+        <text class="dfield-key">上门地址</text>
+        <text class="dfield-val">{{booking.serviceAddress || '未填写'}}</text>
+      </view>
+      <view class="dfield">
+        <text class="dfield-key">手机号</text>
+        <text class="dfield-val">{{booking.contactPhone || '未填写'}}</text>
+      </view>
+      <view class="dfield">
+        <text class="dfield-key">微信号</text>
+        <text class="dfield-val">{{booking.contactWechat || '未填写'}}</text>
+      </view>
     </view>
 
     <!-- 客户需求 -->
