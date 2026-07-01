@@ -2,20 +2,18 @@ const { callCloudFunction } = require('./api')
 
 /**
  * 创建评价
+ * SEC-05: 用户昵称/头像由服务端按 openid 从 users 集合权威读取，客户端不再传
  * @param {string} bookingId - 预约ID
  * @param {number} rating - 评分 (1-5)
  * @param {string} content - 评价内容
- * @param {Object} userInfo - 用户信息 { nickname, avatar }
  * @returns {Promise<Object>} 评价数据
  */
-const createReview = async (bookingId, rating, content, userInfo) => {
+const createReview = async (bookingId, rating, content) => {
   const result = await callCloudFunction('reviews', {
     action: 'create',
     booking_id: bookingId,
     rating,
-    content: content || '',
-    user_nickname: (userInfo && userInfo.nickname) || '',
-    user_avatar: (userInfo && userInfo.avatar) || ''
+    content: content || ''
   })
   if (result.errCode !== 0) throw new Error(result.errMsg)
   return result.data

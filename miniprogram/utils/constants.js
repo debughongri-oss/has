@@ -5,10 +5,6 @@
 // 云开发环境 ID — 用户需替换为自己的云开发环境 ID
 const CLOUD_ENV = 'cloud1-d9gv17qrif53acb2f'
 
-// 化妆师的 OpenID — 用于角色判断
-// 首次部署后通过云函数获取并替换
-const ARTIST_OPENID = 'oDmtI48gecuF3n9OkEBJN91BJliI'
-
 // 预约状态枚举
 const BOOKING_STATUS = {
   PENDING: 'pending',
@@ -61,7 +57,6 @@ const SUBSCRIBE_TEMPLATE_ID = '-i6OevJwdS5fGFXCsB9Xux4zaaxUkXTR0xfLg5T48jM'
 
 module.exports = {
   CLOUD_ENV,
-  ARTIST_OPENID,
   BOOKING_STATUS,
   SERVICE_CATEGORIES,
   STYLE_TAGS,

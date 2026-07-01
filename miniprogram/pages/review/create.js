@@ -1,5 +1,6 @@
 const bookingsService = require('../../services/bookings')
 const reviewsService = require('../../services/reviews')
+const authService = require('../../services/auth')
 
 Page({
   data: {
@@ -72,7 +73,7 @@ Page({
   /**
    * 提交评价 per D-05
    */
-  onSubmit: function () {
+  onSubmit: async function () {
     if (this.data.submitting) return
     if (this.data.rating < 1) {
       wx.showToast({ title: '请先选择评分', icon: 'none' })
@@ -84,14 +85,11 @@ Page({
     // 截断200字
     var content = (this.data.content || '').slice(0, 200)
 
-    // 从 app globalData 或缓存获取 userInfo
-    var app = getApp()
-    var userInfo = {}
-    if (app.globalData && app.globalData.userInfo) {
-      userInfo = app.globalData.userInfo
-    }
+    // SEC-03/SEC-06: 从 authService 单一缓存读用户信息，不再直读 globalData
+    try { await authService.ensureLogin() } catch (e) {}
 
-    reviewsService.createReview(this.data.bookingId, this.data.rating, content, userInfo)
+    // SEC-05: 服务端按 openid 权威取昵称/头像，客户端不再传 user info
+    reviewsService.createReview(this.data.bookingId, this.data.rating, content)
       .then(function () {
         wx.showToast({ title: '评价成功', icon: 'success' })
         setTimeout(function () {
