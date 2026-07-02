@@ -61,15 +61,16 @@ const getStatusLabel = (status) => {
 }
 
 const getStatusColor = (status) => {
+  // POL-02: 使用 app.wxss 设计 token（CSS 变量），消除硬编码色值
   const colors = {
-    pending: '#FF9800',
-    accepted: '#4CAF50',
-    rejected: '#F44336',
-    rescheduled: '#2196F3',
-    completed: '#9E9E9E',
-    cancelled: '#9E9E9E'
+    pending: 'var(--orange)',
+    accepted: 'var(--green)',
+    rejected: 'var(--red)',
+    rescheduled: 'var(--blue)',
+    completed: 'var(--text-tertiary)',
+    cancelled: 'var(--text-tertiary)'
   }
-  return colors[status] || '#999'
+  return colors[status] || 'var(--text-tertiary)'
 }
 
 module.exports = {
