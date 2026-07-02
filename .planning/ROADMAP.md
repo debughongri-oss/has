@@ -22,9 +22,9 @@
 
 ### 🚧 v2.1 经营工具 & 转化优化 (Current)
 
-- [ ] **Phase 16: 数据看板** — 月预约/营收/评价统计 + 热门服务排行
-- [ ] **Phase 17: 不可用时间管理** — 化妆师屏蔽假期/个人时间 + getAvailableSlots 合并
-- [ ] **Phase 18: 转化优化** — 服务时长展示 + 完成自动邀评
+- [x] **Phase 16: 数据看板** — 月预约/营收/评价统计 + 热门服务排行 (completed 2026-07-02)
+- [x] **Phase 17: 不可用时间管理** — 化妆师屏蔽假期/个人时间 + getAvailableSlots 合并 (completed 2026-07-02)
+- [x] **Phase 18: 转化优化** — 服务时长展示 + 完成自动邀评 (completed 2026-07-02)
 
 ## Phase Details
 

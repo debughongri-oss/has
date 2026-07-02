@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v2.1
 milestone_name: 经营工具 & 转化优化
-status: planning
-stopped_at: v2.1 milestone created — 3 phases / 7 requirements
-last_updated: "2026-07-02T16:30:00.000Z"
-last_activity: 2026-07-02 -- v2.1 milestone created
+status: Milestone complete
+stopped_at: v2.0 milestone artifacts created (REQUIREMENTS.md, ROADMAP.md, STATE.md updated)
+last_updated: "2026-07-02T13:55:03.058Z"
+last_activity: 2026-07-02
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 0
-  completed_plans: 0
+  completed_plans: 3
   percent: 0
 ---
 
@@ -29,7 +29,7 @@ See: .planning/PROJECT.md (updated 2026-07-02)
 
 ## Current Position
 
-Phase: 15 of 15 (duration conflict)
+Phase: 18 of 15 (conversion)
 Milestone: v2.0 评价互动 & 预约智能化 🚧
 Last activity: 2026-07-02
 
