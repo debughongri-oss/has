@@ -10,12 +10,12 @@
 
 ## Current State
 
-**Shipped:** v1.0 MVP (2026-04-19), v1.1 品牌升级 & 体验增强 (2026-04-23)
-**In progress:** v1.2 上线前加固 (2026-06-23 — planned, 3 phases / 16 reqs)
+**Shipped:** v1.0 MVP (2026-04-19), v1.1 品牌升级 & 体验增强 (2026-04-24), v1.2 上线前加固 (2026-07-02)
+**Status:** Code is production-ready. No active milestone — run `/gsd-new-milestone` to define v2.0.
 **Tech stack:** 微信原生框架 (WXML/WXSS/JS) + 微信云开发 (CloudBase) + TDesign MiniProgram
 **Cloud functions:** login, profile, works, services, bookings, booking-reminder, reviews (7 functions)
 **Pages:** 5 TabBar pages + works detail/compare/poster + admin sub-package (works/services/bookings/profile/reviews/calendar management) + booking history + review create
-**Known debt (v1.2 scope):** 2026-06-23 全项目 review 发现 16 项问题。经核实无 Critical 阻塞（服务端 requireArtist 鉴权已存在），最高为 High（登录竞态、客户端可伪造展示身份），其余 Medium/Low。详见 `.planning/REQUIREMENTS.md`。
+**v1.2 outcome:** 16 项技术债全部闭环（安全/发布卫生/一致性）。代码具备上线条件。运行时验证（冷启动登录、缓存刷新、并发上传、断网 toast）需在微信开发者工具中手动确认。
 
 ## Requirements
 
@@ -45,26 +45,23 @@
 - ✓ 时间段提示 (BOOK-15/16) — v1.1 Phase 8
 - ✓ 客户评价系统 (REVW-01/02/03/04/05/06) — v1.1 Phase 9
 - ✓ 海报生成 (GROW-01/02/03) — v1.1 Phase 10
+- ✓ 登录态就绪机制 + 冷启动竞态消除 (SEC-03) — v1.2 Phase 11
+- ✓ 身份源统一 artist_profile._openid (SEC-04) — v1.2 Phase 11
+- ✓ 用户信息服务端权威读取 (SEC-05) — v1.2 Phase 11
+- ✓ 用户信息缓存统一 + profile 更新刷新 (SEC-06) — v1.2 Phase 11
+- ✓ 发布包卫生 (HYG-01/02/03) — v1.2 Phase 12
+- ✓ errCode 契约统一 + toast 去重 (HYG-04/05) — v1.2 Phase 12
+- ✓ 设计 token 状态色 + 并发上传 + 聚合统计 + 存储错误上报 (POL-02/04/05/06) — v1.2 Phase 13
 
 ### Active
 
-**v1.2 上线前加固**（详见 `.planning/REQUIREMENTS.md`）— 技术债/安全/发布卫生加固，不引入新功能
+No active milestone. Run `/gsd-new-milestone` to define v2.0.
 
-**Phase 11 — Auth & Security 修复 (High):**
-- [ ] SEC-03: 登录态就绪机制，消除冷启动身份竞态
-- [ ] SEC-04: 化妆师身份源统一（消除前后端硬编码 magic constant 的重复）
-- [ ] SEC-05: 身份信息（昵称/头像）服务端权威，拒绝客户端传入
-- [ ] SEC-06: 用户信息缓存统一，profile 更新后同步刷新
-
-**Phase 12 — 发布卫生 (Medium):**
-- [ ] HYG-01: project.private.config.json 移出版本控制
-- [ ] HYG-02: 移除 demo-ui 生产注册
-- [ ] HYG-03: sitemap 屏蔽 admin 子包
-- [ ] HYG-04: 统一 errCode 响应契约
-- [ ] HYG-05: 消除重复错误 toast
-
-**Phase 13 — 一致性 & 打磨 (Low):**
-- [ ] POL-01..07: booking tab UX、设计 token 状态色、缓存守卫、并发上传、错误上报、聚合统计、配置外部化
+**Deferred to v2** (from v1.1):
+- PROF-05: 化妆师自定义主页主题色
+- PROF-06: 化妆师调整主页模块顺序
+- REVW-07: 化妆师回复客户评价
+- BOOK-17: 预约时自动检测可变时长服务的时间冲突
 
 ### Out of Scope
 
@@ -140,4 +137,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-*Last updated: 2026-04-24 after v1.1 milestone*
+*Last updated: 2026-07-02 after v1.2 milestone*

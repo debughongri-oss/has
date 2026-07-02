@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2
 milestone_name: 上线前加固
-status: executing
-stopped_at: v1.2 milestone artifacts created (REQUIREMENTS.md, ROADMAP.md, STATE.md, PROJECT.md updated)
-last_updated: "2026-07-02T05:38:23.971Z"
-last_activity: 2026-07-02
+status: complete
+stopped_at: v1.2 milestone archived — all 3 phases / 16 requirements complete
+last_updated: "2026-07-02T13:50:00.000Z"
+last_activity: 2026-07-02 -- v1.2 milestone archived, ready for v2.0
 progress:
   total_phases: 3
-  completed_phases: 2
-  total_plans: 4
+  completed_phases: 3
+  total_plans: 5
   completed_plans: 5
   percent: 100
 ---
