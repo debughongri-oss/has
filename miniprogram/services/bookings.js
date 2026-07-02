@@ -2,49 +2,49 @@ const { callCloudFunction } = require('./api')
 
 const getAvailableSlots = async (date) => {
   const result = await callCloudFunction('bookings', { action: 'getAvailableSlots', date })
-  if (result.errCode !== 0) throw new Error(result.errMsg)
+
   return result.data
 }
 
 const createBooking = async (data) => {
   const result = await callCloudFunction('bookings', { action: 'create', ...data })
-  if (result.errCode !== 0) throw new Error(result.errMsg)
+
   return result.data
 }
 
 const getBookingsList = async (status, page, pageSize) => {
   const result = await callCloudFunction('bookings', { action: 'list', status, page, pageSize })
-  if (result.errCode !== 0) throw new Error(result.errMsg)
+
   return result.data
 }
 
 const getMyBookings = async (page, pageSize) => {
   const result = await callCloudFunction('bookings', { action: 'myBookings', page, pageSize })
-  if (result.errCode !== 0) throw new Error(result.errMsg)
+
   return result.data
 }
 
 const getBookingDetail = async (id) => {
   const result = await callCloudFunction('bookings', { action: 'detail', id })
-  if (result.errCode !== 0) throw new Error(result.errMsg)
+
   return result.data
 }
 
 const updateBookingStatus = async (id, status, extra = {}) => {
   const result = await callCloudFunction('bookings', { action: 'updateStatus', id, status, ...extra })
-  if (result.errCode !== 0) throw new Error(result.errMsg)
+
   return result.data
 }
 
 const cancelBooking = async (id) => {
   const result = await callCloudFunction('bookings', { action: 'cancel', id })
-  if (result.errCode !== 0) throw new Error(result.errMsg)
+
   return result.data
 }
 
 const getCalendarData = async (year, month) => {
   const result = await callCloudFunction('bookings', { action: 'getCalendarData', year, month })
-  if (result.errCode !== 0) throw new Error(result.errMsg)
+
   return result.data
 }
 

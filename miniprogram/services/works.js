@@ -8,9 +8,6 @@ const getWorksList = async (category, page = 1, pageSize = 10) => {
     page,
     pageSize
   })
-  if (result.errCode !== 0) {
-    throw new Error(result.errMsg || '获取作品列表失败')
-  }
   return result.data
 }
 
@@ -19,9 +16,6 @@ const getWorkDetail = async (id) => {
     action: 'detail',
     id
   })
-  if (result.errCode !== 0) {
-    throw new Error(result.errMsg || '获取作品详情失败')
-  }
   return result.data
 }
 
@@ -30,9 +24,6 @@ const createWork = async (data) => {
     action: 'create',
     data
   })
-  if (result.errCode !== 0) {
-    throw new Error(result.errMsg || '创建作品失败')
-  }
   return result.data
 }
 
@@ -42,9 +33,6 @@ const updateWork = async (id, data) => {
     id,
     data
   })
-  if (result.errCode !== 0) {
-    throw new Error(result.errMsg || '更新作品失败')
-  }
   return result.data
 }
 
@@ -53,9 +41,6 @@ const deleteWork = async (id) => {
     action: 'delete',
     id
   })
-  if (result.errCode !== 0) {
-    throw new Error(result.errMsg || '删除作品失败')
-  }
   return result.data
 }
 
@@ -68,9 +53,6 @@ const getShareQRCode = async (id) => {
     action: 'getShareQRCode',
     id
   })
-  if (result.errCode !== 0) {
-    throw new Error(result.errMsg || '获取小程序码失败')
-  }
   return result.data
 }
 

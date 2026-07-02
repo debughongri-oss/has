@@ -15,7 +15,7 @@ const createReview = async (bookingId, rating, content) => {
     rating,
     content: content || ''
   })
-  if (result.errCode !== 0) throw new Error(result.errMsg)
+
   return result.data
 }
 
@@ -25,7 +25,7 @@ const createReview = async (bookingId, rating, content) => {
  */
 const getReviewStats = async () => {
   const result = await callCloudFunction('reviews', { action: 'getStats' })
-  if (result.errCode !== 0) throw new Error(result.errMsg)
+
   return result.data
 }
 
@@ -36,7 +36,7 @@ const getReviewStats = async () => {
  */
 const getByBooking = async (bookingId) => {
   const result = await callCloudFunction('reviews', { action: 'getByBooking', booking_id: bookingId })
-  if (result.errCode !== 0) throw new Error(result.errMsg)
+
   return result.data
 }
 
@@ -48,7 +48,7 @@ const getByBooking = async (bookingId) => {
  */
 const getReviewsList = async (page, pageSize) => {
   const result = await callCloudFunction('reviews', { action: 'list', page, pageSize })
-  if (result.errCode !== 0) throw new Error(result.errMsg)
+
   return result.data
 }
 

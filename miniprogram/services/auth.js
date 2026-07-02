@@ -39,10 +39,6 @@ const silentLogin = async () => {
       code: loginRes.code
     })
 
-    if (result.errCode !== 0) {
-      throw new Error(result.errMsg || '登录失败')
-    }
-
     _userInfo = result.data || {}
 
     return _userInfo
@@ -75,11 +71,8 @@ const ensureLogin = () => {
 const refreshUserInfo = async () => {
   try {
     const result = await callCloudFunction('login', { action: 'getUser' })
-    if (result.errCode === 0) {
-      _userInfo = result.data
-      return _userInfo
-    }
-    throw new Error(result.errMsg)
+    _userInfo = result.data
+    return _userInfo
   } catch (error) {
     console.error('刷新用户信息失败:', error)
     throw error

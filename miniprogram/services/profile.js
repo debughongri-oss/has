@@ -24,10 +24,6 @@ const getArtistProfile = async (forceRefresh = false) => {
       action: 'get'
     })
 
-    if (result.errCode !== 0) {
-      throw new Error(result.errMsg || '获取资料失败')
-    }
-
     _artistProfile = result.data
     return _artistProfile
   } catch (error) {
@@ -47,10 +43,6 @@ const updateArtistProfile = async (data) => {
       action: 'update',
       data
     })
-
-    if (result.errCode !== 0) {
-      throw new Error(result.errMsg || '更新失败')
-    }
 
     // 清除缓存，下次获取时重新加载
     _artistProfile = null
