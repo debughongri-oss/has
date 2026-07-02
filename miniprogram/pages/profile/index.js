@@ -59,6 +59,9 @@ Page({
   goToAdminReviews: function () {
     wx.navigateTo({ url: '/pages/admin/reviews/list' })
   },
+  goToDashboard: function () {
+    wx.navigateTo({ url: '/pages/admin/dashboard/dashboard' })
+  },
   goToBookingHistory: function () {
     wx.navigateTo({ url: '/pages/profile/history' })
   }

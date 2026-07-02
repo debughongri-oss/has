@@ -79,6 +79,14 @@
         </view>
         <view class="menu-arrow"></view>
       </view>
+      <view class="menu-item menu-item--last tappable" bindtap="goToDashboard">
+        <view class="menu-icon menu-icon--green"></view>
+        <view class="menu-left">
+          <text class="menu-text">经营数据</text>
+          <text class="menu-note">预约/营收/评价统计</text>
+        </view>
+        <view class="menu-arrow"></view>
+      </view>
     </view>
   </view>
 

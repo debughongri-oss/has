@@ -321,6 +321,81 @@ exports.main = async (event, context) => {
       }
     }
 
+    case 'getDashboard': {
+      // DASH-01: 化妆师经营数据看板
+      const authCheck = await requireArtist(wxContext, db)
+      if (!authCheck.ok) return authCheck.response
+
+      try {
+        const now = new Date()
+        const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+        const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
+
+        // 本月预约统计
+        const monthBookings = await db.collection('bookings')
+          .where({ booking_date: db.regex('^' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')) })
+          .get()
+
+        const statusCounts = { pending: 0, accepted: 0, completed: 0, rejected: 0, cancelled: 0 }
+        let revenue = 0
+        const serviceCount = {}
+
+        monthBookings.data.forEach(b => {
+          statusCounts[b.status] = (statusCounts[b.status] || 0) + 1
+          if (b.status === 'completed') {
+            const price = parseFloat(String(b.service_name || '').match(/[\d.]+/)) || 0
+            revenue += price
+          }
+          if (b.service_name) {
+            serviceCount[b.service_name] = (serviceCount[b.service_name] || 0) + 1
+          }
+        })
+
+        // 上月预约数（环比）
+        const lastMonthBookings = await db.collection('bookings')
+          .where({ booking_date: db.regex('^' + lastMonthStart.getFullYear() + '-' + String(lastMonthStart.getMonth() + 1).padStart(2, '0')) })
+          .count()
+
+        // 热门服务 Top3
+        const topServices = Object.entries(serviceCount)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3)
+          .map(([name, count]) => ({ name, count }))
+
+        // 评价统计
+        let reviewStats = { average: '0.0', total: 0 }
+        try {
+          const rStats = await db.collection('reviews').aggregate()
+            .group({ _id: null, total: $.sum(1), avg: $.avg('$rating') })
+            .end()
+          if (rStats.list.length > 0) {
+            reviewStats = { average: Number(rStats.list[0].avg || 0).toFixed(1), total: rStats.list[0].total }
+          }
+        } catch (e) { /* reviews 集合可能不存在 */ }
+
+        return {
+          errCode: 0,
+          data: {
+            thisMonth: {
+              total: monthBookings.data.length,
+              pending: statusCounts.pending,
+              accepted: statusCounts.accepted,
+              completed: statusCounts.completed,
+              rejected: statusCounts.rejected,
+              cancelled: statusCounts.cancelled
+            },
+            lastMonthTotal: lastMonthBookings.total,
+            revenue,
+            topServices,
+            reviewStats
+          }
+        }
+      } catch (error) {
+        console.error('获取看板数据失败:', error)
+        return { errCode: -1, errMsg: '获取看板数据失败' }
+      }
+    }
+
     default:
       return { errCode: -1, errMsg: '未知操作' }
   }

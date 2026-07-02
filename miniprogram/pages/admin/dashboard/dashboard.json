@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "经营数据",
+  "usingComponents": {
+    "t-loading": "tdesign-miniprogram/loading/loading"
+  }
+}
