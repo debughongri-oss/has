@@ -11,7 +11,7 @@
 ## Current State
 
 **Shipped:** v1.0 MVP (2026-04-19), v1.1 品牌升级 & 体验增强 (2026-04-24), v1.2 上线前加固 (2026-07-02)
-**Status:** Code is production-ready. No active milestone — run `/gsd-new-milestone` to define v2.0.
+**In progress:** v2.0 评价互动 & 预约智能化 (2026-07-02 — planned, 2 phases / 5 reqs)
 **Tech stack:** 微信原生框架 (WXML/WXSS/JS) + 微信云开发 (CloudBase) + TDesign MiniProgram
 **Cloud functions:** login, profile, works, services, bookings, booking-reminder, reviews (7 functions)
 **Pages:** 5 TabBar pages + works detail/compare/poster + admin sub-package (works/services/bookings/profile/reviews/calendar management) + booking history + review create
@@ -55,13 +55,20 @@
 
 ### Active
 
-No active milestone. Run `/gsd-new-milestone` to define v2.0.
+**v2.0 评价互动 & 预约智能化**（详见 `.planning/REQUIREMENTS.md`）
 
-**Deferred to v2** (from v1.1):
+**Phase 14 — 化妆师回复评价 (Medium):**
+- [ ] REVW-07: reviews 云函数 reply action（化妆师回复/编辑/删除，含内容安全审查）
+- [ ] REVW-08: 管理后台评价列表增加回复入口和编辑器
+- [ ] REVW-09: 前台评价展示显示化妆师回复
+
+**Phase 15 — 可变时长冲突检测 (Medium):**
+- [ ] BOOK-17: bookings 冲突检查改为时长区间重叠检测 + getAvailableSlots 按时长计算
+- [ ] BOOK-18: 预约创建页实时显示可用时段
+
+**Deferred to later:**
 - PROF-05: 化妆师自定义主页主题色
 - PROF-06: 化妆师调整主页模块顺序
-- REVW-07: 化妆师回复客户评价
-- BOOK-17: 预约时自动检测可变时长服务的时间冲突
 
 ### Out of Scope
 
