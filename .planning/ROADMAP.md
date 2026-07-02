@@ -76,7 +76,9 @@ v1.2 是技术债/安全/发布卫生加固里程碑，不引入新功能。2026
   3. admin 子包页面被 sitemap 标记为 `disallow`，不被收录
   4. errCode 响应契约在 api.js 与所有 services/*.js 中一致（成功=0，失败≠0），有单一判定点
   5. 错误提示不重复——api.js 与调用方 toast 不再叠加出现
-**Plans**: TBD (via `/gsd-plan-phase 12`)
+**Plans**:
+- `12-01-PLAN.md` (Wave 1): 发布包卫生 — private config 出库 + demo-ui 移除 + sitemap 屏蔽 admin (HYG-01, HYG-02, HYG-03)
+- `12-02-PLAN.md` (Wave 1): errCode 契约统一 + toast 去重 — api.js 单一判定点 + services 移除冗余守卫 (HYG-04, HYG-05)
 **UI hint**: no
 
 ### Phase 13: 一致性 & 打磨
@@ -103,5 +105,5 @@ Phases execute in numeric order: 11 → 12 → 13
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 11. Auth & Security 修复 | v1.2 | 2/2 | Complete    | 2026-07-01 |
-| 12. 发布卫生 | v1.2 | 0/TBD | Pending | — |
+| 12. 发布卫生 | v1.2 | 0/2 | Pending | — |
 | 13. 一致性 & 打磨 | v1.2 | 0/TBD | Pending | — |
