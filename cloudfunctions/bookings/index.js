@@ -30,15 +30,19 @@ const STATUS_LABELS = {
 
 async function sendNotify(booking, status) {
   try {
+    // CONV-02: 完成时通知中提示评价，并跳转到预约记录页
+    const isCompleted = status === 'completed'
     await cloud.openapi.subscribeMessage.send({
       touser: booking.user_openid,
       templateId: TEMPLATE_ID,
-      page: `pages/profile/history`,
+      page: isCompleted && booking._id
+        ? `pages/review/create?booking_id=${booking._id}`
+        : 'pages/profile/history',
       data: {
         thing1: { value: booking.service_name || '化妆服务' },
         date2: { value: `${booking.booking_date} ${booking.booking_time}` },
         date3: { value: `${booking.booking_date} ${booking.booking_time}` },
-        thing4: { value: booking.special_needs || booking.notes || '无' },
+        thing4: { value: isCompleted ? '服务完成，期待您的评价' : (booking.special_needs || booking.notes || '无') },
         phrase5: { value: STATUS_LABELS[status] || status }
       }
     })
