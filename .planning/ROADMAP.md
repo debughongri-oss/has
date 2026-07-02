@@ -46,7 +46,7 @@ v1.2 是技术债/安全/发布卫生加固里程碑，不引入新功能。2026
 
 - [x] **Phase 11: Auth & Security 修复** — 登录竞态、身份源硬编码统一、身份信息服务端权威、缓存统一 (completed 2026-07-01)
 - [x] **Phase 12: 发布卫生** — private config 出库、移除 demo 页、sitemap 收敛、统一 errCode 契约、去重错误提示 (completed 2026-07-02)
-- [ ] **Phase 13: 一致性 & 打磨** — booking tab UX、设计 token 状态色、缓存守卫、并发上传、错误上报、聚合统计、配置外部化
+- [x] **Phase 13: 一致性 & 打磨** — booking tab UX、设计 token 状态色、缓存守卫、并发上传、错误上报、聚合统计、配置外部化 (completed 2026-07-02)
 
 ## Phase Details
 
@@ -106,4 +106,4 @@ Phases execute in numeric order: 11 → 12 → 13
 |-------|-----------|----------------|--------|-----------|
 | 11. Auth & Security 修复 | v1.2 | 2/2 | Complete    | 2026-07-01 |
 | 12. 发布卫生 | v1.2 | 2/2 | Complete    | 2026-07-02 |
-| 13. 一致性 & 打磨 | v1.2 | 0/TBD | Pending | — |
+| 13. 一致性 & 打磨 | v1.2 | 1/0 | Complete    | 2026-07-02 |
