@@ -9,8 +9,7 @@
     "pages/booking/create",
     "pages/profile/index",
     "pages/profile/history",
-    "pages/review/create",
-    "pages/demo-ui/demo-ui"
+    "pages/review/create"
   ],
   "window": {
     "backgroundTextStyle": "dark",
