@@ -151,26 +151,38 @@ exports.main = async (event, context) => {
     }
 
     case 'getStats': {
-      // D-16/D-17: 实时聚合计算平均评分、总数、最近3条评价
+      // POL-06: 改用数据库聚合管道，替代拉取 1000 条内存计算
       try {
-        const { data: reviews } = await db.collection('reviews')
-          .orderBy('created_at', 'desc')
-          .limit(1000)
-          .get()
+        const $ = db.command.aggregate
 
-        if (reviews.length === 0) {
+        // 聚合查询：服务端计算 total + average
+        const statsResult = await db.collection('reviews').aggregate()
+          .group({
+            _id: null,
+            total: $.sum(1),
+            avgRating: $.avg('$rating')
+          })
+          .end()
+
+        // 集合为空时聚合返回空 list
+        if (!statsResult.list || statsResult.list.length === 0) {
           return {
             errCode: 0,
             data: { average: '0.0', total: 0, recent: [] }
           }
         }
 
-        const total = reviews.length
-        const sum = reviews.reduce((acc, r) => acc + (r.rating || 0), 0)
-        const average = (sum / total).toFixed(1)
+        const stats = statsResult.list[0]
+        const average = Number(stats.avgRating || 0).toFixed(1)
 
-        // 最近3条评价，content 截断到30字
-        const recent = reviews.slice(0, 3).map(r => ({
+        // 最近 3 条评价（独立小查询，仅取需要的字段）
+        const recentResult = await db.collection('reviews')
+          .orderBy('created_at', 'desc')
+          .limit(3)
+          .field({ rating: true, content: true, user_nickname: true, created_at: true })
+          .get()
+
+        const recent = (recentResult.data || []).map(r => ({
           rating: r.rating,
           content: r.content ? r.content.slice(0, 30) : '',
           user_nickname: r.user_nickname || '',
@@ -179,7 +191,7 @@ exports.main = async (event, context) => {
 
         return {
           errCode: 0,
-          data: { average, total, recent }
+          data: { average, total: stats.total, recent }
         }
       } catch (error) {
         if (isCollectionMissing(error)) {
