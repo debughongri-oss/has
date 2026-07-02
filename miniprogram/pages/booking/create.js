@@ -220,7 +220,9 @@ Page({
     this.setData({ selectedDate: date, selectedDateLabel: formatDateLabel(date), selectedTime: '', loadingSlots: true })
     this.renderCalendar(this.data.calYear, this.data.calMonth, date)
 
-    bookingsService.getAvailableSlots(date)
+    // BOOK-17: 传入 service_id 让云函数按时长计算可用时段
+    var serviceId = this.data.selectedService ? this.data.selectedService._id : ''
+    bookingsService.getAvailableSlots(date, serviceId)
       .then(data => {
         const slots = data.all.map(time => ({
           time,

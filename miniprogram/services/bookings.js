@@ -1,7 +1,7 @@
 const { callCloudFunction } = require('./api')
 
-const getAvailableSlots = async (date) => {
-  const result = await callCloudFunction('bookings', { action: 'getAvailableSlots', date })
+const getAvailableSlots = async (date, serviceId) => {
+  const result = await callCloudFunction('bookings', { action: 'getAvailableSlots', date, service_id: serviceId })
 
   return result.data
 }

@@ -7,6 +7,18 @@ const $ = db.command.aggregate
 
 const TIME_SLOTS = ['09:00', '10:30', '12:00', '13:30', '15:00', '16:30']
 const TEMPLATE_ID = '-i6OevJwdS5fGFXCsB9Xux4zaaxUkXTR0xfLg5T48jM'
+const DEFAULT_DURATION = 90 // 默认服务时长（分钟），duration 为 0 或缺失时使用
+
+// "HH:MM" → 分钟数（BOOK-17: 时长冲突检测用）
+const parseTime = (t) => {
+  const parts = String(t || '').split(':')
+  return (Number(parts[0]) || 0) * 60 + (Number(parts[1]) || 0)
+}
+
+// 区间重叠检测：[s1, s1+d1) 与 [s2, s2+d2) 是否有交集
+const hasOverlap = (s1, d1, s2, d2) => {
+  return s1 < s2 + d2 && s2 < s1 + d1
+}
 
 const STATUS_LABELS = {
   pending: '待确认',
@@ -41,16 +53,37 @@ exports.main = async (event, context) => {
 
   switch (event.action) {
     case 'getAvailableSlots': {
-      const { date } = event
+      // BOOK-17: 按服务时长计算真正可用时段（不再仅排除精确匹配）
+      const { date, service_id } = event
       try {
+        // 查询服务时长
+        let duration = DEFAULT_DURATION
+        if (service_id) {
+          try {
+            const svc = await db.collection('services').doc(service_id).get()
+            duration = (svc.data.duration && svc.data.duration > 0) ? svc.data.duration : DEFAULT_DURATION
+          } catch (e) { /* 服务不存在用默认时长 */ }
+        }
+
         const existing = await db.collection('bookings')
           .where({
             booking_date: date,
             status: _.in(['pending', 'accepted'])
           })
           .get()
-        const bookedSlots = existing.data.map(b => b.booking_time)
-        const availableSlots = TIME_SLOTS.filter(s => !bookedSlots.includes(s))
+
+        // 按时长区间重叠检测：某时段可用 = 不与任何已有预约的时间范围重叠
+        const availableSlots = TIME_SLOTS.filter(slot => {
+          const slotStart = parseTime(slot)
+          const slotEnd = slotStart + duration
+          return !existing.data.some(booking => {
+            const bookStart = parseTime(booking.booking_time)
+            const bookDur = (booking.service_duration && booking.service_duration > 0)
+              ? booking.service_duration : DEFAULT_DURATION
+            return hasOverlap(slotStart, duration, bookStart, bookDur)
+          })
+        })
+
         return { errCode: 0, data: { available: availableSlots, all: TIME_SLOTS } }
       } catch (error) {
         console.error('获取可用时段失败:', error)
@@ -75,16 +108,33 @@ exports.main = async (event, context) => {
           return { errCode: -1, errMsg: '请填写联系方式' }
         }
 
-        const existing = await db.collection('bookings')
+        // BOOK-17: 查询服务时长
+        let serviceDuration = DEFAULT_DURATION
+        if (service_id) {
+          try {
+            const svc = await db.collection('services').doc(service_id).get()
+            serviceDuration = (svc.data.duration && svc.data.duration > 0) ? svc.data.duration : DEFAULT_DURATION
+          } catch (e) { /* 用默认时长 */ }
+        }
+
+        // BOOK-17: 按时长区间重叠检测（替代精确时间段匹配）
+        const dayBookings = await db.collection('bookings')
           .where({
             booking_date,
-            booking_time,
             status: _.in(['pending', 'accepted'])
           })
           .get()
 
-        if (existing.data.length > 0) {
-          return { errCode: -1, errMsg: '该时段已被预约，请选择其他时间' }
+        const newStart = parseTime(booking_time)
+        const conflict = dayBookings.data.some(booking => {
+          const bookStart = parseTime(booking.booking_time)
+          const bookDur = (booking.service_duration && booking.service_duration > 0)
+            ? booking.service_duration : DEFAULT_DURATION
+          return hasOverlap(newStart, serviceDuration, bookStart, bookDur)
+        })
+
+        if (conflict) {
+          return { errCode: -1, errMsg: '该时段与已有预约时间冲突，请选择其他时间' }
         }
 
         // SEC-05: 服务端权威读取用户昵称/头像，客户端传入被忽略
@@ -100,6 +150,7 @@ exports.main = async (event, context) => {
           user_info: userInfo,
           service_id,
           service_name,
+          service_duration: serviceDuration,
           booking_date,
           booking_time,
           service_mode: mode,
