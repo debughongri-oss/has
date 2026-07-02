@@ -56,8 +56,8 @@ Full details: [milestones/v1.2-ROADMAP.md](milestones/v1.2-ROADMAP.md)
 
 **Milestone Goal:** 化妆师回复评价增强互动信任 + 可变时长冲突检测消除双重预约
 
-- [ ] **Phase 14: 化妆师回复评价** — reviews 云函数 reply action + 管理后台回复 UI + 前台回复展示
-- [ ] **Phase 15: 可变时长冲突检测** — bookings 冲突检查改为时长区间重叠 + getAvailableSlots 按时长计算 + 前台实时可用时段
+- [x] **Phase 14: 化妆师回复评价** — reviews 云函数 reply action + 管理后台回复 UI + 前台回复展示 (completed 2026-07-02)
+- [x] **Phase 15: 可变时长冲突检测** — bookings 冲突检查改为时长区间重叠 + getAvailableSlots 按时长计算 + 前台实时可用时段 (completed 2026-07-02)
 
 ## Phase Details
 
@@ -88,5 +88,5 @@ Phases 14 and 15 are independent (no file overlap), can execute in parallel or s
 
 | Phase | Milestone | Plans Complete | Status |
 |-------|-----------|----------------|--------|
-| 14. 化妆师回复评价 | v2.0 | 0/? | Not Started |
-| 15. 可变时长冲突检测 | v2.0 | 0/? | Not Started |
+| 14. 化妆师回复评价 | 1/0 | Complete    | 2026-07-02 |
+| 15. 可变时长冲突检测 | 1/0 | Complete    | 2026-07-02 |
