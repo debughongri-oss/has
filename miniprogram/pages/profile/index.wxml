@@ -71,6 +71,14 @@
         </view>
         <view class="menu-arrow"></view>
       </view>
+      <view class="menu-item menu-item--last tappable" bindtap="goToAdminReviews">
+        <view class="menu-icon menu-icon--blue"></view>
+        <view class="menu-left">
+          <text class="menu-text">评价管理</text>
+          <text class="menu-note">查看和回复客户评价</text>
+        </view>
+        <view class="menu-arrow"></view>
+      </view>
     </view>
   </view>
 
