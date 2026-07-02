@@ -52,9 +52,25 @@ const getReviewsList = async (page, pageSize) => {
   return result.data
 }
 
+/**
+ * 化妆师回复评价（REVW-07）
+ * @param {string} reviewId - 评价ID
+ * @param {string} content - 回复内容（空字符串=删除回复）
+ * @returns {Promise<Object>} { artist_reply }
+ */
+const replyReview = async (reviewId, content) => {
+  const result = await callCloudFunction('reviews', {
+    action: 'reply',
+    review_id: reviewId,
+    content: content || ''
+  })
+  return result.data
+}
+
 module.exports = {
   createReview,
   getReviewStats,
   getByBooking,
-  getReviewsList
+  getReviewsList,
+  replyReview
 }

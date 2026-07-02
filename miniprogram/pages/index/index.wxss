@@ -367,6 +367,29 @@
   color: var(--text-secondary);
 }
 
+/* 化妆师回复 (REVW-09) */
+.review-reply {
+  margin-top: 16rpx;
+  padding: 16rpx 20rpx;
+  background-color: var(--fill-primary);
+  border-radius: var(--radius-sm);
+  border-left: 4rpx solid var(--accent);
+}
+
+.review-reply-label {
+  display: block;
+  font-size: 20rpx;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 6rpx;
+}
+
+.review-reply-text {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
 /* ===== 预约 CTA ===== */
 .cta {
   padding: 56rpx var(--page-pad) 8rpx;

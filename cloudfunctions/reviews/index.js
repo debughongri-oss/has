@@ -1,6 +1,7 @@
 const cloud = require('wx-server-sdk')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
+const { requireArtist } = require('./shared/auth')
 
 // reviews 集合尚未创建（还没有任何评价）时，查询会抛错，视为「空数据」处理
 const isCollectionMissing = (error) => {
@@ -179,13 +180,14 @@ exports.main = async (event, context) => {
         const recentResult = await db.collection('reviews')
           .orderBy('created_at', 'desc')
           .limit(3)
-          .field({ rating: true, content: true, user_nickname: true, created_at: true })
+          .field({ rating: true, content: true, user_nickname: true, created_at: true, artist_reply: true })
           .get()
 
         const recent = (recentResult.data || []).map(r => ({
           rating: r.rating,
           content: r.content ? r.content.slice(0, 30) : '',
           user_nickname: r.user_nickname || '',
+          artist_reply: r.artist_reply || '',
           created_at: r.created_at
         }))
 
@@ -227,6 +229,57 @@ exports.main = async (event, context) => {
         }
         console.error('查询预约评价失败:', error)
         return { errCode: -1, errMsg: '查询评价失败' }
+      }
+    }
+
+    case 'reply': {
+      // REVW-07: 化妆师回复评价（仅化妆师可操作）
+      const { review_id, content } = event
+      try {
+        if (!review_id) {
+          return { errCode: -1, errMsg: '缺少评价ID' }
+        }
+
+        const authCheck = await requireArtist(wxContext, db)
+        if (!authCheck.ok) return authCheck.response
+
+        const trimmedContent = (content || '').slice(0, 200)
+
+        // 空内容 = 删除回复
+        if (!trimmedContent) {
+          await db.collection('reviews').doc(review_id).update({
+            data: { artist_reply: '', artist_reply_at: null }
+          })
+          return { errCode: 0, data: { artist_reply: '' } }
+        }
+
+        // 内容安全审查
+        try {
+          const secResult = await cloud.openapi.security.msgSecCheck({
+            content: trimmedContent,
+            openid: openid,
+            scene: 2,
+            version: 2
+          })
+          if (secResult.errCode === 87014) {
+            return { errCode: -1, errMsg: '回复内容包含不当信息，请修改后重新提交' }
+          }
+        } catch (secErr) {
+          console.error('msgSecCheck 调用失败:', secErr)
+          return { errCode: -1, errMsg: '内容安全检查失败，请稍后重试' }
+        }
+
+        await db.collection('reviews').doc(review_id).update({
+          data: {
+            artist_reply: trimmedContent,
+            artist_reply_at: db.serverDate()
+          }
+        })
+
+        return { errCode: 0, data: { artist_reply: trimmedContent } }
+      } catch (error) {
+        console.error('回复评价失败:', error)
+        return { errCode: -1, errMsg: '回复失败' }
       }
     }
 

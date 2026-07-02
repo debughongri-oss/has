@@ -138,6 +138,10 @@
         <view class="review-quote" wx:if="{{reviewStats.recent[0] && reviewStats.recent[0].content}}">
           <text class="review-quote-text">"{{reviewStats.recent[0].content}}"</text>
           <text class="review-quote-from">— {{reviewStats.recent[0].user_nickname || '匿名客户'}}</text>
+          <view class="review-reply" wx:if="{{reviewStats.recent[0].artist_reply}}">
+            <text class="review-reply-label">化妆师回复</text>
+            <text class="review-reply-text">{{reviewStats.recent[0].artist_reply}}</text>
+          </view>
         </view>
       </view>
     </view>

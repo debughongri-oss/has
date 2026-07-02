@@ -6,7 +6,11 @@ Page({
     reviews: [],
     loading: true,
     hasMore: true,
-    page: 1
+    page: 1,
+    // REVW-08: 回复编辑器状态
+    replyingId: '',
+    replyText: '',
+    replySubmitting: false
   },
 
   onLoad: async function () {
@@ -36,9 +40,6 @@ Page({
     }
   },
 
-  /**
-   * 加载评价列表 per D-19
-   */
   loadReviews: function (reset) {
     if (typeof reset === 'undefined') reset = false
     var page = reset ? 1 : this.data.page
@@ -47,7 +48,6 @@ Page({
 
     return reviewsService.getReviewsList(page, 10)
       .then(function (result) {
-        // 格式化时间显示
         var reviews = result.list.map(function (r) {
           return Object.assign({}, r, {
             timeLabel: self.formatTime(r.created_at)
@@ -65,9 +65,59 @@ Page({
       })
   },
 
-  /**
-   * 格式化时间为日期字符串
-   */
+  // REVW-08: 回复相关方法
+  onToggleReply: function (e) {
+    var id = e.currentTarget.dataset.id
+    var current = this.data.replyingId === id ? '' : id
+    var replyText = ''
+    if (current) {
+      var review = this.data.reviews.find(function (r) { return r._id === id })
+      replyText = (review && review.artist_reply) || ''
+    }
+    this.setData({ replyingId: current, replyText: replyText })
+  },
+
+  onReplyInput: function (e) {
+    this.setData({ replyText: e.detail.value })
+  },
+
+  onSubmitReply: function () {
+    var self = this
+    var reviewId = this.data.replyingId
+    var content = (this.data.replyText || '').slice(0, 200)
+
+    if (!reviewId) return
+    if (this.data.replySubmitting) return
+
+    this.setData({ replySubmitting: true })
+
+    reviewsService.replyReview(reviewId, content)
+      .then(function () {
+        // 更新本地列表中的回复
+        var reviews = self.data.reviews.map(function (r) {
+          if (r._id === reviewId) {
+            return Object.assign({}, r, {
+              artist_reply: content,
+              artist_reply_at: new Date().toISOString()
+            })
+          }
+          return r
+        })
+        self.setData({
+          reviews: reviews,
+          replyingId: '',
+          replyText: '',
+          replySubmitting: false
+        })
+        wx.showToast({ title: content ? '回复成功' : '已删除回复', icon: 'success' })
+      })
+      .catch(function (err) {
+        console.error('回复失败:', err)
+        wx.showToast({ title: err.message || '回复失败', icon: 'none' })
+        self.setData({ replySubmitting: false })
+      })
+  },
+
   formatTime: function (date) {
     if (!date) return ''
     var d = new Date(date)

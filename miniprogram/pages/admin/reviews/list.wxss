@@ -60,6 +60,80 @@
   border-top: 1rpx solid var(--separator);
 }
 
+/* 化妆师回复展示 (REVW-09) */
+.reply-display {
+  margin-top: 16rpx;
+  padding: 18rpx 22rpx;
+  background-color: var(--fill-primary);
+  border-radius: var(--radius-sm);
+  border-left: 4rpx solid var(--accent);
+}
+
+.reply-label {
+  font-size: 20rpx;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 8rpx;
+}
+
+.reply-text {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* 回复操作按钮 */
+.reply-action {
+  margin-top: 14rpx;
+  align-self: flex-start;
+  font-size: 22rpx;
+  color: var(--accent);
+  padding: 6rpx 0;
+}
+
+/* 回复编辑器 (REVW-08) */
+.reply-editor {
+  margin-top: 14rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.reply-input {
+  width: 100%;
+  min-height: 80rpx;
+  padding: 18rpx 22rpx;
+  font-size: var(--fs-xs);
+  color: var(--text-primary);
+  background-color: var(--fill-primary);
+  border-radius: var(--radius-sm);
+  line-height: 1.6;
+  box-sizing: border-box;
+}
+
+.reply-ph {
+  color: var(--text-tertiary);
+}
+
+.reply-submit {
+  align-self: flex-end;
+  font-size: 24rpx;
+  color: #FFFFFF;
+  background-color: var(--accent-dark);
+  padding: 12rpx 36rpx;
+  border-radius: var(--radius-sm);
+  line-height: 1.4;
+  border: none;
+}
+
+.reply-submit::after {
+  border: none;
+}
+
+.reply-submit[disabled] {
+  opacity: 0.5;
+}
+
 .empty-container {
   display: flex;
   justify-content: center;

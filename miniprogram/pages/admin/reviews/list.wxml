@@ -17,6 +17,35 @@
         <text class="rsvc" wx:if="{{item.service_name}}">{{item.service_name}}</text>
       </view>
       <text class="rcontent" wx:if="{{item.content}}">{{item.content}}</text>
+
+      <!-- 化妆师回复展示 (REVW-09) -->
+      <view class="reply-display" wx:if="{{item.artist_reply}}">
+        <view class="reply-label">化妆师回复</view>
+        <text class="reply-text">{{item.artist_reply}}</text>
+      </view>
+
+      <!-- 回复按钮 -->
+      <view class="reply-action" bindtap="onToggleReply" data-id="{{item._id}}">
+        <text>{{replyingId === item._id ? '取消' : (item.artist_reply ? '修改回复' : '回复')}}</text>
+      </view>
+
+      <!-- 回复编辑器 (REVW-08) -->
+      <view class="reply-editor" wx:if="{{replyingId === item._id}}">
+        <textarea
+          class="reply-input"
+          placeholder="输入回复内容（留空删除回复）"
+          placeholder-class="reply-ph"
+          value="{{replyText}}"
+          maxlength="200"
+          bindinput="onReplyInput"
+          auto-height
+        />
+        <button
+          class="reply-submit"
+          bindtap="onSubmitReply"
+          disabled="{{replySubmitting}}"
+        >{{replySubmitting ? '提交中...' : (replyText ? '提交回复' : '删除回复')}}</button>
+      </view>
     </view>
   </view>
 
