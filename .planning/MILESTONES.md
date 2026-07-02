@@ -1,5 +1,23 @@
 # Milestones
 
+## v2.0 评价互动 & 预约智能化 (Shipped: 2026-07-02)
+
+**Phases completed:** 2 phases, 5 requirements
+**Timeline:** 1 day (2026-07-02)
+**Git range:** feat(14)..fix(14) — 6 commits, 19 files (+543 / -77)
+
+**Key accomplishments:**
+
+- Review reply system: reviews cloud function `reply` action (requireArtist + msgSecCheck), admin reply editor in reviews list, homepage artist reply display
+- Variable duration conflict detection: bookings create + getAvailableSlots changed from exact-time-match to `[start, start+duration)` interval overlap detection
+- parseTime/hasOverlap utility functions for time range calculations
+- Booking documents now store `service_duration` for accurate conflict detection
+- Profile page: added direct 评价管理 entry with dedicated icon
+
+**Archived:** `.planning/milestones/v2.0-ROADMAP.md`, `.planning/milestones/v2.0-REQUIREMENTS.md`
+
+---
+
 ## v1.2 上线前加固 (Shipped: 2026-07-02)
 
 **Phases completed:** 3 phases, 5 plans, 16 requirements

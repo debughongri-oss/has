@@ -10,8 +10,8 @@
 
 ## Current State
 
-**Shipped:** v1.0 MVP (2026-04-19), v1.1 品牌升级 & 体验增强 (2026-04-24), v1.2 上线前加固 (2026-07-02)
-**In progress:** v2.0 评价互动 & 预约智能化 (2026-07-02 — planned, 2 phases / 5 reqs)
+**Shipped:** v1.0 MVP (2026-04-19), v1.1 品牌升级 & 体验增强 (2026-04-24), v1.2 上线前加固 (2026-07-02), v2.0 评价互动 & 预约智能化 (2026-07-02)
+**Status:** No active milestone — run `/gsd-new-milestone` to define next version
 **Tech stack:** 微信原生框架 (WXML/WXSS/JS) + 微信云开发 (CloudBase) + TDesign MiniProgram
 **Cloud functions:** login, profile, works, services, bookings, booking-reminder, reviews (7 functions)
 **Pages:** 5 TabBar pages + works detail/compare/poster + admin sub-package (works/services/bookings/profile/reviews/calendar management) + booking history + review create
