@@ -87,6 +87,14 @@
         </view>
         <view class="menu-arrow"></view>
       </view>
+      <view class="menu-item menu-item--last tappable" bindtap="goToAvailability">
+        <view class="menu-icon menu-icon--orange"></view>
+        <view class="menu-left">
+          <text class="menu-text">时间管理</text>
+          <text class="menu-note">屏蔽假期/个人时间</text>
+        </view>
+        <view class="menu-arrow"></view>
+      </view>
     </view>
   </view>
 

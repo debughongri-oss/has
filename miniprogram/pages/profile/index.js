@@ -62,6 +62,9 @@ Page({
   goToDashboard: function () {
     wx.navigateTo({ url: '/pages/admin/dashboard/dashboard' })
   },
+  goToAvailability: function () {
+    wx.navigateTo({ url: '/pages/admin/availability/availability' })
+  },
   goToBookingHistory: function () {
     wx.navigateTo({ url: '/pages/profile/history' })
   }

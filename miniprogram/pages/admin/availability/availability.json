@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "时间管理",
+  "usingComponents": {
+    "t-loading": "tdesign-miniprogram/loading/loading"
+  }
+}

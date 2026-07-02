@@ -72,16 +72,36 @@ exports.main = async (event, context) => {
           })
           .get()
 
-        // 按时长区间重叠检测：某时段可用 = 不与任何已有预约的时间范围重叠
+        // AVAIL-02: 查询时间屏蔽
+        let blockedDates = []
+        try {
+          const blocked = await db.collection('time_blocks')
+            .where({ block_date: date }).get()
+          blockedDates = blocked.data
+        } catch (e) { /* time_blocks 集合可能不存在 */ }
+
         const availableSlots = TIME_SLOTS.filter(slot => {
           const slotStart = parseTime(slot)
           const slotEnd = slotStart + duration
-          return !existing.data.some(booking => {
+
+          // 检查预约冲突
+          const bookingConflict = existing.data.some(booking => {
             const bookStart = parseTime(booking.booking_time)
             const bookDur = (booking.service_duration && booking.service_duration > 0)
               ? booking.service_duration : DEFAULT_DURATION
             return hasOverlap(slotStart, duration, bookStart, bookDur)
           })
+          if (bookingConflict) return false
+
+          // AVAIL-02: 检查时间屏蔽（全日屏蔽或特定时段屏蔽）
+          if (blockedDates.length > 0) {
+            const fullDayBlock = blockedDates.some(b => !b.block_time)
+            if (fullDayBlock) return false
+            const slotBlock = blockedDates.some(b => b.block_time === slot)
+            if (slotBlock) return false
+          }
+
+          return true
         })
 
         return { errCode: 0, data: { available: availableSlots, all: TIME_SLOTS } }
@@ -318,6 +338,72 @@ exports.main = async (event, context) => {
       } catch (error) {
         console.error('获取日历数据失败:', error)
         return { errCode: -1, errMsg: '获取日历数据失败' }
+      }
+    }
+
+    case 'blockTime': {
+      // AVAIL-01: 化妆师屏蔽日期/时段
+      const authCheck = await requireArtist(wxContext, db)
+      if (!authCheck.ok) return authCheck.response
+
+      const { date, time_slot, reason } = event
+      if (!date) return { errCode: -1, errMsg: '缺少日期' }
+
+      try {
+        // 检查是否已存在相同屏蔽
+        const existing = await db.collection('time_blocks')
+          .where({ block_date: date, block_time: time_slot || '' })
+          .limit(1).get()
+        if (existing.data.length > 0) {
+          return { errCode: -1, errMsg: '该日期/时段已屏蔽' }
+        }
+
+        const res = await db.collection('time_blocks').add({
+          data: {
+            block_date: date,
+            block_time: time_slot || '',
+            reason: reason || '',
+            created_at: db.serverDate()
+          }
+        })
+        return { errCode: 0, data: { _id: res._id } }
+      } catch (error) {
+        console.error('屏蔽时间失败:', error)
+        return { errCode: -1, errMsg: '屏蔽失败' }
+      }
+    }
+
+    case 'unblockTime': {
+      const authCheck = await requireArtist(wxContext, db)
+      if (!authCheck.ok) return authCheck.response
+
+      try {
+        await db.collection('time_blocks').doc(event.block_id).remove()
+        return { errCode: 0, data: {} }
+      } catch (error) {
+        console.error('取消屏蔽失败:', error)
+        return { errCode: -1, errMsg: '取消屏蔽失败' }
+      }
+    }
+
+    case 'getBlockedTimes': {
+      const authCheck = await requireArtist(wxContext, db)
+      if (!authCheck.ok) return authCheck.response
+
+      const { year, month } = event
+      try {
+        const prefix = year + '-' + String(month).padStart(2, '0')
+        const { data } = await db.collection('time_blocks')
+          .where({ block_date: db.regex('^' + prefix) })
+          .orderBy('block_date', 'asc')
+          .get()
+        return { errCode: 0, data: { blocks: data } }
+      } catch (error) {
+        if (/not exist|COLLECTION_NOT_EXIST/i.test(error.errMsg || '')) {
+          return { errCode: 0, data: { blocks: [] } }
+        }
+        console.error('获取屏蔽时间失败:', error)
+        return { errCode: -1, errMsg: '获取失败' }
       }
     }
 

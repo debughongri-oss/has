@@ -69,7 +69,8 @@
         "bookings/calendar",
         "profile/edit",
         "reviews/list",
-        "dashboard/dashboard"
+        "dashboard/dashboard",
+        "availability/availability"
       ]
     }
   ],

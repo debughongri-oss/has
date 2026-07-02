@@ -73,6 +73,22 @@ const getStatusColor = (status) => {
   return colors[status] || 'var(--text-tertiary)'
 }
 
+// AVAIL-01: 不可用时间管理
+const blockTime = async (date, timeSlot, reason) => {
+  const result = await callCloudFunction('bookings', { action: 'blockTime', date, time_slot: timeSlot || '', reason: reason || '' })
+  return result.data
+}
+
+const unblockTime = async (blockId) => {
+  const result = await callCloudFunction('bookings', { action: 'unblockTime', block_id: blockId })
+  return result.data
+}
+
+const getBlockedTimes = async (year, month) => {
+  const result = await callCloudFunction('bookings', { action: 'getBlockedTimes', year, month })
+  return result.data
+}
+
 module.exports = {
   getAvailableSlots,
   createBooking,
@@ -83,5 +99,8 @@ module.exports = {
   cancelBooking,
   getCalendarData,
   getStatusLabel,
-  getStatusColor
+  getStatusColor,
+  blockTime,
+  unblockTime,
+  getBlockedTimes
 }

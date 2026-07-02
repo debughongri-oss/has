@@ -1,0 +1,135 @@
+.availability-page {
+  min-height: 100vh;
+  background-color: var(--bg);
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+.add-bar { padding: 24rpx var(--page-pad); }
+
+.add-btn {
+  width: 100%;
+  height: 80rpx;
+  font-size: var(--fs-sm);
+  color: var(--accent);
+  background-color: var(--accent-soft);
+  border: 2rpx solid var(--accent-medium);
+  border-radius: var(--radius-md);
+  line-height: 80rpx;
+}
+.add-btn::after { border: none; }
+
+.add-form {
+  margin: 0 var(--page-pad) 16rpx;
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  padding: 26rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 22rpx;
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
+}
+
+.form-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+}
+
+.form-label {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  width: 60rpx;
+  flex-shrink: 0;
+  line-height: 52rpx;
+}
+
+.form-value {
+  font-size: var(--fs-xs);
+  color: var(--text-primary);
+  line-height: 52rpx;
+}
+.form-value.ph { color: var(--text-tertiary); }
+
+.form-input {
+  flex: 1;
+  font-size: var(--fs-xs);
+  color: var(--text-primary);
+  height: 52rpx;
+}
+
+.time-options {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.time-chip {
+  font-size: 22rpx;
+  padding: 8rpx 20rpx;
+  border-radius: 999rpx;
+  background-color: var(--fill-primary);
+  color: var(--text-secondary);
+}
+
+.time-chip.active {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.form-submit {
+  align-self: flex-end;
+  font-size: 24rpx;
+  color: #FFFFFF;
+  background-color: var(--accent-dark);
+  padding: 12rpx 40rpx;
+  border-radius: var(--radius-sm);
+  line-height: 1.4;
+}
+.form-submit::after { border: none; }
+
+.block-list {
+  padding: 0 var(--page-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.block-card {
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  padding: 22rpx 26rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.04);
+}
+
+.block-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.block-date {
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.block-time {
+  font-size: var(--fs-xs);
+  color: var(--accent);
+}
+
+.block-reason {
+  font-size: 20rpx;
+  color: var(--text-tertiary);
+}
+
+.block-remove {
+  font-size: 22rpx;
+  color: var(--red);
+  flex-shrink: 0;
+}

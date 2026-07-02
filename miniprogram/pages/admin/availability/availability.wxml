@@ -1,0 +1,51 @@
+<view class="availability-page">
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <block wx:if="{{!loading}}">
+    <!-- 添加按钮 -->
+    <view class="add-bar">
+      <button class="add-btn" bindtap="onToggleAdd">{{showAdd ? '取消' : '+ 添加屏蔽时间'}}</button>
+    </view>
+
+    <!-- 添加表单 -->
+    <view class="add-form" wx:if="{{showAdd}}">
+      <view class="form-row">
+        <text class="form-label">日期</text>
+        <picker mode="date" value="{{newDate}}" bindchange="onDateChange">
+          <text class="form-value {{newDate ? '' : 'ph'}}">{{newDate || '选择日期'}}</text>
+        </picker>
+      </view>
+      <view class="form-row">
+        <text class="form-label">时段</text>
+        <view class="time-options">
+          <text class="time-chip {{newTime === '' ? 'active' : ''}}" bindtap="onTimePick" data-time="">全天</text>
+          <text class="time-chip {{newTime === item ? 'active' : ''}}" wx:for="{{timeSlots}}" wx:key="*this" bindtap="onTimePick" data-time="{{item}}">{{item}}</text>
+        </view>
+      </view>
+      <view class="form-row">
+        <text class="form-label">备注</text>
+        <input class="form-input" placeholder="如：个人事务/假期" value="{{newReason}}" bindinput="onReasonInput" />
+      </view>
+      <button class="form-submit" bindtap="onAddBlock">确认屏蔽</button>
+    </view>
+
+    <!-- 屏蔽列表 -->
+    <view class="block-list" wx:if="{{blocks.length}}">
+      <view class="block-card" wx:for="{{blocks}}" wx:key="_id">
+        <view class="block-info">
+          <text class="block-date">{{item.dateLabel}}</text>
+          <text class="block-time">{{item.timeLabel}}</text>
+          <text class="block-reason">{{item.reasonLabel}}</text>
+        </view>
+        <text class="block-remove" bindtap="onRemoveBlock" data-id="{{item._id}}">取消屏蔽</text>
+      </view>
+    </view>
+
+    <view class="empty" wx:if="{{!blocks.length}}">
+      <view class="empty-icon"></view>
+      <text class="empty-text">暂无屏蔽时间</text>
+    </view>
+  </block>
+</view>
