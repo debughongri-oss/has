@@ -396,9 +396,12 @@ exports.main = async (event, context) => {
 
       const { year, month } = event
       try {
-        const prefix = year + '-' + String(month).padStart(2, '0')
+        // 用范围查询替代 RegExp（更可靠，可用索引）
+        const m = String(month).padStart(2, '0')
+        const startDate = `${year}-${m}-01`
+        const endDate = `${year}-${m}-31`
         const { data } = await db.collection('time_blocks')
-          .where({ block_date: db.RegExp({ regexp: '^' + prefix }) })
+          .where({ block_date: _.gte(startDate).and(_.lte(endDate)) })
           .orderBy('block_date', 'asc')
           .get()
         return { errCode: 0, data: { blocks: data } }
@@ -421,9 +424,10 @@ exports.main = async (event, context) => {
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
         const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
 
-        // 本月预约统计
+        // 本月预约统计（范围查询替代 RegExp）
+        const thisM = String(now.getMonth() + 1).padStart(2, '0')
         const monthBookings = await db.collection('bookings')
-          .where({ booking_date: db.RegExp({ regexp: '^' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') }) })
+          .where({ booking_date: _.gte(`${now.getFullYear()}-${thisM}-01`).and(_.lte(`${now.getFullYear()}-${thisM}-31`)) })
           .get()
 
         const statusCounts = { pending: 0, accepted: 0, completed: 0, rejected: 0, cancelled: 0 }
@@ -442,8 +446,9 @@ exports.main = async (event, context) => {
         })
 
         // 上月预约数（环比）
+        const lastM = String(lastMonthStart.getMonth() + 1).padStart(2, '0')
         const lastMonthBookings = await db.collection('bookings')
-          .where({ booking_date: db.RegExp({ regexp: '^' + lastMonthStart.getFullYear() + '-' + String(lastMonthStart.getMonth() + 1).padStart(2, '0') }) })
+          .where({ booking_date: _.gte(`${lastMonthStart.getFullYear()}-${lastM}-01`).and(_.lte(`${lastMonthStart.getFullYear()}-${lastM}-31`)) })
           .count()
 
         // 热门服务 Top3
