@@ -3,5 +3,6 @@
     "openapi": [
       "subscribeMessage.send"
     ]
-  }
+  },
+  "timeout": 10
 }
