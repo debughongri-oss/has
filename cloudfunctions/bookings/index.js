@@ -398,7 +398,7 @@ exports.main = async (event, context) => {
       try {
         const prefix = year + '-' + String(month).padStart(2, '0')
         const { data } = await db.collection('time_blocks')
-          .where({ block_date: db.regex('^' + prefix) })
+          .where({ block_date: db.RegExp({ regexp: '^' + prefix }) })
           .orderBy('block_date', 'asc')
           .get()
         return { errCode: 0, data: { blocks: data } }
@@ -423,7 +423,7 @@ exports.main = async (event, context) => {
 
         // 本月预约统计
         const monthBookings = await db.collection('bookings')
-          .where({ booking_date: db.regex('^' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0')) })
+          .where({ booking_date: db.RegExp({ regexp: '^' + now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') }) })
           .get()
 
         const statusCounts = { pending: 0, accepted: 0, completed: 0, rejected: 0, cancelled: 0 }
@@ -443,7 +443,7 @@ exports.main = async (event, context) => {
 
         // 上月预约数（环比）
         const lastMonthBookings = await db.collection('bookings')
-          .where({ booking_date: db.regex('^' + lastMonthStart.getFullYear() + '-' + String(lastMonthStart.getMonth() + 1).padStart(2, '0')) })
+          .where({ booking_date: db.RegExp({ regexp: '^' + lastMonthStart.getFullYear() + '-' + String(lastMonthStart.getMonth() + 1).padStart(2, '0') }) })
           .count()
 
         // 热门服务 Top3
