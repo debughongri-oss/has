@@ -1,6 +1,26 @@
 const bookingsService = require('../../../services/bookings')
 const authService = require('../../../services/auth')
 
+const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
+function formatMonthLabel(date) {
+  return `${date.getFullYear()}年${date.getMonth() + 1}月`
+}
+
+function formatBlock(block) {
+  const date = new Date(`${block.block_date}T00:00:00`)
+  const isAllDay = !block.block_time
+  return {
+    ...block,
+    dateLabel: block.block_date,
+    dayLabel: block.block_date.slice(5),
+    weekdayLabel: Number.isNaN(date.getTime()) ? '' : WEEKDAYS[date.getDay()],
+    timeLabel: isAllDay ? '全天' : block.block_time,
+    reasonLabel: block.reason || '未备注',
+    isAllDay
+  }
+}
+
 Page({
   data: {
     blocks: [],
@@ -9,6 +29,9 @@ Page({
     newDate: '',
     newTime: '',
     newReason: '',
+    monthLabel: '',
+    allDayCount: 0,
+    slotCount: 0,
     timeSlots: ['09:00', '10:30', '12:00', '13:30', '15:00', '16:30']
   },
 
@@ -31,13 +54,15 @@ Page({
     this.setData({ loading: true })
     bookingsService.getBlockedTimes(now.getFullYear(), now.getMonth() + 1)
       .then(data => {
-        const blocks = (data.blocks || []).map(b => ({
-          ...b,
-          dateLabel: b.block_date,
-          timeLabel: b.block_time ? b.block_time : '全天',
-          reasonLabel: b.reason || '未备注'
-        }))
-        this.setData({ blocks, loading: false })
+        const blocks = (data.blocks || []).map(formatBlock)
+        const allDayCount = blocks.filter(item => item.isAllDay).length
+        this.setData({
+          blocks,
+          allDayCount,
+          slotCount: blocks.length - allDayCount,
+          monthLabel: formatMonthLabel(now),
+          loading: false
+        })
       })
       .catch(err => {
         console.error('加载屏蔽时间失败:', err)

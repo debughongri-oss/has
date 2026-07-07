@@ -4,42 +4,88 @@
   </view>
 
   <block wx:if="{{!loading}}">
-    <!-- 添加按钮 -->
-    <view class="add-bar">
-      <button class="add-btn" bindtap="onToggleAdd">{{showAdd ? '取消' : '+ 添加屏蔽时间'}}</button>
+    <view class="hero-card">
+      <view class="hero-head">
+        <view>
+          <text class="hero-kicker">{{monthLabel}}</text>
+          <text class="hero-title">不可约时间</text>
+        </view>
+        <button class="add-btn {{showAdd ? 'add-btn--open' : ''}}" bindtap="onToggleAdd">
+          <text class="add-ic"></text>
+          <text>{{showAdd ? '收起' : '添加'}}</text>
+        </button>
+      </view>
+      <view class="summary-row">
+        <view class="summary-item">
+          <text class="summary-num">{{blocks.length}}</text>
+          <text class="summary-label">屏蔽记录</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-num">{{allDayCount}}</text>
+          <text class="summary-label">全天</text>
+        </view>
+        <view class="summary-item">
+          <text class="summary-num">{{slotCount}}</text>
+          <text class="summary-label">时段</text>
+        </view>
+      </view>
     </view>
 
     <!-- 添加表单 -->
     <view class="add-form" wx:if="{{showAdd}}">
-      <view class="form-row">
+      <view class="form-head">
+        <text class="form-title">新增屏蔽</text>
+        <text class="form-state">{{newTime ? '指定时段' : '全天不可约'}}</text>
+      </view>
+
+      <view class="field">
         <text class="form-label">日期</text>
-        <picker mode="date" value="{{newDate}}" bindchange="onDateChange">
-          <text class="form-value {{newDate ? '' : 'ph'}}">{{newDate || '选择日期'}}</text>
+        <picker class="date-picker" mode="date" value="{{newDate}}" bindchange="onDateChange">
+          <view class="picker-value {{newDate ? '' : 'ph'}}">
+            <text>{{newDate || '选择日期'}}</text>
+            <text class="picker-arrow"></text>
+          </view>
         </picker>
       </view>
-      <view class="form-row">
+
+      <view class="field field--col">
         <text class="form-label">时段</text>
         <view class="time-options">
-          <text class="time-chip {{newTime === '' ? 'active' : ''}}" bindtap="onTimePick" data-time="">全天</text>
-          <text class="time-chip {{newTime === item ? 'active' : ''}}" wx:for="{{timeSlots}}" wx:key="*this" bindtap="onTimePick" data-time="{{item}}">{{item}}</text>
+          <view class="time-chip {{newTime === '' ? 'active' : ''}} tappable" bindtap="onTimePick" data-time="">全天</view>
+          <view class="time-chip {{newTime === item ? 'active' : ''}} tappable" wx:for="{{timeSlots}}" wx:key="*this" bindtap="onTimePick" data-time="{{item}}">{{item}}</view>
         </view>
       </view>
-      <view class="form-row">
+
+      <view class="field">
         <text class="form-label">备注</text>
-        <input class="form-input" placeholder="如：个人事务/假期" value="{{newReason}}" bindinput="onReasonInput" />
+        <input class="form-input" placeholder="个人事务/假期" placeholder-class="ph" value="{{newReason}}" bindinput="onReasonInput" />
       </view>
+
       <button class="form-submit" bindtap="onAddBlock">确认屏蔽</button>
     </view>
 
     <!-- 屏蔽列表 -->
-    <view class="block-list" wx:if="{{blocks.length}}">
-      <view class="block-card" wx:for="{{blocks}}" wx:key="_id">
-        <view class="block-info">
-          <text class="block-date">{{item.dateLabel}}</text>
-          <text class="block-time">{{item.timeLabel}}</text>
-          <text class="block-reason">{{item.reasonLabel}}</text>
+    <view class="section" wx:if="{{blocks.length}}">
+      <view class="section-head">
+        <text class="section-title">已屏蔽时间</text>
+        <text class="section-count">{{blocks.length}} 条</text>
+      </view>
+      <view class="block-list">
+        <view class="block-card {{item.isAllDay ? 'block-card--all' : ''}}" wx:for="{{blocks}}" wx:key="_id">
+          <view class="date-badge">
+            <text class="date-day">{{item.dayLabel}}</text>
+            <text class="date-week">{{item.weekdayLabel}}</text>
+          </view>
+          <view class="block-info">
+            <view class="block-top">
+              <text class="block-time">{{item.timeLabel}}</text>
+              <text class="block-kind">{{item.isAllDay ? '全天' : '时段'}}</text>
+            </view>
+            <text class="block-date">{{item.dateLabel}}</text>
+            <text class="block-reason text-ellipsis">{{item.reasonLabel}}</text>
+          </view>
+          <view class="block-remove tappable" bindtap="onRemoveBlock" data-id="{{item._id}}">取消</view>
         </view>
-        <text class="block-remove" bindtap="onRemoveBlock" data-id="{{item._id}}">取消屏蔽</text>
       </view>
     </view>
 
