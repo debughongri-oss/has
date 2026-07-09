@@ -97,6 +97,21 @@ exports.main = async (event, context) => {
           } catch (e) { /* 服务不存在用默认时长 */ }
         }
 
+        // E: 读取化妆师工作时间配置（每周休息日 + 每日窗口）
+        let schedule = null
+        try {
+          const ap = await db.collection('artist_profile').limit(1).get()
+          if (ap.data.length > 0) schedule = ap.data[0].working_schedule || null
+        } catch (e) { /* artist_profile 读取失败按全开放 */ }
+
+        // E: 每周固定休息日 → 整天无可用时段
+        if (schedule && Array.isArray(schedule.off_days) && schedule.off_days.length > 0) {
+          const weekday = new Date(date + 'T00:00:00.000Z').getUTCDay()
+          if (schedule.off_days.includes(weekday)) {
+            return { errCode: 0, data: { available: [], all: TIME_SLOTS } }
+          }
+        }
+
         const existing = await db.collection('bookings')
           .where({
             booking_date: date,
@@ -131,6 +146,13 @@ exports.main = async (event, context) => {
             if (fullDayBlock) return false
             const slotBlock = blockedDates.some(b => b.block_time === slot)
             if (slotBlock) return false
+          }
+
+          // E: 每日工作时段窗口（只裁剪固定时段，不新增）
+          if (schedule && schedule.work_start && schedule.work_end) {
+            const ws = parseTime(schedule.work_start)
+            const we = parseTime(schedule.work_end)
+            if (slotStart < ws || slotEnd > we) return false
           }
 
           return true

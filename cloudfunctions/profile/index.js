@@ -127,6 +127,11 @@ function getDefaultProfile() {
       phone: '',
       location: ''
     },
+    working_schedule: {
+      off_days: [],
+      work_start: '09:00',
+      work_end: '18:00'
+    },
     created_at: new Date(),
     updated_at: new Date()
   }

@@ -68,6 +68,35 @@
     </view>
   </view>
 
+  <!-- 营业时间 -->
+  <view class="card">
+    <text class="card-title">营业时间</text>
+    <view class="field-col">
+      <view class="field-col-label"><text class="field-col-key">每周休息日</text></view>
+      <view class="tags">
+        <view
+          class="tag {{item.selected ? 'tag--on' : ''}} tappable"
+          wx:for="{{weekdayOptions}}"
+          wx:key="value"
+          bindtap="onToggleWeekday"
+          data-value="{{item.value}}"
+        >{{item.label}}</view>
+      </view>
+    </view>
+    <view class="field">
+      <text class="field-key">每日开始</text>
+      <picker mode="time" value="{{workStart}}" bindchange="onWorkStartChange">
+        <text class="field-val">{{workStart}}</text>
+      </picker>
+    </view>
+    <view class="field">
+      <text class="field-key">每日结束</text>
+      <picker mode="time" value="{{workEnd}}" bindchange="onWorkEndChange">
+        <text class="field-val">{{workEnd}}</text>
+      </picker>
+    </view>
+  </view>
+
   <!-- 个人简介 -->
   <view class="card">
     <text class="card-title">个人简介</text>

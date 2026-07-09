@@ -3,6 +3,17 @@ const authService = require('../../../services/auth')
 const storageService = require('../../../services/storage')
 const { STYLE_TAGS } = require('../../../utils/constants')
 
+// E: 每周休息日配置（getDay: 0=周日, 1..6=周一..周六；显示按 周一-first）
+const WEEKDAY_DEFS = [
+  { label: '周一', value: 1 },
+  { label: '周二', value: 2 },
+  { label: '周三', value: 3 },
+  { label: '周四', value: 4 },
+  { label: '周五', value: 5 },
+  { label: '周六', value: 6 },
+  { label: '周日', value: 0 }
+]
+
 Page({
   data: {
     avatar: '',
@@ -17,6 +28,9 @@ Page({
     location: '',
     wechat: '',
     phone: '',
+    weekdayOptions: WEEKDAY_DEFS.map(d => ({ ...d, selected: false })),
+    workStart: '09:00',
+    workEnd: '18:00',
     saving: false
   },
 
@@ -55,7 +69,10 @@ Page({
           })),
           location: (data.contact_info && data.contact_info.location) || '',
           wechat: (data.contact_info && data.contact_info.wechat) || '',
-          phone: (data.contact_info && data.contact_info.phone) || ''
+          phone: (data.contact_info && data.contact_info.phone) || '',
+          weekdayOptions: WEEKDAY_DEFS.map(d => ({ ...d, selected: ((data.working_schedule && data.working_schedule.off_days) || []).includes(d.value) })),
+          workStart: (data.working_schedule && data.working_schedule.work_start) || '09:00',
+          workEnd: (data.working_schedule && data.working_schedule.work_end) || '18:00'
         })
         wx.hideLoading()
       })
@@ -87,6 +104,14 @@ Page({
   onLocationInput: function (e) { this.setData({ location: e.detail.value }) },
   onWechatInput: function (e) { this.setData({ wechat: e.detail.value }) },
   onPhoneInput: function (e) { this.setData({ phone: e.detail.value }) },
+  // E: 工作时间配置
+  onToggleWeekday: function (e) {
+    const value = Number(e.currentTarget.dataset.value)
+    const opts = this.data.weekdayOptions.map(o => o.value === value ? { ...o, selected: !o.selected } : o)
+    this.setData({ weekdayOptions: opts })
+  },
+  onWorkStartChange: function (e) { this.setData({ workStart: e.detail.value }) },
+  onWorkEndChange: function (e) { this.setData({ workEnd: e.detail.value }) },
 
   chooseAvatar: function () {
     wx.chooseMedia({
@@ -101,7 +126,7 @@ Page({
   },
 
   saveProfile: function () {
-    const { name, bio, experience, experienceYears, specialtiesText, selectedStyleTags, location, wechat, phone } = this.data
+    const { name, bio, experience, experienceYears, specialtiesText, selectedStyleTags, location, wechat, phone, weekdayOptions, workStart, workEnd } = this.data
     if (!name.trim()) {
       wx.showToast({ title: '请输入姓名', icon: 'none' })
       return
@@ -121,6 +146,11 @@ Page({
         wechat: wechat.trim(),
         phone: phone.trim(),
         location: location.trim()
+      },
+      working_schedule: {
+        off_days: weekdayOptions.filter(o => o.selected).map(o => o.value),
+        work_start: workStart,
+        work_end: workEnd
       }
     }
 

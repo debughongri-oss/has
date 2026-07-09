@@ -13,7 +13,7 @@
 // profile update 允许的字段白名单 (per D-13)
 const PROFILE_ALLOWED_FIELDS = [
   'name', 'bio', 'experience', 'experience_years',
-  'service_area', 'specialties', 'avatar', 'contact_info'
+  'service_area', 'specialties', 'avatar', 'contact_info', 'working_schedule'
 ]
 
 /**
