@@ -132,13 +132,17 @@ exports.main = async (event, context) => {
           return { errCode: -1, errMsg: '请填写联系方式' }
         }
 
-        // BOOK-17: 查询服务时长
+        // BOOK-17: 查询服务时长 / B: 顺带快照服务价（dashboard 营收用）
         let serviceDuration = DEFAULT_DURATION
+        let servicePrice = 0
         if (service_id) {
           try {
             const svc = await db.collection('services').doc(service_id).get()
             serviceDuration = (svc.data.duration && svc.data.duration > 0) ? svc.data.duration : DEFAULT_DURATION
-          } catch (e) { /* 用默认时长 */ }
+            // price 在 services 集合里是字符串（"299" / "面议"），转数值，非数字则 0
+            const rawPrice = parseFloat(svc.data.price)
+            servicePrice = (!isNaN(rawPrice) && rawPrice > 0) ? rawPrice : 0
+          } catch (e) { /* 用默认时长 / 价格 0 */ }
         }
 
         // BOOK-17: 按时长区间重叠检测（替代精确时间段匹配）
@@ -175,6 +179,7 @@ exports.main = async (event, context) => {
           service_id,
           service_name,
           service_duration: serviceDuration,
+          service_price: servicePrice,
           booking_date,
           booking_time,
           service_mode: mode,
@@ -437,7 +442,10 @@ exports.main = async (event, context) => {
         monthBookings.data.forEach(b => {
           statusCounts[b.status] = (statusCounts[b.status] || 0) + 1
           if (b.status === 'completed') {
-            const price = parseFloat(String(b.service_name || '').match(/[\d.]+/)) || 0
+            // B: 优先用下单时快照的服务价；老预约无该字段则回退正则（对它们仍为 0）
+            const price = (typeof b.service_price === 'number' && b.service_price > 0)
+              ? b.service_price
+              : (parseFloat(String(b.service_name || '').match(/[\d.]+/)) || 0)
             revenue += price
           }
           if (b.service_name) {
