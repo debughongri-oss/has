@@ -1,6 +1,7 @@
 // miniprogram/pages/profile/index.js
 const authService = require('../../services/auth')
 const { callCloudFunction } = require('../../services/api')
+const { SUBSCRIBE_TEMPLATE_ID } = require('../../utils/constants')
 
 Page({
   data: {
@@ -52,6 +53,22 @@ Page({
   },
   goToAdminBookings: function () {
     wx.navigateTo({ url: '/pages/admin/bookings/list' })
+  },
+  // A: 化妆师开启新预约提醒（微信一次性订阅：每次授权可收 1 条）
+  onEnableNewBookingNotify: function () {
+    wx.requestSubscribeMessage({
+      tmplIds: [SUBSCRIBE_TEMPLATE_ID],
+      success: (res) => {
+        const granted = res[SUBSCRIBE_TEMPLATE_ID] === 'accept'
+        wx.showToast({
+          title: granted ? '已开启，将通知下一条新预约' : '未开启',
+          icon: granted ? 'success' : 'none'
+        })
+      },
+      fail: () => {
+        wx.showToast({ title: '开启失败', icon: 'none' })
+      }
+    })
   },
   goToAdminProfile: function () {
     wx.navigateTo({ url: '/pages/admin/profile/edit' })

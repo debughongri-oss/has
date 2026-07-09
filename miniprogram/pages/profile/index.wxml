@@ -63,6 +63,14 @@
         </view>
         <view class="menu-arrow"></view>
       </view>
+      <view class="menu-item tappable" bindtap="onEnableNewBookingNotify">
+        <view class="menu-icon menu-icon--blue"></view>
+        <view class="menu-left">
+          <text class="menu-text">新预约提醒</text>
+          <text class="menu-note">每次开启可收 1 条通知</text>
+        </view>
+        <view class="menu-arrow"></view>
+      </view>
       <view class="menu-item menu-item--last tappable" bindtap="goToAdminProfile">
         <view class="menu-icon menu-icon--rose"></view>
         <view class="menu-left">

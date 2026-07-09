@@ -51,6 +51,33 @@ async function sendNotify(booking, status) {
   }
 }
 
+// A: 客户下单后通知化妆师（best-effort，复用现有模板，收件人 = 化妆师 openid）
+async function notifyArtistNewBooking(booking) {
+  try {
+    const { data } = await db.collection('artist_profile').limit(1).get()
+    if (!data.length || !data[0]._openid) return
+    const artistOpenid = data[0]._openid
+    const nickname = (booking.user_info && booking.user_info.nickname) || '客户'
+    const contact = booking.contact_info || {}
+    const contactStr = contact.phone || contact.wechat || '未留联系方式'
+    const summary = `${nickname} · ${contactStr}`.slice(0, 20) // thing 字段限 20 字
+    await cloud.openapi.subscribeMessage.send({
+      touser: artistOpenid,
+      templateId: TEMPLATE_ID,
+      page: `pages/admin/bookings/detail?id=${booking._id}`,
+      data: {
+        thing1: { value: booking.service_name || '化妆服务' },
+        date2: { value: `${booking.booking_date} ${booking.booking_time}` },
+        date3: { value: `${booking.booking_date} ${booking.booking_time}` },
+        thing4: { value: summary },
+        phrase5: { value: '新预约' }
+      }
+    })
+  } catch (err) {
+    console.error('通知化妆师新预约失败:', err)
+  }
+}
+
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   const openid = wxContext.OPENID
@@ -196,6 +223,8 @@ exports.main = async (event, context) => {
           updated_at: db.serverDate()
         }
         const res = await db.collection('bookings').add({ data: booking })
+        // A: best-effort 通知化妆师有新预约（失败不影响下单，helper 内部已吞错）
+        await notifyArtistNewBooking({ ...booking, _id: res._id })
         return { errCode: 0, data: { _id: res._id } }
       } catch (error) {
         console.error('创建预约失败:', error)
