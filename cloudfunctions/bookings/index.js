@@ -52,8 +52,8 @@ async function sendNotify(booking, status) {
   }
 }
 
-// A: 客户下单后通知化妆师（best-effort，复用现有模板，收件人 = 化妆师 openid）
-async function notifyArtistNewBooking(booking) {
+// A/D: best-effort 通知化妆师（复用现有模板，收件人 = 化妆师 openid；phrase 区分新预约/改期）
+async function notifyArtist(booking, phrase) {
   try {
     const { data } = await db.collection('artist_profile').limit(1).get()
     if (!data.length || !data[0]._openid) return
@@ -71,11 +71,11 @@ async function notifyArtistNewBooking(booking) {
         date2: { value: `${booking.booking_date} ${booking.booking_time}` },
         date3: { value: `${booking.booking_date} ${booking.booking_time}` },
         thing4: { value: summary },
-        phrase5: { value: '新预约' }
+        phrase5: { value: phrase }
       }
     })
   } catch (err) {
-    console.error('通知化妆师新预约失败:', err)
+    console.error('通知化妆师失败:', err)
   }
 }
 
@@ -225,7 +225,7 @@ exports.main = async (event, context) => {
         }
         const res = await db.collection('bookings').add({ data: booking })
         // A: best-effort 通知化妆师有新预约（失败不影响下单，helper 内部已吞错）
-        await notifyArtistNewBooking({ ...booking, _id: res._id })
+        await notifyArtist({ ...booking, _id: res._id }, '新预约')
         return { errCode: 0, data: { _id: res._id } }
       } catch (error) {
         console.error('创建预约失败:', error)
@@ -331,6 +331,61 @@ exports.main = async (event, context) => {
       } catch (error) {
         console.error('取消预约失败:', error)
         return { errCode: -1, errMsg: '取消预约失败' }
+      }
+    }
+
+    case 'reschedule': {
+      // D: 客户改期（owner-only；pending/accepted 可改，改后重置为 pending 待重新确认）
+      const { id, booking_date, booking_time } = event
+      try {
+        if (!id || !booking_date || !booking_time) {
+          return { errCode: -1, errMsg: '缺少改期参数' }
+        }
+        const booking = await db.collection('bookings').doc(id).get()
+        if (booking.data.user_openid !== openid) {
+          return { errCode: -1, errMsg: '无权操作' }
+        }
+        if (!['pending', 'accepted'].includes(booking.data.status)) {
+          return { errCode: -1, errMsg: '当前状态不可改期' }
+        }
+
+        // 冲突检测：复用 create 的区间重叠逻辑，排除自身 _id（防自冲突）
+        const newStart = parseTime(booking_time)
+        const duration = (booking.data.service_duration && booking.data.service_duration > 0)
+          ? booking.data.service_duration : DEFAULT_DURATION
+        const dayBookings = await db.collection('bookings')
+          .where({
+            booking_date,
+            status: _.in(['pending', 'accepted']),
+            _id: _.neq(id)
+          })
+          .get()
+        const conflict = dayBookings.data.some(b => {
+          const bookStart = parseTime(b.booking_time)
+          const bookDur = (b.service_duration && b.service_duration > 0)
+            ? b.service_duration : DEFAULT_DURATION
+          return hasOverlap(newStart, duration, bookStart, bookDur)
+        })
+        if (conflict) {
+          return { errCode: -1, errMsg: '该时段与已有预约时间冲突，请选择其他时间' }
+        }
+
+        // 改期并重置为待确认（化妆师重新确认新时间）
+        await db.collection('bookings').doc(id).update({
+          data: {
+            booking_date,
+            booking_time,
+            status: 'pending',
+            reject_reason: '',
+            updated_at: db.serverDate()
+          }
+        })
+        // best-effort 通知化妆师改期申请
+        await notifyArtist({ ...booking.data, booking_date, booking_time, _id: id }, '改期申请')
+        return { errCode: 0, data: { success: true } }
+      } catch (error) {
+        console.error('改期失败:', error)
+        return { errCode: -1, errMsg: '改期失败' }
       }
     }
 

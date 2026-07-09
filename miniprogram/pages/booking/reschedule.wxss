@@ -1,0 +1,134 @@
+.page {
+  min-height: 100vh;
+  background-color: var(--bg);
+  padding-bottom: calc(200rpx + env(safe-area-inset-bottom));
+}
+
+.loading {
+  padding: 120rpx 0;
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  margin: 24rpx var(--page-pad) 0;
+  background-color: var(--bg-elevated);
+  border-radius: 26rpx;
+  padding: 28rpx;
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
+}
+
+.svc {
+  display: block;
+  font-size: 36rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.cur {
+  margin-top: 16rpx;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cur-label {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+}
+
+.cur-val {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.card-title {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  letter-spacing: 1rpx;
+  margin-bottom: 18rpx;
+}
+
+.date-pill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22rpx 24rpx;
+  background-color: var(--fill-primary);
+  border-radius: 18rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.date-arrow {
+  width: 16rpx;
+  height: 16rpx;
+  border-right: 4rpx solid var(--text-tertiary);
+  border-bottom: 4rpx solid var(--text-tertiary);
+  transform: rotate(45deg);
+}
+
+.slot-tip {
+  font-size: 26rpx;
+  color: var(--text-tertiary);
+  padding: 16rpx 0;
+}
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18rpx;
+}
+
+.slot {
+  height: 84rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18rpx;
+  background-color: var(--fill-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.slot--disabled {
+  color: var(--text-tertiary);
+  opacity: 0.5;
+}
+
+.slot--active {
+  background-color: var(--accent);
+  color: #FFFFFF;
+}
+
+.dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18rpx var(--page-pad);
+  padding-bottom: calc(28rpx + env(safe-area-inset-bottom));
+  background-color: var(--bg-elevated);
+  box-shadow: 0 -8rpx 26rpx rgba(0, 0, 0, 0.07);
+}
+
+.dock-btn {
+  width: 100%;
+  height: 100rpx;
+  border-radius: 24rpx;
+  background-color: var(--accent);
+  color: #FFFFFF;
+  font-size: var(--fs-base);
+  font-weight: 700;
+  letter-spacing: 2rpx;
+  border: none;
+}
+
+.dock-btn::after {
+  border: none;
+}

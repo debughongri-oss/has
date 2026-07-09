@@ -106,7 +106,8 @@
         <text class="box-text">{{item.notes}}</text>
       </view>
 
-      <view class="actions" wx:if="{{item.status === 'pending' || item.status === 'completed'}}">
+      <view class="actions" wx:if="{{item.status === 'pending' || item.status === 'accepted' || item.status === 'completed'}}">
+        <view class="action action--ghost tappable" wx:if="{{item.status === 'pending' || item.status === 'accepted'}}" bindtap="goReschedule" data-id="{{item._id}}">改期</view>
         <view class="action action--ghost tappable" wx:if="{{item.status === 'pending'}}" bindtap="cancelBooking" data-id="{{item._id}}">取消预约</view>
         <view class="action action--primary tappable" wx:if="{{item.status === 'completed' && !reviewMap[item._id]}}" bindtap="goToReview" data-id="{{item._id}}">去评价</view>
         <view class="reviewed" wx:if="{{item.status === 'completed' && reviewMap[item._id]}}">

@@ -1,0 +1,45 @@
+<view class="page">
+  <view class="loading" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <block wx:if="{{!loading}}">
+    <view class="card">
+      <text class="svc">{{serviceName}}</text>
+      <view class="cur">
+        <text class="cur-label">当前时间</text>
+        <text class="cur-val">{{booking.booking_date}} {{booking.booking_time}}</text>
+      </view>
+    </view>
+
+    <view class="card">
+      <text class="card-title">选择新日期</text>
+      <picker mode="date" value="{{selectedDate}}" start="{{minDate}}" end="{{maxDate}}" bindchange="onDateChange">
+        <view class="date-pill">
+          <text>{{selectedDateLabel || '点击选择日期'}}</text>
+          <text class="date-arrow"></text>
+        </view>
+      </picker>
+    </view>
+
+    <view class="card">
+      <text class="card-title">选择新时段</text>
+      <view class="slot-tip" wx:if="{{loadingSlots}}">加载时段中...</view>
+      <view class="slot-tip" wx:elif="{{allBooked}}">该日已约满，请换一天</view>
+      <view class="slot-grid" wx:else>
+        <view
+          wx:for="{{timeSlots}}"
+          wx:key="time"
+          class="slot {{item.available ? '' : 'slot--disabled'}} {{selectedTime === item.time ? 'slot--active' : ''}}"
+          data-time="{{item.time}}"
+          data-available="{{item.available}}"
+          bindtap="onPickTime"
+        >{{item.time}}</view>
+      </view>
+    </view>
+
+    <view class="dock">
+      <button class="dock-btn" bindtap="onConfirm" disabled="{{submitting}}">{{submitting ? '提交中...' : '确认改期'}}</button>
+    </view>
+  </block>
+</view>

@@ -234,6 +234,12 @@ Page({
     })
   },
 
+  // D: 改期 — 跳转改期页
+  goReschedule: function (e) {
+    var id = e.currentTarget.dataset.id
+    wx.navigateTo({ url: '/pages/booking/reschedule?id=' + id })
+  },
+
   /**
    * 跳转到评价表单页 per D-04
    */

@@ -42,6 +42,13 @@ const cancelBooking = async (id) => {
   return result.data
 }
 
+// D: 客户改期
+const rescheduleBooking = async (id, bookingDate, bookingTime) => {
+  const result = await callCloudFunction('bookings', { action: 'reschedule', id, booking_date: bookingDate, booking_time: bookingTime })
+
+  return result.data
+}
+
 const getCalendarData = async (year, month) => {
   const result = await callCloudFunction('bookings', { action: 'getCalendarData', year, month })
 
@@ -99,6 +106,7 @@ module.exports = {
   getBookingDetail,
   updateBookingStatus,
   cancelBooking,
+  rescheduleBooking,
   getCalendarData,
   getStatusLabel,
   getStatusColor,
