@@ -40,15 +40,18 @@ Last activity: 2026-07-09
 | 17. 不可用时间管理 | time_blocks 集合 + block/unblock/getBlockedTimes + getAvailableSlots 合并屏蔽 + 后台日历屏蔽 UI | AVAIL-01/02/03 |
 | 18. 转化优化 | 服务时长卡片/预约页可见 + 完成后自动邀请评价 | CONV-01/02 |
 
+## Recently delivered (post-v2.1，未入正式里程碑)
+
+- 服务价快照 / 营收修复（功能 B）：create 时快照 `service_price`，`getDashboard` 优先读快照——修掉营收恒为 0 的隐性 bug。`c3356c9`
+- 新预约提醒推送化妆师（功能 A）：下单后给化妆师发订阅消息（复用现有模板），化妆师在个人中心授权开启；受微信一次性订阅限制，每次授权收 1 条。`005e676`
+
 ## Deferred (未排期，候选 v2.2)
 
 - PROF-05/06：化妆师自定义首页主题色 + 首页模块排序
 - 评价体系增强：标签快捷选择、评价带图、匿名评价、后台筛选/排序、artist_profile 冗余 avg_rating、评价提交推送
-- 服务价快照：create 时把 service_price 写入 booking，替换 getDashboard 从 service_name 正则取价的脆弱实现（功能 B）
-- 新预约提醒推送化妆师（功能 A）
 
 ## Session Continuity
 
 Last session: 2026-07-09
-Stopped at: 收尾项处理 — availability 月份切换等改动已提交（5f2188e），STATE.md 已对齐 v2.1 完成态
-Next step: 进入第一梯队功能（推荐 A 新单提醒 + B 价格快照/营收修复），或 `/gsd-new-milestone` 定义 v2.2
+Stopped at: 收尾 + 第一梯队功能 A/B 已实现并提交（B `c3356c9`、A `005e676`）；待微信开发者工具部署 bookings 云函数并真机验证
+Next step: 部署 + 验证 A/B；或继续第二梯队功能（客户改期 / 工作时间配置 / 客户档案 / no-show），或 `/gsd-new-milestone` 定义 v2.2
