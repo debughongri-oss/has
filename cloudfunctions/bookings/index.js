@@ -20,6 +20,25 @@ const hasOverlap = (s1, d1, s2, d2) => {
   return s1 < s2 + d2 && s2 < s1 + d1
 }
 
+// "YYYY-MM-DD" → 当地 0 点 Date（避免时区把日期推前/后一天）
+const parseDate = (s) => {
+  const [y, m, d] = String(s || '').split('-').map(Number)
+  return new Date(y || 1970, (m || 1) - 1, d || 1)
+}
+
+// 校验预约日期窗口：winDays 为正整数时限制为今天起未来 N 天内；始终禁止过去日期。
+// 返回 { ok, errMsg }，ok=false 时 errMsg 可直接作为接口错误信息。
+const assertDateInWindow = (bookingDate, winDays) => {
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  const d = parseDate(bookingDate)
+  if (d < today) return { ok: false, errMsg: '不能预约过去的日期' }
+  if (winDays && winDays > 0) {
+    const max = new Date(today); max.setDate(max.getDate() + winDays); max.setHours(23, 59, 59, 999)
+    if (d > max) return { ok: false, errMsg: `该服务仅支持预约未来 ${winDays} 天内的日期` }
+  }
+  return { ok: true }
+}
+
 const STATUS_LABELS = {
   pending: '待确认',
   accepted: '已确认',
@@ -185,6 +204,7 @@ exports.main = async (event, context) => {
         // BOOK-17: 查询服务时长 / B: 顺带快照服务价（dashboard 营收用）
         let serviceDuration = DEFAULT_DURATION
         let servicePrice = 0
+        let serviceWindow = null // 可预约窗口（天）；null=不限
         if (service_id) {
           try {
             const svc = await db.collection('services').doc(service_id).get()
@@ -192,8 +212,17 @@ exports.main = async (event, context) => {
             // price 在 services 集合里是字符串（"299" / "面议"），转数值，非数字则 0
             const rawPrice = parseFloat(svc.data.price)
             servicePrice = (!isNaN(rawPrice) && rawPrice > 0) ? rawPrice : 0
+            // 可预约窗口：正整数才生效
+            serviceWindow = (svc.data.booking_window > 0) ? svc.data.booking_window : null
           } catch (e) { /* 用默认时长 / 价格 0 */ }
         }
+
+        // 校验日期窗口（防绕过前端）：禁止过去日期；服务设了窗口则限制未来 N 天内
+        const dateCheck = assertDateInWindow(booking_date, serviceWindow)
+        if (!dateCheck.ok) {
+          return { errCode: -1, errMsg: dateCheck.errMsg }
+        }
+
 
         // BOOK-17: 按时长区间重叠检测（替代精确时间段匹配）
         const dayBookings = await db.collection('bookings')
@@ -369,6 +398,19 @@ exports.main = async (event, context) => {
         }
         if (!['pending', 'accepted'].includes(booking.data.status)) {
           return { errCode: -1, errMsg: '当前状态不可改期' }
+        }
+
+        // 校验日期窗口：按原服务的可预约窗口；禁止过去日期
+        let serviceWindow = null
+        if (booking.data.service_id) {
+          try {
+            const svc = await db.collection('services').doc(booking.data.service_id).get()
+            serviceWindow = (svc.data.booking_window > 0) ? svc.data.booking_window : null
+          } catch (e) { /* 服务已删则按不限处理 */ }
+        }
+        const dateCheck = assertDateInWindow(booking_date, serviceWindow)
+        if (!dateCheck.ok) {
+          return { errCode: -1, errMsg: dateCheck.errMsg }
         }
 
         // 冲突检测：复用 create 的区间重叠逻辑，排除自身 _id（防自冲突）

@@ -8,22 +8,18 @@ const { SERVICE_CATEGORIES } = require('../../utils/constants')
 const CATEGORY_MAP = {}
 SERVICE_CATEGORIES.forEach(c => { CATEGORY_MAP[c.key] = c.label })
 
-// 服务分类 → 图标色调（对应 app.wxss 调色板）
-const TONE_MAP = {
-  bridal: 'rose',
-  bridesmaid: 'purple',
-  engagement: 'gold',
-  daily: 'green',
-  creative: 'blue'
-}
-
-// 把作品拆成 hero 大图 + 等比网格
+// 把作品拆成档案页拼贴（1 张大图 + 侧边小图）
 const buildGallery = (works) => {
-  const decorated = works.map(w => ({
-    ...w,
-    categoryLabel: CATEGORY_MAP[w.category] || w.category || ''
-  }))
-  return { heroWork: decorated[0] || null, gridWorks: decorated.slice(1) }
+  const decorated = works
+    .filter(w => w.images && w.images[0])
+    .map(w => ({
+      ...w,
+      categoryLabel: CATEGORY_MAP[w.category] || w.category || ''
+    }))
+  return {
+    heroWork: decorated[0] || null,
+    mosaicWorks: decorated.slice(1, 3)
+  }
 }
 
 Page({
@@ -32,7 +28,7 @@ Page({
     loading: true,
     error: '',
     heroWork: null,
-    gridWorks: [],
+    mosaicWorks: [],
     categories: SERVICE_CATEGORIES,
     services: [],
     reviewStats: null
@@ -73,13 +69,13 @@ Page({
   },
 
   /**
-   * 加载精选作品 — 1 张大图 + 双列瀑布流
+   * 加载精选作品 — 1 张大图 + 侧边拼贴
    */
   loadFeaturedWorks: function () {
-    worksService.getWorksList('all', 1, 7)
+    worksService.getWorksList('all', 1, 3)
       .then(result => {
-        const { heroWork, gridWorks } = buildGallery(result.list || [])
-        this.setData({ heroWork, gridWorks })
+        const { heroWork, mosaicWorks } = buildGallery(result.list || [])
+        this.setData({ heroWork, mosaicWorks })
       })
       .catch(err => {
         console.error('加载精选作品失败:', err)
@@ -92,7 +88,7 @@ Page({
   loadServices: function () {
     servicesService.getServicesList()
       .then(list => {
-        const services = (list || []).slice(0, 4).map(s => {
+        const services = (list || []).slice(0, 3).map(s => {
           const categoryLabel = CATEGORY_MAP[s.category] || s.category || ''
           const parts = []
           if (categoryLabel) parts.push(categoryLabel)
@@ -100,8 +96,6 @@ Page({
           return {
             ...s,
             categoryLabel,
-            icon: categoryLabel.charAt(0) || '妆',
-            tone: TONE_MAP[s.category] || 'rose',
             meta: parts.join(' · ')
           }
         })
@@ -149,20 +143,6 @@ Page({
 
   goToBooking: function () {
     wx.switchTab({ url: '/pages/booking/create' })
-  },
-
-  copyWechat: function () {
-    const wechat = this.data.artist && this.data.artist.contact_info && this.data.artist.contact_info.wechat
-    if (!wechat) {
-      wx.showToast({ title: '化妆师暂未设置微信号', icon: 'none' })
-      return
-    }
-    wx.setClipboardData({
-      data: wechat,
-      success: () => {
-        wx.showToast({ title: '微信号已复制', icon: 'success' })
-      }
-    })
   },
 
   /**

@@ -48,12 +48,13 @@
         <text class="counter-total">{{work.images.length}}</text>
       </view>
 
-      <!-- Top-left back button — custom nav mode has no native back arrow -->
-      <view class="gallery-back tappable" bindtap="goBack"></view>
+      <!-- Top-left back button — custom nav mode has no native back arrow.
+           top 与右侧操作簇对齐（均在胶囊下方），见 detail.js actionTop。 -->
+      <view class="gallery-back tappable" style="top: {{actionTop}}px" bindtap="goBack"></view>
 
-      <!-- Top-right action cluster: poster (artist only) + share -->
-      <!-- Sits below status bar AND below the slider's own fullscreen button -->
-      <view class="gallery-actions">
+      <!-- Top-right action cluster: poster (artist only) + share.
+           top 按微信胶囊底部定位(actionTop)，避免被右上胶囊按钮遮挡。 -->
+      <view class="gallery-actions" style="top: {{actionTop}}px">
         <button wx:if="{{isArtist}}" class="gallery-action-btn gallery-action-btn--poster tappable" bindtap="goToPoster"></button>
         <button class="gallery-action-btn gallery-action-btn--share tappable" open-type="share"></button>
       </view>

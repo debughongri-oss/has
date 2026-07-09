@@ -104,57 +104,6 @@ exports.main = async (event, context) => {
       }
     }
 
-    case 'getShareQRCode': {
-      const { id } = event
-      try {
-        // 权限验证 per D-26
-        const authCheck = await requireArtist(wxContext, db)
-        if (!authCheck.ok) return authCheck.response
-
-        // 尝试从云存储获取已缓存的 QR 码 per D-07
-        const cloudPath = 'qrcodes/' + id + '.png'
-        try {
-          const downloadRes = await cloud.downloadFile({
-            fileID: cloudPath
-          })
-          // 缓存命中 — 直接返回 fileID
-          return { errCode: 0, data: { fileID: downloadRes.fileID } }
-        } catch (cacheErr) {
-          // 缓存未命中 — 继续生成
-        }
-
-        // 生成小程序码 per D-05/D-06
-        // checkPath: false 跳过"page 必须已发布"校验（开发期必须）
-        // envVersion: 'develop' 扫码进入开发版（正式发布后改 'release'）
-        const qrResult = await cloud.openapi.wxacode.getUnlimitedQRCode({
-          scene: id,
-          page: 'pages/works/detail',
-          checkPath: false,
-          envVersion: 'develop',
-          width: 280,
-          autoColor: false,
-          lineColor: { r: 156, g: 122, b: 90 },
-          isHyaline: false
-        })
-
-        // 上传到云存储 per D-07/D-25
-        const uploadRes = await cloud.uploadFile({
-          cloudPath: cloudPath,
-          fileContent: qrResult
-        })
-
-        return { errCode: 0, data: { fileID: uploadRes.fileID } }
-      } catch (error) {
-        console.error('生成小程序码失败:', error)
-        // 透传微信原始 errCode/ErrMsg，方便客户端诊断
-        // 常见: 48001(个人主体无权限) / 41030(无效 page) / 40097(无效 scene)
-        return {
-          errCode: error.errCode || -1,
-          errMsg: error.errMsg || '生成小程序码失败'
-        }
-      }
-    }
-
     default:
       return { errCode: -1, errMsg: '未知操作' }
   }

@@ -13,6 +13,7 @@ Page({
     duration: '',
     description: '',
     sortOrder: 0,
+    bookingWindow: '',
     saving: false
   },
 
@@ -47,7 +48,8 @@ Page({
           price: data.price || '',
           duration: data.duration ? String(data.duration) : '',
           description: data.description || '',
-          sortOrder: data.sort_order || 0
+          sortOrder: data.sort_order || 0,
+          bookingWindow: data.booking_window > 0 ? String(data.booking_window) : ''
         })
         wx.hideLoading()
       })
@@ -62,26 +64,30 @@ Page({
   onDurationInput: function (e) { this.setData({ duration: e.detail.value }) },
   onDescInput: function (e) { this.setData({ description: e.detail.value }) },
   onSortInput: function (e) { this.setData({ sortOrder: Number(e.detail.value) || 0 }) },
+  onWindowInput: function (e) { this.setData({ bookingWindow: e.detail.value }) },
 
   onCategoryPick: function (e) {
     this.setData({ category: e.currentTarget.dataset.key })
   },
 
   saveService: function () {
-    const { name, category, price, duration, description, sortOrder } = this.data
+    const { name, category, price, duration, description, sortOrder, bookingWindow } = this.data
     if (!name.trim()) {
       wx.showToast({ title: '请输入服务名称', icon: 'none' })
       return
     }
 
     this.setData({ saving: true })
+    const winNum = Number(bookingWindow)
     const data = {
       name: name.trim(),
       category,
       price: price.trim() || '面议',
       duration: Number(duration) || 0,
       description: description.trim(),
-      sort_order: sortOrder
+      sort_order: sortOrder,
+      // 留空 / 非正整数 → null（不限）；否则取该天数
+      booking_window: Number.isInteger(winNum) && winNum > 0 ? winNum : null
     }
 
     const promise = this.data.isEdit

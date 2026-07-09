@@ -75,12 +75,12 @@
   font-size: var(--fs-sm);
 }
 
-/* 离屏 Canvas per D-22 */
+/* 离屏 Canvas per D-22 — 尺寸仅作占位，实际绘制分辨率在 poster.js 中按 DPR 设置 */
 .poster-canvas {
   position: fixed;
   left: -9999px;
   width: 750px;
-  height: 1060px;
+  height: 1260px;
 }
 
 /* 海报预览区域 */
@@ -105,20 +105,22 @@
   display: block;
 }
 
-/* 底部操作栏 */
+/* 底部操作栏：转发 + 保存 双按钮 */
 .poster-actions {
   width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 24rpx;
   padding: 36rpx var(--page-pad) 60rpx;
 }
 
+.poster-share-btn,
 .poster-save-btn {
-  width: 100%;
+  flex: 1;
   height: 100rpx;
   font-size: var(--fs-base);
 }
 
 .poster-save-btn[disabled] {
   opacity: 0.5;
-  background-color: var(--accent-dark);
-  color: #FFFFFF;
 }

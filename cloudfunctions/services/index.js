@@ -3,6 +3,12 @@ const { requireArtist } = require('./shared/auth')
 cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 
+// booking_window：正整数（天）=可预约未来 N 天；其余一律归一为 null（=不限）
+const sanitizeBookingWindow = (raw) => {
+  const n = Number(raw)
+  return Number.isInteger(n) && n > 0 ? n : null
+}
+
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
   switch (event.action) {
@@ -52,6 +58,7 @@ exports.main = async (event, context) => {
 
         const data = {
           ...event.data,
+          booking_window: sanitizeBookingWindow(event.data && event.data.booking_window),
           is_active: true,
           created_at: db.serverDate(),
           updated_at: db.serverDate()
@@ -70,6 +77,7 @@ exports.main = async (event, context) => {
         if (!authCheck.ok) return authCheck.response
 
         const data = { ...event.data, updated_at: db.serverDate() }
+        data.booking_window = sanitizeBookingWindow(event.data && event.data.booking_window)
         await db.collection('services').doc(event.id).update({ data })
         return { errCode: 0, data: { success: true } }
       } catch (error) {

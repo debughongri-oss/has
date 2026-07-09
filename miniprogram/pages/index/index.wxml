@@ -6,33 +6,79 @@
   </view>
 
   <block wx:if="{{!loading && artist}}">
-    <!-- 身份条 -->
-    <view class="identity">
-      <view class="identity-avatar">
+    <!-- 专业档案头 -->
+    <view class="profile-hero">
+      <view class="profile-avatar">
         <t-image
           wx:if="{{artist.avatar}}"
           src="{{artist.avatar}}"
           mode="aspectFill"
-          width="92rpx"
-          height="92rpx"
+          width="144rpx"
+          height="144rpx"
           shape="circle"
         />
         <view class="avatar-fallback" wx:else>
           <text>{{artist.name[0] || '妆'}}</text>
         </view>
       </view>
-      <view class="identity-main">
-        <text class="identity-eyebrow">MAKEUP ARTIST</text>
-        <text class="identity-name">{{artist.name}}</text>
-        <view class="identity-meta">
-          <text wx:if="{{artist.experience_years || artist.experience}}">{{artist.experience_years ? artist.experience_years + '年经验' : artist.experience}}</text>
-          <text class="dot" wx:if="{{(artist.experience_years || artist.experience) && artist.contact_info.location}}">·</text>
-          <text wx:if="{{artist.contact_info.location}}">{{artist.contact_info.location}}</text>
+      <view class="profile-main">
+        <text class="profile-name">{{artist.name}}</text>
+        <text class="profile-role">Makeup Artist</text>
+        <view class="profile-rule"></view>
+        <view class="profile-meta">
+          <view class="profile-meta-item" wx:if="{{artist.contact_info && artist.contact_info.location}}">
+            <text class="meta-label">地点</text>
+            <text>{{artist.contact_info.location}}</text>
+          </view>
+          <view class="profile-meta-sep" wx:if="{{artist.contact_info && artist.contact_info.location && (artist.experience_years || artist.experience)}}"></view>
+          <view class="profile-meta-item" wx:if="{{artist.experience_years || artist.experience}}">
+            <text class="meta-label">经验</text>
+            <text>{{artist.experience_years ? artist.experience_years + '年经验' : artist.experience}}</text>
+          </view>
+          <view class="profile-meta-sep" wx:if="{{reviewStats && reviewStats.total > 0}}"></view>
+          <view class="profile-meta-item profile-meta-item--rating" wx:if="{{reviewStats && reviewStats.total > 0}}">
+            <text class="meta-label meta-label--rating">评分</text>
+            <text>{{reviewStats.average}}评分</text>
+          </view>
         </view>
       </view>
-      <view class="identity-rating" wx:if="{{reviewStats && reviewStats.total > 0}}">
-        <text class="identity-rating-star">★</text>
-        <text class="identity-rating-num">{{reviewStats.average}}</text>
+    </view>
+
+    <!-- 精选作品拼贴 -->
+    <view class="portfolio" wx:if="{{heroWork}}">
+      <view class="section-head section-head--portfolio">
+        <view>
+          <text class="section-label">精选作品</text>
+          <view class="section-rule"></view>
+        </view>
+        <view class="section-more tappable" bindtap="goToWorks">
+          <text>看作品</text>
+          <view class="section-more-arrow"></view>
+        </view>
+      </view>
+      <view class="mosaic">
+        <view
+          class="mosaic-main tappable"
+          bindtap="goToWorkDetail"
+          data-id="{{heroWork._id}}"
+        >
+          <image class="mosaic-img" src="{{heroWork.images[0]}}" mode="aspectFill" lazy-load />
+          <view class="mosaic-caption">
+            <text class="mosaic-title text-ellipsis">{{heroWork.title}}</text>
+            <text class="mosaic-cat" wx:if="{{heroWork.categoryLabel}}">{{heroWork.categoryLabel}}</text>
+          </view>
+        </view>
+        <view class="mosaic-side" wx:if="{{mosaicWorks.length}}">
+          <view
+            class="mosaic-small tappable"
+            wx:for="{{mosaicWorks}}"
+            wx:key="_id"
+            bindtap="goToWorkDetail"
+            data-id="{{item._id}}"
+          >
+            <image class="mosaic-img" src="{{item.images[0]}}" mode="aspectFill" lazy-load />
+          </view>
+        </view>
       </view>
     </view>
 
@@ -47,63 +93,26 @@
       >{{item.label}}</view>
     </scroll-view>
 
-    <!-- 精选大图 -->
-    <view
-      class="featured tappable"
-      wx:if="{{heroWork}}"
-      bindtap="goToWorkDetail"
-      data-id="{{heroWork._id}}"
-    >
-      <image class="featured-img" src="{{heroWork.images[0]}}" mode="aspectFill" lazy-load />
-      <view class="featured-scrim">
-        <text class="featured-cat" wx:if="{{heroWork.categoryLabel}}">{{heroWork.categoryLabel}}</text>
-        <text class="featured-title text-ellipsis">{{heroWork.title}}</text>
-      </view>
-    </view>
-
-    <!-- 精选作品：等比双列网格 -->
-    <view class="gallery" wx:if="{{gridWorks.length}}">
-      <view class="section-head">
-        <text class="section-label">精选作品</text>
-        <view class="section-more tappable" bindtap="goToWorks">
-          <text>全部</text>
-          <view class="section-more-arrow"></view>
-        </view>
-      </view>
-      <view class="grid">
-        <view
-          class="g-card tappable"
-          wx:for="{{gridWorks}}"
-          wx:key="_id"
-          bindtap="goToWorkDetail"
-          data-id="{{item._id}}"
-        >
-          <image class="g-img" src="{{item.images[0]}}" mode="aspectFill" lazy-load />
-          <view class="g-info">
-            <text class="g-title text-ellipsis">{{item.title}}</text>
-            <text class="g-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
-          </view>
-        </view>
-      </view>
-    </view>
-
-    <!-- 热门服务：横滑价格卡 -->
+    <!-- 热门服务 -->
     <view class="svc" wx:if="{{services.length}}">
       <view class="section-head">
-        <text class="section-label">热门服务</text>
+        <view>
+          <text class="section-label">热门服务</text>
+          <view class="section-rule"></view>
+        </view>
         <view class="section-more tappable" bindtap="goToServices">
           <text>全部</text>
           <view class="section-more-arrow"></view>
         </view>
       </view>
-      <view class="svc-list">
+      <view class="svc-stack">
         <view
-          class="svc-row tappable"
+          class="svc-card tappable"
           wx:for="{{services}}"
           wx:key="_id"
           bindtap="goToServices"
         >
-          <view class="svc-ic svc-ic--{{item.tone}}">{{item.icon}}</view>
+          <text class="svc-rank">{{index + 1 < 10 ? '0' : ''}}{{index + 1}}</text>
           <view class="svc-main">
             <text class="svc-name text-ellipsis">{{item.name}}</text>
             <text class="svc-meta">{{item.meta}}</text>
@@ -122,11 +131,17 @@
     <!-- 客户评价 -->
     <view class="reviews" wx:if="{{reviewStats && reviewStats.total > 0}}">
       <view class="section-head">
-        <text class="section-label">客户评价</text>
+        <view>
+          <text class="section-label">客户评价</text>
+          <view class="section-rule"></view>
+        </view>
       </view>
       <view class="review-card">
         <view class="review-top">
-          <text class="review-avg">{{reviewStats.average}}</text>
+          <view class="review-score">
+            <text class="review-avg">{{reviewStats.average}}</text>
+            <text class="review-max">/ 5.0</text>
+          </view>
           <view class="review-meta">
             <view class="stars">
               <text class="stars-bg">★★★★★</text>
@@ -135,23 +150,26 @@
             <text class="review-count">{{reviewStats.total}} 条真实评价</text>
           </view>
         </view>
-        <view class="review-quote" wx:if="{{reviewStats.recent[0] && reviewStats.recent[0].content}}">
-          <text class="review-quote-text">"{{reviewStats.recent[0].content}}"</text>
+        <view class="review-quote" wx:if="{{reviewStats.recent && reviewStats.recent[0] && reviewStats.recent[0].content}}">
+          <text class="review-quote-text">{{reviewStats.recent[0].content}}</text>
           <text class="review-quote-from">— {{reviewStats.recent[0].user_nickname || '匿名客户'}}</text>
-          <view class="review-reply" wx:if="{{reviewStats.recent[0].artist_reply}}">
-            <text class="review-reply-label">化妆师回复</text>
-            <text class="review-reply-text">{{reviewStats.recent[0].artist_reply}}</text>
-          </view>
+        </view>
+        <view class="review-reply" wx:if="{{reviewStats.recent && reviewStats.recent[0] && reviewStats.recent[0].artist_reply}}">
+          <text class="review-reply-label">化妆师回复</text>
+          <text class="review-reply-text">{{reviewStats.recent[0].artist_reply}}</text>
         </view>
       </view>
     </view>
 
     <!-- 预约 CTA -->
-    <view class="cta">
-      <button class="cta-book" bindtap="goToBooking">预约化妆</button>
-      <view class="cta-row">
-        <button class="cta-sub" open-type="contact">在线咨询</button>
-        <button class="cta-sub" bindtap="copyWechat" wx:if="{{artist.contact_info.wechat}}">复制微信</button>
+    <view class="cta-panel">
+      <view class="cta-bar">
+        <button class="cta-contact" open-type="contact">
+          <text>微信联系</text>
+        </button>
+        <button class="cta-book" bindtap="goToBooking">
+          <text>预约化妆</text>
+        </button>
       </view>
     </view>
   </block>

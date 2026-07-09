@@ -39,7 +39,7 @@
     "localPlugins": false,
     "disableUseStrict": false,
     "useCompilerPlugins": false,
-    "condition": false,
+    "condition": true,
     "swc": false,
     "disableSWC": true
   },
@@ -47,12 +47,15 @@
   "libVersion": "3.15.2",
   "condition": {},
   "compileType": "miniprogram",
-  "simulatorPluginLibVersion": {},
+  "simulatorPluginLibVersion": {
+    "wxext14566970e7e9f62": "2.27.3-4"
+  },
   "packOptions": {
     "ignore": [],
     "include": []
   },
   "editorSetting": {},
   "appid": "wx92f2a99ea060fb2d",
-  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/"
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate/",
+  "projectArchitecture": "multiPlatform"
 }

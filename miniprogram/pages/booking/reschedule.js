@@ -1,6 +1,6 @@
 const bookingsService = require('../../services/bookings')
+const servicesService = require('../../services/services')
 
-const BOOKING_WINDOW = 30
 const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
 
 const formatDate = (d) => {
@@ -36,11 +36,11 @@ Page({
 
   onLoad: function (options) {
     const today = new Date(); today.setHours(0, 0, 0, 0)
-    const maxDate = new Date(); maxDate.setDate(maxDate.getDate() + BOOKING_WINDOW)
+    // maxDate 先留空（不限），待 loadBooking 取到服务的可预约窗口后再收紧
     this.setData({
       id: options.id || '',
       minDate: formatDate(today),
-      maxDate: formatDate(maxDate)
+      maxDate: ''
     })
     this.loadBooking()
   },
@@ -56,6 +56,7 @@ Page({
           selectedDateLabel: formatDateLabel(data.booking_date),
           loading: false
         })
+        this.applyServiceWindow(data.service_id)
         if (data.booking_date) this.loadSlots(data.booking_date)
       })
       .catch(err => {
@@ -63,6 +64,19 @@ Page({
         this.setData({ loading: false })
         wx.showToast({ title: '加载失败', icon: 'none' })
       })
+  },
+
+  // 按原服务的可预约窗口收紧日期选择上限；未设窗口（或取不到）则保持不限
+  applyServiceWindow: function (serviceId) {
+    if (!serviceId) return
+    servicesService.getServiceDetail(serviceId)
+      .then(svc => {
+        const win = svc && svc.booking_window > 0 ? svc.booking_window : 0
+        if (!win) return
+        const maxDate = new Date(); maxDate.setDate(maxDate.getDate() + win)
+        this.setData({ maxDate: formatDate(maxDate) })
+      })
+      .catch(err => { console.error('获取服务窗口失败:', err) })
   },
 
   loadSlots: function (date) {

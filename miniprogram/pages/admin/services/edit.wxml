@@ -55,6 +55,16 @@
     />
   </view>
 
+  <!-- 预约设置 -->
+  <view class="card">
+    <view class="card-head"><text class="card-title">预约设置</text></view>
+    <view class="field">
+      <text class="field-key">可预约窗口</text>
+      <input class="field-val" type="number" placeholder="不限" placeholder-class="ph" value="{{bookingWindow}}" bindinput="onWindowInput" />
+    </view>
+    <text class="hint">客户最多可提前多少天预约（单位：天）；留空 = 不限，可选任意未来日期</text>
+  </view>
+
   <!-- 显示设置 -->
   <view class="card">
     <view class="card-head"><text class="card-title">显示设置</text></view>

@@ -48,20 +48,11 @@ const getCategories = () => {
   return [{ key: 'all', label: '全部' }, ...SERVICE_CATEGORIES]
 }
 
-const getShareQRCode = async (id) => {
-  const result = await callCloudFunction('works', {
-    action: 'getShareQRCode',
-    id
-  })
-  return result.data
-}
-
 module.exports = {
   getWorksList,
   getWorkDetail,
   createWork,
   updateWork,
   deleteWork,
-  getCategories,
-  getShareQRCode
+  getCategories
 }

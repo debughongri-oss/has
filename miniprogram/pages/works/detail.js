@@ -10,10 +10,18 @@ Page({
     work: null,
     loading: true,
     currentImage: 0,
-    isArtist: false
+    isArtist: false,
+    // 右上操作簇的 top(px)：onLoad 按微信胶囊底部精确定位，避免被胶囊遮挡
+    actionTop: 88
   },
 
   onLoad: async function (options) {
+    // 右上操作簇需让开微信胶囊按钮：custom 导航下胶囊仍在，按其底部对齐
+    var menu = wx.getMenuButtonBoundingClientRect()
+    if (menu && menu.bottom) {
+      this.setData({ actionTop: menu.bottom + 8 })
+    }
+
     // SEC-03: 等待登录态就绪后再读身份，消除冷启动竞态（按钮可能不显示）
     try { await authService.ensureLogin() } catch (e) {}
     this.setData({ isArtist: authService.isArtist() })

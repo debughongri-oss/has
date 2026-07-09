@@ -16,7 +16,6 @@ const TONE_MAP = {
 }
 
 const MONTH_NAMES = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
-const BOOKING_WINDOW = 30
 const SERVICE_MODE_OPTIONS = [
   { key: 'store', label: '到店', desc: '前往化妆师工作室' },
   { key: 'home', label: '上门', desc: '化妆师到指定地址' }
@@ -31,6 +30,11 @@ const formatDateLabel = (dateStr) => {
   if (!dateStr) return ''
   const parts = dateStr.split('-')
   return parts.length === 3 ? `${Number(parts[1])}月${Number(parts[2])}日` : dateStr
+}
+
+// 服务的可预约窗口（天）：服务配了正整数则用之，否则 null（=不限，可选任意未来日期）
+const getBookingWindow = (service) => {
+  return (service && service.booking_window && service.booking_window > 0) ? service.booking_window : null
 }
 
 Page({
@@ -117,9 +121,14 @@ Page({
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    const maxDate = new Date()
-    maxDate.setDate(maxDate.getDate() + BOOKING_WINDOW)
-    maxDate.setHours(23, 59, 59, 999)
+    // 按当前所选服务的可预约窗口算上限；null = 不限
+    const win = getBookingWindow(this.data.selectedService)
+    let maxDate = null
+    if (win) {
+      maxDate = new Date()
+      maxDate.setDate(maxDate.getDate() + win)
+      maxDate.setHours(23, 59, 59, 999)
+    }
 
     const firstDay = new Date(year, month, 1)
     const lastDay = new Date(year, month + 1, 0)
@@ -139,7 +148,7 @@ Page({
       cells.push({
         day: d,
         date: dateStr,
-        selectable: cellDate >= today && cellDate <= maxDate,
+        selectable: cellDate >= today && (!maxDate || cellDate <= maxDate),
         isToday: dateStr === todayStr,
         isSelected: dateStr === selectedDate
       })
@@ -160,11 +169,16 @@ Page({
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    const maxDate = new Date()
-    maxDate.setDate(maxDate.getDate() + BOOKING_WINDOW)
+    // 按所选服务的窗口算上限；null = 不限（可一直往后翻月）
+    const win = getBookingWindow(this.data.selectedService)
+    let maxDate = null
+    if (win) {
+      maxDate = new Date()
+      maxDate.setDate(maxDate.getDate() + win)
+    }
 
     const calCanPrev = year > today.getFullYear() || (year === today.getFullYear() && month > today.getMonth())
-    const calCanNext = year < maxDate.getFullYear() || (year === maxDate.getFullYear() && month < maxDate.getMonth())
+    const calCanNext = !maxDate || (year < maxDate.getFullYear() || (year === maxDate.getFullYear() && month < maxDate.getMonth()))
 
     const calCells = this.generateCalendar(year, month, selDate)
     const calMonthLabel = year + '年' + MONTH_NAMES[month]

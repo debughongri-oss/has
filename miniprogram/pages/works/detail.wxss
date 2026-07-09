@@ -65,8 +65,8 @@
 }
 
 /* Top-right action cluster: poster (artist) + share.
-   Stacked vertically; sits below status bar (~88rpx) and the
-   slider component's own fullscreen button (which ends ~88rpx). */
+   top 由 detail.js 的 actionTop 按"微信胶囊底部"动态设置(inline style)，
+   避免被右上胶囊按钮遮挡；这里的 top:100rpx 仅作兜底。 */
 .gallery-actions {
   position: absolute;
   top: 100rpx;
