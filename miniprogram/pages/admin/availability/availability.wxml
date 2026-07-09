@@ -7,7 +7,12 @@
     <view class="hero-card">
       <view class="hero-head">
         <view>
-          <text class="hero-kicker">{{monthLabel}}</text>
+          <picker class="month-picker" mode="date" fields="month" value="{{monthValue}}" bindchange="onMonthChange">
+            <view class="month-pill">
+              <text class="hero-kicker">{{monthLabel}}</text>
+              <text class="month-arrow"></text>
+            </view>
+          </picker>
           <text class="hero-title">不可约时间</text>
         </view>
         <button class="add-btn {{showAdd ? 'add-btn--open' : ''}}" bindtap="onToggleAdd">
@@ -61,7 +66,7 @@
         <input class="form-input" placeholder="个人事务/假期" placeholder-class="ph" value="{{newReason}}" bindinput="onReasonInput" />
       </view>
 
-      <button class="form-submit" bindtap="onAddBlock">确认屏蔽</button>
+      <button class="form-submit" disabled="{{submitting}}" bindtap="onAddBlock">{{submitting ? '提交中...' : '确认屏蔽'}}</button>
     </view>
 
     <!-- 屏蔽列表 -->
@@ -91,7 +96,9 @@
 
     <view class="empty" wx:if="{{!blocks.length}}">
       <view class="empty-icon"></view>
+      <text class="empty-title">该月可正常接单</text>
       <text class="empty-text">暂无屏蔽时间</text>
+      <view class="empty-action tappable" wx:if="{{!showAdd}}" bindtap="onToggleAdd">添加屏蔽</view>
     </view>
   </block>
 </view>
