@@ -12,7 +12,8 @@ const BOOKING_STATUS = {
   REJECTED: 'rejected',
   RESCHEDULED: 'rescheduled',
   COMPLETED: 'completed',
-  CANCELLED: 'cancelled'
+  CANCELLED: 'cancelled',
+  NO_SHOW: 'no_show'
 }
 
 // 服务分类

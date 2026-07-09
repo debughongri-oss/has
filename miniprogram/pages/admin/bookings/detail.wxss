@@ -52,6 +52,11 @@
   color: var(--text-secondary);
 }
 
+.status-pill--no_show {
+  background-color: var(--red-bg);
+  color: var(--red);
+}
+
 .h-svc {
   display: block;
   font-size: 40rpx;
@@ -209,6 +214,12 @@
   background-color: var(--accent-dark);
   color: #FFFFFF;
   box-shadow: 0 10rpx 24rpx rgba(232, 85, 117, 0.34);
+}
+
+.act-noshow {
+  flex: 0 0 220rpx;
+  background-color: var(--red-bg);
+  color: var(--red);
 }
 
 /* ===== 拒绝弹窗 ===== */

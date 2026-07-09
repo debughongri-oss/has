@@ -14,7 +14,8 @@ function buildStatusBreakdown(thisMonth) {
     { key: 'accepted', name: '已确认', count: thisMonth.accepted || 0 },
     { key: 'completed', name: '已完成', count: thisMonth.completed || 0 },
     { key: 'rejected', name: '已拒绝', count: thisMonth.rejected || 0 },
-    { key: 'cancelled', name: '已取消', count: thisMonth.cancelled || 0 }
+    { key: 'cancelled', name: '已取消', count: thisMonth.cancelled || 0 },
+    { key: 'no_show', name: '缺席', count: thisMonth.no_show || 0 }
   ].map(item => ({
     ...item,
     percent: total ? Math.round(item.count / total * 100) : 0

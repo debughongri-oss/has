@@ -141,5 +141,28 @@ Page({
         wx.hideLoading()
         wx.showToast({ title: '操作失败', icon: 'none' })
       })
+  },
+
+  onNoShow: function () {
+    wx.showModal({
+      title: '标记缺席',
+      content: '确认将该预约标记为缺席？此状态仅管理端可见。',
+      confirmText: '标记缺席',
+      confirmColor: '#e85575',
+      success: (res) => {
+        if (!res.confirm) return
+        wx.showLoading({ title: '处理中...' })
+        bookingsService.updateBookingStatus(this.data.booking._id, 'no_show')
+          .then(() => {
+            wx.hideLoading()
+            wx.showToast({ title: '已标记缺席', icon: 'success' })
+            this.loadDetail(this.data.booking._id)
+          })
+          .catch(err => {
+            wx.hideLoading()
+            wx.showToast({ title: err.message || '操作失败', icon: 'none' })
+          })
+      }
+    })
   }
 })

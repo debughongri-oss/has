@@ -98,6 +98,7 @@
 
   <view class="action-bar" wx:if="{{!loading && booking.status === 'accepted'}}">
     <button class="act act-done" bindtap="onComplete">标记完成</button>
+    <button class="act act-noshow" bindtap="onNoShow">标记缺席</button>
   </view>
 
   <t-dialog

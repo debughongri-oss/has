@@ -204,6 +204,11 @@
   color: var(--text-secondary);
 }
 
+.badge--no_show {
+  background-color: var(--red-bg);
+  color: var(--red);
+}
+
 .bmeta-row {
   display: flex;
   align-items: center;

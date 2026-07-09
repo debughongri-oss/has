@@ -55,7 +55,8 @@ const getStatusLabel = (status) => {
     rejected: '已拒绝',
     rescheduled: '已改期',
     completed: '已完成',
-    cancelled: '已取消'
+    cancelled: '已取消',
+    no_show: '缺席'
   }
   return labels[status] || status
 }
@@ -68,7 +69,8 @@ const getStatusColor = (status) => {
     rejected: 'var(--red)',
     rescheduled: 'var(--blue)',
     completed: 'var(--text-tertiary)',
-    cancelled: 'var(--text-tertiary)'
+    cancelled: 'var(--text-tertiary)',
+    no_show: 'var(--red)'
   }
   return colors[status] || 'var(--text-tertiary)'
 }

@@ -25,7 +25,8 @@ const STATUS_LABELS = {
   accepted: '已确认',
   rejected: '已拒绝',
   cancelled: '已取消',
-  completed: '已完成'
+  completed: '已完成',
+  no_show: '缺席'
 }
 
 async function sendNotify(booking, status) {
@@ -266,9 +267,9 @@ exports.main = async (event, context) => {
     case 'myBookings': {
       const { page = 1, pageSize = 20 } = event
       try {
-        const total = (await db.collection('bookings').where({ user_openid: openid }).count()).total
+        const total = (await db.collection('bookings').where({ user_openid: openid, status: _.neq('no_show') }).count()).total
         const data = await db.collection('bookings')
-          .where({ user_openid: openid })
+          .where({ user_openid: openid, status: _.neq('no_show') })
           .orderBy('created_at', 'desc')
           .skip((page - 1) * pageSize)
           .limit(pageSize)
@@ -464,7 +465,7 @@ exports.main = async (event, context) => {
           .where({ booking_date: _.gte(`${now.getFullYear()}-${thisM}-01`).and(_.lte(`${now.getFullYear()}-${thisM}-31`)) })
           .get()
 
-        const statusCounts = { pending: 0, accepted: 0, completed: 0, rejected: 0, cancelled: 0 }
+        const statusCounts = { pending: 0, accepted: 0, completed: 0, rejected: 0, cancelled: 0, no_show: 0 }
         let revenue = 0
         const serviceCount = {}
 
@@ -514,7 +515,8 @@ exports.main = async (event, context) => {
               accepted: statusCounts.accepted,
               completed: statusCounts.completed,
               rejected: statusCounts.rejected,
-              cancelled: statusCounts.cancelled
+              cancelled: statusCounts.cancelled,
+              no_show: statusCounts.no_show
             },
             lastMonthTotal: lastMonthBookings.total,
             revenue,

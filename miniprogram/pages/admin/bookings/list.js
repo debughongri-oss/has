@@ -23,7 +23,8 @@ Page({
       { key: 'pending', label: '待确认', count: 0 },
       { key: 'accepted', label: '已确认', count: 0 },
       { key: 'rejected', label: '已拒绝', count: 0 },
-      { key: 'completed', label: '已完成', count: 0 }
+      { key: 'completed', label: '已完成', count: 0 },
+      { key: 'no_show', label: '缺席', count: 0 }
     ]
   },
 
