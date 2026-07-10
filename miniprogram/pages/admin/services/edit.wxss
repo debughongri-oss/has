@@ -31,6 +31,64 @@
   color: var(--text-tertiary);
 }
 
+/* ===== 封面 ===== */
+.cover {
+  display: flex;
+}
+
+.cover-preview {
+  position: relative;
+  width: 100%;
+  height: 320rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+}
+
+.cover-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.cover-del {
+  position: absolute;
+  top: 14rpx;
+  right: 14rpx;
+  width: 48rpx;
+  height: 48rpx;
+  line-height: 44rpx;
+  text-align: center;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #FFFFFF;
+  font-size: 36rpx;
+}
+
+.cover-add {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  height: 320rpx;
+  border: 2rpx dashed var(--separator);
+  border-radius: 20rpx;
+  background-color: var(--fill-primary);
+}
+
+.cover-add-plus {
+  font-size: 56rpx;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--text-tertiary);
+}
+
+.cover-add-text {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+}
+
 /* ===== 名称 / 排序 行 ===== */
 .field {
   display: flex;

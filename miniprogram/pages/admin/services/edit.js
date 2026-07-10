@@ -1,4 +1,5 @@
 const servicesService = require('../../../services/services')
+const storageService = require('../../../services/storage')
 const authService = require('../../../services/auth')
 const { SERVICE_CATEGORIES } = require('../../../utils/constants')
 
@@ -14,6 +15,7 @@ Page({
     description: '',
     sortOrder: 0,
     bookingWindow: '',
+    coverImage: '',
     saving: false
   },
 
@@ -49,7 +51,8 @@ Page({
           duration: data.duration ? String(data.duration) : '',
           description: data.description || '',
           sortOrder: data.sort_order || 0,
-          bookingWindow: data.booking_window > 0 ? String(data.booking_window) : ''
+          bookingWindow: data.booking_window > 0 ? String(data.booking_window) : '',
+          coverImage: data.cover_image || ''
         })
         wx.hideLoading()
       })
@@ -70,8 +73,24 @@ Page({
     this.setData({ category: e.currentTarget.dataset.key })
   },
 
+  chooseCover: function () {
+    wx.chooseMedia({
+      count: 1,
+      mediaType: ['image'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const tempPath = res.tempFiles[0].tempFilePath
+        this.setData({ coverImage: tempPath })
+      }
+    })
+  },
+
+  removeCover: function () {
+    this.setData({ coverImage: '' })
+  },
+
   saveService: function () {
-    const { name, category, price, duration, description, sortOrder, bookingWindow } = this.data
+    const { name, category, price, duration, description, sortOrder, bookingWindow, coverImage } = this.data
     if (!name.trim()) {
       wx.showToast({ title: '请输入服务名称', icon: 'none' })
       return
@@ -90,18 +109,44 @@ Page({
       booking_window: Number.isInteger(winNum) && winNum > 0 ? winNum : null
     }
 
-    const promise = this.data.isEdit
-      ? servicesService.updateService(this.data.serviceId, data)
-      : servicesService.createService(data)
+    // 封面：新选的本地临时文件需先上传得到 cloud:// fileID；已上传的或为空直接透传
+    let coverPromise = Promise.resolve()
+    if (coverImage && !coverImage.startsWith('cloud://')) {
+      coverPromise = storageService.uploadImage(coverImage, `services/cover_${Date.now()}.jpg`)
+        .then(fileID => { data.cover_image = fileID })
+        .catch(err => {
+          console.error('上传封面失败:', err)
+          // 转成可识别的错误，避免与下方「保存失败」重复弹 toast
+          const e = new Error('COVER_UPLOAD_FAILED')
+          e.cause = err
+          throw e
+        })
+    } else if (coverImage) {
+      data.cover_image = coverImage
+    } else {
+      data.cover_image = ''
+    }
 
-    promise.then(() => {
-      this.setData({ saving: false })
-      wx.showToast({ title: '保存成功', icon: 'success' })
-      setTimeout(() => wx.navigateBack(), 1500)
-    }).catch(err => {
-      this.setData({ saving: false })
-      console.error('保存失败:', err)
-      wx.showToast({ title: '保存失败', icon: 'none' })
-    })
+    coverPromise
+      .then(() => {
+        const promise = this.data.isEdit
+          ? servicesService.updateService(this.data.serviceId, data)
+          : servicesService.createService(data)
+        return promise
+      })
+      .then(() => {
+        this.setData({ saving: false })
+        wx.showToast({ title: '保存成功', icon: 'success' })
+        setTimeout(() => wx.navigateBack(), 1500)
+      })
+      .catch(err => {
+        this.setData({ saving: false })
+        if (err && err.message === 'COVER_UPLOAD_FAILED') {
+          wx.showToast({ title: '封面上传失败', icon: 'none' })
+        } else {
+          console.error('保存失败:', err)
+          wx.showToast({ title: '保存失败', icon: 'none' })
+        }
+      })
   }
 })

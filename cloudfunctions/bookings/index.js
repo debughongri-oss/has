@@ -325,9 +325,18 @@ exports.main = async (event, context) => {
           .skip((page - 1) * pageSize)
           .limit(pageSize)
           .get()
+        const list = data.data
+        // 关联服务封面：批量按 service_id 取 cover_image 注入每条预约，供列表卡片展示
+        const serviceIds = Array.from(new Set(list.map(b => b.service_id).filter(Boolean)))
+        const coverMap = {}
+        if (serviceIds.length) {
+          const svcRes = await db.collection('services').where({ _id: _.in(serviceIds) }).limit(100).get()
+          svcRes.data.forEach(s => { if (s.cover_image) coverMap[s._id] = s.cover_image })
+        }
+        list.forEach(b => { b.service_image = coverMap[b.service_id] || '' })
         return {
           errCode: 0,
-          data: { list: data.data, total, page, pageSize, hasMore: page * pageSize < total }
+          data: { list, total, page, pageSize, hasMore: page * pageSize < total }
         }
       } catch (error) {
         console.error('获取我的预约失败:', error)
@@ -387,10 +396,24 @@ exports.main = async (event, context) => {
 
     case 'reschedule': {
       // D: 客户改期（owner-only；pending/accepted 可改，改后重置为 pending 待重新确认）
-      const { id, booking_date, booking_time } = event
+      // 支持同步修改联系方式/服务方式/上门地址/肤质/特殊需求/场合（服务项目不可改）
+      const { id, booking_date, booking_time, service_mode, service_mode_label, service_address, contact_info, skin_type, special_needs, occasion } = event
       try {
         if (!id || !booking_date || !booking_time) {
           return { errCode: -1, errMsg: '缺少改期参数' }
+        }
+
+        // 字段清洗与白名单（镜像 create 动作）
+        const mode = service_mode === 'home' ? 'home' : 'store'
+        const address = String(service_address || '').trim().slice(0, 200)
+        const contact = contact_info || {}
+        const phone = String(contact.phone || '').trim().slice(0, 30)
+        const wechat = String(contact.wechat || '').trim().slice(0, 60)
+        if (mode === 'home' && !address) {
+          return { errCode: -1, errMsg: '请填写上门地址' }
+        }
+        if (!phone && !wechat) {
+          return { errCode: -1, errMsg: '请填写联系方式' }
         }
         const booking = await db.collection('bookings').doc(id).get()
         if (booking.data.user_openid !== openid) {
@@ -434,11 +457,18 @@ exports.main = async (event, context) => {
           return { errCode: -1, errMsg: '该时段与已有预约时间冲突，请选择其他时间' }
         }
 
-        // 改期并重置为待确认（化妆师重新确认新时间）
+        // 改期并重置为待确认（化妆师重新确认新时间）；同步落库本次可编辑字段
         await db.collection('bookings').doc(id).update({
           data: {
             booking_date,
             booking_time,
+            service_mode: mode,
+            service_mode_label: service_mode_label || (mode === 'home' ? '上门' : '到店'),
+            service_address: mode === 'home' ? address : '',
+            contact_info: { phone, wechat },
+            skin_type: skin_type || '',
+            special_needs: special_needs || '',
+            occasion: occasion || '',
             status: 'pending',
             reject_reason: '',
             updated_at: db.serverDate()

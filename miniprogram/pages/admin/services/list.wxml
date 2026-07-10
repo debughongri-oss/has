@@ -19,7 +19,10 @@
         wx:key="_id"
       >
         <view class="stop">
-          <view class="sic sic--{{item.tone}}">{{item.icon}}</view>
+          <view class="sic sic--{{item.tone}}">
+            <image wx:if="{{item.cover_image}}" class="sic-cover" src="{{item.cover_image}}" mode="aspectFill" />
+            <text wx:else>{{item.icon}}</text>
+          </view>
           <view class="smain">
             <view class="snamerow">
               <text class="sname text-ellipsis">{{item.name}}</text>

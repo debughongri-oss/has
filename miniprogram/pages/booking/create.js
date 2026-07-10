@@ -17,9 +17,10 @@ const TONE_MAP = {
 
 const MONTH_NAMES = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
 const SERVICE_MODE_OPTIONS = [
-  { key: 'store', label: '到店', desc: '前往化妆师工作室' },
-  { key: 'home', label: '上门', desc: '化妆师到指定地址' }
+  { key: 'store', label: '到店服务', shortLabel: '到店', desc: '前往化妆师工作室', iconPath: '../../images/booking-building-store.png' },
+  { key: 'home', label: '上门服务', shortLabel: '上门', desc: '化妆师到指定地址', iconPath: '../../images/booking-home.png' }
 ]
+const SERVICE_ICON_PATH = '../../images/booking-sparkles.png'
 
 const formatDate = (d) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -32,9 +33,42 @@ const formatDateLabel = (dateStr) => {
   return parts.length === 3 ? `${Number(parts[1])}月${Number(parts[2])}日` : dateStr
 }
 
+const WEEKDAY_NAMES = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+// "2026-06-25" → "周三"；解析失败或为空返回 ''
+const formatWeekday = (dateStr) => {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  return Number.isNaN(d.getTime()) ? '' : WEEKDAY_NAMES[d.getDay()]
+}
+
 // 服务的可预约窗口（天）：服务配了正整数则用之，否则 null（=不限，可选任意未来日期）
 const getBookingWindow = (service) => {
   return (service && service.booking_window && service.booking_window > 0) ? service.booking_window : null
+}
+
+const formatDockPrice = (price) => {
+  if (price === undefined || price === null || price === '') return '--'
+  const num = Number(price)
+  if (!Number.isNaN(num) && num >= 10000) {
+    const compact = (num / 10000).toFixed(num >= 100000 ? 0 : 1).replace(/\.0$/, '')
+    return compact + '万'
+  }
+  const text = String(price)
+  return text.length > 5 ? text.slice(0, 5) + '…' : text
+}
+
+const buildTimeSlotGroups = (slots) => {
+  const morning = []
+  const afternoon = []
+  ;(slots || []).forEach(slot => {
+    const hour = Number(String(slot.time || '').split(':')[0])
+    if (!Number.isNaN(hour) && hour < 12) morning.push(slot)
+    else afternoon.push(slot)
+  })
+  return [
+    { key: 'morning', label: '上午', iconPath: '../../images/booking-sun.png', slots: morning },
+    { key: 'afternoon', label: '下午', iconPath: '../../images/booking-moon.png', slots: afternoon }
+  ].filter(group => group.slots.length)
 }
 
 Page({
@@ -43,7 +77,9 @@ Page({
     selectedService: null,
     selectedDate: '',
     selectedDateLabel: '',
+    weekdayLabel: '',
     timeSlots: [],
+    timeSlotGroups: [],
     selectedTime: '',
     loadingSlots: false,
     availableCount: 0,
@@ -56,7 +92,11 @@ Page({
     serviceAddress: '',
     contactPhone: '',
     contactWechat: '',
+    bookingDetailVisible: false,
+    detailLeaving: false,
     skinTypeOptions: [],
+    skinTypeLabel: '',
+    hasNotes: false,
     loading: true,
     submitting: false,
     calYear: 0,
@@ -105,6 +145,10 @@ Page({
             ...s,
             categoryLabel,
             icon: categoryLabel.charAt(0) || '妆',
+            iconPath: s.cover_image || SERVICE_ICON_PATH,
+            iconMode: s.cover_image ? 'aspectFill' : 'aspectFit',
+            displayDescription: s.description || '专业妆造服务，可按场合沟通妆面细节',
+            dockPrice: formatDockPrice(s.price),
             tone: TONE_MAP[s.category] || 'rose'
           }
         })
@@ -221,7 +265,12 @@ Page({
       selectedService: service,
       selectedDate: '',
       selectedDateLabel: '',
-      selectedTime: ''
+      weekdayLabel: '',
+      selectedTime: '',
+      timeSlots: [],
+      timeSlotGroups: [],
+      availableCount: 0,
+      allBooked: false
     })
     this.renderCalendar(today.getFullYear(), today.getMonth(), '')
   },
@@ -231,21 +280,22 @@ Page({
     const selectable = e.currentTarget.dataset.selectable
     if (!selectable || !date) return
 
-    this.setData({ selectedDate: date, selectedDateLabel: formatDateLabel(date), selectedTime: '', loadingSlots: true })
+    this.setData({ selectedDate: date, selectedDateLabel: formatDateLabel(date), weekdayLabel: formatWeekday(date), selectedTime: '', loadingSlots: true })
     this.renderCalendar(this.data.calYear, this.data.calMonth, date)
 
     // BOOK-17: 传入 service_id 让云函数按时长计算可用时段
     var serviceId = this.data.selectedService ? this.data.selectedService._id : ''
     bookingsService.getAvailableSlots(date, serviceId)
       .then(data => {
-        const slots = data.all.map(time => ({
+        const slots = (data.all || []).map(time => ({
           time,
-          available: data.available.includes(time)
+          available: (data.available || []).includes(time)
         }))
         this.setData({
           timeSlots: slots,
-          availableCount: data.available.length,
-          allBooked: data.available.length === 0,
+          timeSlotGroups: buildTimeSlotGroups(slots),
+          availableCount: (data.available || []).length,
+          allBooked: (data.available || []).length === 0,
           loadingSlots: false
         })
       })
@@ -268,21 +318,26 @@ Page({
     const key = e.currentTarget.dataset.key
     const currentSkinType = this.data.skinType
     const newSkinType = currentSkinType === key ? '' : key
+    const newLabel = (SKIN_TYPE_OPTIONS.find(t => t.key === newSkinType) || {}).label || ''
     this.setData({
       skinType: newSkinType,
+      skinTypeLabel: newLabel,
       skinTypeOptions: SKIN_TYPE_OPTIONS.map(t => ({
         ...t,
         selected: t.key === newSkinType
-      }))
+      })),
+      hasNotes: !!(newLabel || this.data.specialNeeds || this.data.occasion)
     })
   },
 
   onSpecialNeedsInput: function (e) {
-    this.setData({ specialNeeds: e.detail.value })
+    const val = e.detail.value
+    this.setData({ specialNeeds: val, hasNotes: !!(this.data.skinTypeLabel || val || this.data.occasion) })
   },
 
   onOccasionInput: function (e) {
-    this.setData({ occasion: e.detail.value })
+    const val = e.detail.value
+    this.setData({ occasion: val, hasNotes: !!(this.data.skinTypeLabel || this.data.specialNeeds || val) })
   },
 
   onSelectServiceMode: function (e) {
@@ -307,6 +362,29 @@ Page({
   onContactWechatInput: function (e) {
     this.setData({ contactWechat: e.detail.value })
   },
+
+  showBookingDetail: function () {
+    if (!this.data.selectedService) {
+      wx.showToast({ title: '请先选择服务', icon: 'none' })
+      return
+    }
+    this.setData({ bookingDetailVisible: true, detailLeaving: false })
+  },
+
+  hideBookingDetail: function () {
+    if (this.data.detailLeaving || !this.data.bookingDetailVisible) return
+    this.setData({ detailLeaving: true })
+    clearTimeout(this._detailLeaveTimer)
+    this._detailLeaveTimer = setTimeout(() => {
+      this.setData({ bookingDetailVisible: false, detailLeaving: false })
+    }, 240)
+  },
+
+  onUnload: function () {
+    clearTimeout(this._detailLeaveTimer)
+  },
+
+  noop: function () {},
 
   submitBooking: function () {
     const { selectedService, selectedDate, selectedTime, skinType, specialNeeds, occasion, serviceMode, serviceAddress, contactPhone, contactWechat } = this.data

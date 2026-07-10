@@ -45,6 +45,7 @@ function normalizeBookingMeta(booking) {
     serviceMode: mode,
     serviceModeLabel: booking.service_mode_label || (mode === 'home' ? '上门' : '到店'),
     serviceAddress: booking.service_address || '',
+    serviceImage: booking.service_image || '',
     contactPhone: contactInfo.phone || '',
     contactWechat: contactInfo.wechat || ''
   }

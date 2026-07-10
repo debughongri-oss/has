@@ -56,9 +56,12 @@
   <view class="list" wx:if="{{!loading && filteredBookings.length}}">
     <view class="booking-card" wx:for="{{filteredBookings}}" wx:key="_id">
       <view class="card-head">
-        <view class="date-tile">
-          <text class="date-day">{{item.dateShort}}</text>
-          <text class="date-time">{{item.booking_time}}</text>
+        <view class="cover">
+          <image wx:if="{{item.serviceImage}}" class="cover-img" src="{{item.serviceImage}}" mode="aspectFill" lazy-load="{{true}}" />
+          <view wx:else class="cover-fallback">
+            <text class="cover-fallback-day">{{item.dateShort}}</text>
+            <text class="cover-fallback-time">{{item.booking_time}}</text>
+          </view>
         </view>
         <view class="booking-main">
           <view class="title-row">

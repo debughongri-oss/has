@@ -1,4 +1,20 @@
 <view class="edit-service">
+  <!-- 封面 -->
+  <view class="card">
+    <view class="card-head"><text class="card-title">封面</text></view>
+    <view class="cover">
+      <view wx:if="{{coverImage}}" class="cover-preview tappable" bindtap="chooseCover">
+        <image class="cover-img" src="{{coverImage}}" mode="aspectFill" />
+        <view class="cover-del tappable" catchtap="removeCover">×</view>
+      </view>
+      <view wx:else class="cover-add tappable" bindtap="chooseCover">
+        <text class="cover-add-plus">+</text>
+        <text class="cover-add-text">上传封面图</text>
+      </view>
+    </view>
+    <text class="hint">建议正方形；将展示在预约选服务、改期卡与服务列表</text>
+  </view>
+
   <!-- 基本信息 -->
   <view class="card">
     <view class="card-head"><text class="card-title">基本信息</text></view>

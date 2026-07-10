@@ -26,7 +26,10 @@
           data-id="{{service._id}}"
         >
           <view class="card-top">
-            <view class="svc-ic svc-ic--{{service.tone}}">{{service.icon}}</view>
+            <view class="svc-ic svc-ic--{{service.tone}}">
+              <image wx:if="{{service.cover_image}}" class="svc-ic-cover" src="{{service.cover_image}}" mode="aspectFill" />
+              <text wx:else>{{service.icon}}</text>
+            </view>
             <view class="card-body">
               <text class="card-name">{{service.name}}</text>
               <text class="card-desc text-ellipsis-2" wx:if="{{service.description}}">{{service.description}}</text>

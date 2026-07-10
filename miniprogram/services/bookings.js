@@ -42,9 +42,9 @@ const cancelBooking = async (id) => {
   return result.data
 }
 
-// D: 客户改期
-const rescheduleBooking = async (id, bookingDate, bookingTime) => {
-  const result = await callCloudFunction('bookings', { action: 'reschedule', id, booking_date: bookingDate, booking_time: bookingTime })
+// D: 客户改期（payload 含 booking_date/booking_time 及可编辑字段 contact_info/service_mode/service_address/skin_type/special_needs/occasion）
+const rescheduleBooking = async (id, payload) => {
+  const result = await callCloudFunction('bookings', { action: 'reschedule', id, ...payload })
 
   return result.data
 }

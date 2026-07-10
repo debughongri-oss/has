@@ -1,0 +1,481 @@
+/**
+ * 预约表单公共样式 —— 由「创建预约」(pages/booking/create) 与「改期」(pages/booking/reschedule) 共用。
+ * 包含：步骤卡 / 日历 / 时段 / 联系信息字段。两页 @import 本文件以保持视觉完全一致。
+ * 页面专属样式（服务列表、明细弹层、dock 等）仍留在各自的页面 wxss。
+ */
+
+/* ===== 步骤 ===== */
+.steps {
+  margin: 0 var(--page-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.step-card {
+  position: relative;
+  background-color: var(--bg-elevated);
+  border-radius: 28rpx;
+  padding: 30rpx 28rpx;
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.step-card--locked {
+  opacity: 0.72;
+}
+
+.step-card::before {
+  content: '';
+  position: absolute;
+  left: 52rpx;
+  top: 84rpx;
+  bottom: 0;
+  width: 2rpx;
+  border-left: 2rpx dashed rgba(232, 85, 117, 0.22);
+}
+
+.step-card:last-child::before {
+  display: none;
+}
+
+.step-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+}
+
+.step-badge {
+  width: 46rpx;
+  height: 46rpx;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--accent);
+  color: #FFFFFF;
+  font-size: 24rpx;
+  font-weight: 800;
+  box-shadow: 0 8rpx 18rpx rgba(232, 85, 117, 0.25);
+}
+
+.step-badge--done {
+  background-color: var(--accent-dark);
+}
+
+.step-title-wrap {
+  flex: 1;
+  min-width: 0;
+}
+
+.step-title {
+  display: block;
+  font-size: 34rpx;
+  line-height: 1.2;
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
+.step-sub {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  line-height: 1.35;
+  color: var(--text-secondary);
+}
+
+.step-state {
+  flex-shrink: 0;
+  max-width: 190rpx;
+  padding: 7rpx 16rpx;
+  border-radius: 999rpx;
+  font-size: 22rpx;
+  line-height: 1.2;
+  color: var(--accent);
+  background-color: var(--accent-soft);
+}
+
+.step-state--warn {
+  color: var(--orange);
+  background-color: var(--orange-bg);
+}
+
+.step-body {
+  position: relative;
+  z-index: 1;
+  margin-top: 26rpx;
+  padding-left: 64rpx;
+}
+
+/* ===== 日历 ===== */
+.cal-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 8rpx 20rpx;
+}
+
+.cal-month {
+  font-size: 32rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.cal-arrow {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  background-color: var(--fill-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cal-arrow text {
+  width: 16rpx;
+  height: 16rpx;
+  border-top: 3rpx solid var(--text-secondary);
+  border-right: 3rpx solid var(--text-secondary);
+}
+
+.cal-arrow.l text {
+  transform: rotate(-135deg);
+  margin-left: 5rpx;
+}
+
+.cal-arrow.r text {
+  transform: rotate(45deg);
+  margin-right: 5rpx;
+}
+
+.cal-arrow--disabled {
+  opacity: 0.28;
+  pointer-events: none;
+}
+
+.cal-wd {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  margin-bottom: 6rpx;
+}
+
+.cal-wd text {
+  text-align: center;
+  font-size: 23rpx;
+  color: var(--text-tertiary);
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.cal-cell {
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.cal-cell--blank,
+.cal-cell--disabled {
+  pointer-events: none;
+}
+
+.cal-day {
+  width: 58rpx;
+  height: 58rpx;
+  line-height: 58rpx;
+  text-align: center;
+  border-radius: 50%;
+  font-size: 27rpx;
+  color: var(--text-primary);
+}
+
+.cal-cell--disabled .cal-day {
+  color: var(--text-tertiary);
+  opacity: 0.36;
+}
+
+.cal-cell--today .cal-day {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.cal-cell--today::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 4rpx;
+  transform: translateX(-50%);
+  width: 7rpx;
+  height: 7rpx;
+  border-radius: 50%;
+  background-color: var(--accent);
+}
+
+.cal-cell--on .cal-day {
+  background-color: var(--accent);
+  color: #FFFFFF;
+  font-weight: 800;
+  box-shadow: 0 8rpx 18rpx rgba(232, 85, 117, 0.34);
+}
+
+.cal-cell--on.cal-cell--today::after {
+  background-color: #FFFFFF;
+}
+
+.cal-legend {
+  margin-top: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  font-size: 23rpx;
+  color: var(--text-tertiary);
+}
+
+.legend-dot {
+  width: 8rpx;
+  height: 8rpx;
+  border-radius: 50%;
+  background-color: var(--accent);
+}
+
+.legend-sep {
+  color: var(--separator-opaque);
+}
+
+/* ===== 时间 ===== */
+.slot-load {
+  display: flex;
+  justify-content: center;
+  padding: 42rpx 0;
+}
+
+.slot-group {
+  margin-top: 24rpx;
+}
+
+.slot-group:first-child {
+  margin-top: 0;
+}
+
+.slot-group-head {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 16rpx;
+  font-size: 27rpx;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.slot-group-icon {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16rpx;
+}
+
+.slot {
+  min-width: 0;
+  height: 86rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5rpx;
+  border-radius: 18rpx;
+  font-size: 28rpx;
+  font-weight: 700;
+  background-color: #FFFFFF;
+  border: 2rpx solid var(--separator-opaque);
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.slot-note {
+  font-size: 21rpx;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.slot--on {
+  border-color: var(--accent);
+  color: var(--accent-dark);
+  background-color: var(--accent-soft);
+}
+
+.slot--no {
+  background-color: var(--fill-primary);
+  border-color: transparent;
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.slot--no .slot-note {
+  color: var(--text-tertiary);
+}
+
+.slot-empty {
+  padding: 34rpx 0;
+  font-size: 25rpx;
+  color: var(--text-tertiary);
+}
+
+/* ===== 联系信息 ===== */
+.field-list {
+  border: 2rpx solid var(--separator-opaque);
+  border-radius: 20rpx;
+  overflow: hidden;
+  background-color: #FFFFFF;
+}
+
+.field-row {
+  display: flex;
+  align-items: center;
+  min-height: 92rpx;
+  padding: 0 22rpx;
+  border-bottom: 1rpx solid var(--separator);
+  box-sizing: border-box;
+}
+
+.field-row:last-child {
+  border-bottom: none;
+}
+
+.field-icon {
+  width: 34rpx;
+  height: 34rpx;
+  margin-right: 16rpx;
+  flex-shrink: 0;
+}
+
+.field-label {
+  width: 112rpx;
+  flex-shrink: 0;
+  font-size: 27rpx;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.field-input {
+  flex: 1;
+  min-width: 0;
+  height: 88rpx;
+  color: var(--text-primary);
+  font-size: 27rpx;
+}
+
+.line-ph {
+  color: var(--text-tertiary);
+}
+
+.field {
+  margin-top: 26rpx;
+}
+
+.field-title {
+  display: block;
+  margin-bottom: 14rpx;
+  font-size: 26rpx;
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16rpx;
+}
+
+.mode-card {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  padding: 20rpx;
+  border-radius: 18rpx;
+  border: 2rpx solid var(--separator-opaque);
+  background-color: #FFFFFF;
+  box-sizing: border-box;
+}
+
+.mode-card--on {
+  border-color: var(--accent);
+  background-color: var(--accent-soft);
+}
+
+.mode-icon {
+  width: 36rpx;
+  height: 36rpx;
+  flex-shrink: 0;
+}
+
+.mode-title {
+  display: block;
+  font-size: 27rpx;
+  line-height: 1.2;
+  color: var(--text-primary);
+  font-weight: 800;
+}
+
+.mode-card--on .mode-title {
+  color: var(--accent-dark);
+}
+
+.mode-desc {
+  display: block;
+  margin-top: 5rpx;
+  font-size: 21rpx;
+  line-height: 1.35;
+  color: var(--text-secondary);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.chip {
+  padding: 14rpx 28rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  background-color: var(--fill-primary);
+  color: var(--text-secondary);
+  border: 2rpx solid transparent;
+}
+
+.chip--on {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+
+.ta {
+  width: 100%;
+  height: 132rpx;
+  padding: 22rpx;
+  background-color: var(--fill-primary);
+  border-radius: 18rpx;
+  font-size: 26rpx;
+  box-sizing: border-box;
+  line-height: 1.65;
+  border: none;
+  color: var(--text-primary);
+}
+
+.ta--address {
+  height: 120rpx;
+}

@@ -1,7 +1,10 @@
+@import "../../styles/booking-form.wxss";
+
 .page {
   min-height: 100vh;
   background-color: var(--bg);
-  padding-bottom: calc(200rpx + env(safe-area-inset-bottom));
+  padding: 20rpx 0 calc(190rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
 }
 
 .loading {
@@ -10,125 +13,155 @@
   justify-content: center;
 }
 
-.card {
-  margin: 24rpx var(--page-pad) 0;
-  background-color: var(--bg-elevated);
-  border-radius: 26rpx;
-  padding: 28rpx;
-  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
-}
-
-.svc {
-  display: block;
-  font-size: 36rpx;
-  font-weight: 800;
-  color: var(--text-primary);
-}
-
-.cur {
-  margin-top: 16rpx;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.cur-label {
-  font-size: 26rpx;
-  color: var(--text-secondary);
-}
-
-.cur-val {
-  font-size: 28rpx;
-  font-weight: 600;
-  color: var(--accent);
-}
-
-.card-title {
-  display: block;
-  font-size: 24rpx;
-  font-weight: 700;
+/* 步骤1「不可修改」中性胶囊（覆盖公共 .step-state 的强调色） */
+.step-state--locked {
   color: var(--text-tertiary);
-  letter-spacing: 1rpx;
-  margin-bottom: 18rpx;
-}
-
-.date-pill {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 22rpx 24rpx;
   background-color: var(--fill-primary);
-  border-radius: 18rpx;
-  font-size: 30rpx;
-  font-weight: 600;
-  color: var(--text-primary);
 }
 
-.date-arrow {
-  width: 16rpx;
-  height: 16rpx;
-  border-right: 4rpx solid var(--text-tertiary);
-  border-bottom: 4rpx solid var(--text-tertiary);
-  transform: rotate(45deg);
+/* 只读服务卡（与创建页服务行同风格，但不可选） */
+.svc-locked {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 22rpx;
+  border-radius: 22rpx;
+  border: 2rpx solid var(--separator-opaque);
+  background-color: #FFFFFF;
+  box-sizing: border-box;
 }
 
-.slot-tip {
-  font-size: 26rpx;
-  color: var(--text-tertiary);
-  padding: 16rpx 0;
-}
-
-.slot-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18rpx;
-}
-
-.slot {
-  height: 84rpx;
+.svc-locked-icon-wrap {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 22rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 18rpx;
-  background-color: var(--fill-primary);
-  font-size: 28rpx;
-  font-weight: 600;
+  flex-shrink: 0;
+  background-color: var(--accent-soft);
+}
+
+.svc-locked-icon {
+  width: 46rpx;
+  height: 46rpx;
+}
+
+/* 有封面时：图片铺满整个色块（aspectFill 裁剪），不再露出色块底色 */
+.svc-locked-icon-wrap--cover {
+  background-color: transparent;
+  overflow: hidden;
+}
+
+.svc-locked-icon-wrap--cover .svc-locked-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.svc-locked-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.svc-locked-top {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.svc-locked-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 30rpx;
+  font-weight: 800;
   color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.slot--disabled {
-  color: var(--text-tertiary);
-  opacity: 0.5;
+.svc-locked-cat {
+  flex-shrink: 0;
+  max-width: 140rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+  color: var(--accent);
+  background-color: var(--accent-soft);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.slot--active {
-  background-color: var(--accent);
-  color: #FFFFFF;
+.svc-locked-price {
+  display: block;
+  margin-top: 10rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--accent);
 }
 
+/* ===== 提交栏（价格 + 确认改期） ===== */
 .dock {
   position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
   padding: 18rpx var(--page-pad);
   padding-bottom: calc(28rpx + env(safe-area-inset-bottom));
   background-color: var(--bg-elevated);
   box-shadow: 0 -8rpx 26rpx rgba(0, 0, 0, 0.07);
+  box-sizing: border-box;
+}
+
+.dock-price {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  color: var(--accent);
+}
+
+.dock-yen {
+  font-size: 28rpx;
+  font-weight: 700;
+}
+
+.dock-amount {
+  font-size: 46rpx;
+  line-height: 1;
+  font-weight: 800;
 }
 
 .dock-btn {
-  width: 100%;
-  height: 100rpx;
-  border-radius: 24rpx;
-  background-color: var(--accent);
+  flex: 1;
+  min-width: 0;
+  height: 92rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  background-color: var(--accent-dark);
   color: #FFFFFF;
-  font-size: var(--fs-base);
-  font-weight: 700;
+  border-radius: 20rpx;
+  font-size: 30rpx;
+  font-weight: 800;
   letter-spacing: 2rpx;
+  box-sizing: border-box;
   border: none;
+  line-height: 1;
+  box-shadow: 0 8rpx 20rpx rgba(232, 85, 117, 0.3);
 }
 
 .dock-btn::after {
   border: none;
+}
+
+.dock-btn[disabled] {
+  opacity: 0.42;
+  box-shadow: none;
 }

@@ -76,6 +76,13 @@
   font-size: 36rpx;
   font-weight: 700;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.sic-cover {
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 .sic--rose { background-color: rgba(196, 114, 127, 0.13); color: #C4727F; }
