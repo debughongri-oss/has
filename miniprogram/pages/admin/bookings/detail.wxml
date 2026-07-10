@@ -72,6 +72,41 @@
       </view>
     </view>
 
+    <!-- CUST-04: 客户档案（化妆师画像，与客户需求独立） -->
+    <view class="card" wx:if="{{booking.user_openid}}">
+      <text class="card-title">客户档案</text>
+
+      <!-- D-14: Empty state — no note yet, guide to customer detail -->
+      <view class="cust-empty tappable" wx:if="{{!customerNote}}" bindtap="goToCustomerDetail">
+        <text>暂无客户档案，点击查看客户详情</text>
+      </view>
+
+      <!-- D-13: Note content — tag + count + preference + allergy + custom_notes -->
+      <block wx:if="{{customerNote}}">
+        <view class="dfield" wx:if="{{customerTag}}">
+          <text class="dfield-key">客户标签</text>
+          <text class="dfield-val">
+            <text class="cust-tag cust-tag--{{customerTag}}">{{customerTag === 'vip' ? 'VIP' : (customerTag === 'new' ? '新客' : '回头客')}}</text>
+          </text>
+        </view>
+        <view class="dfield" wx:if="{{customerNote.preference}}">
+          <text class="dfield-key">偏好</text>
+          <text class="dfield-val">{{customerNote.preference}}</text>
+        </view>
+        <view class="dfield" wx:if="{{customerNote.allergy}}">
+          <text class="dfield-key">过敏史</text>
+          <text class="dfield-val cust-allergy">{{customerNote.allergy}}</text>
+        </view>
+        <view class="dfield" wx:if="{{customerNote.custom_notes}}">
+          <text class="dfield-key">备注</text>
+          <text class="dfield-val">{{customerNote.custom_notes}}</text>
+        </view>
+        <view class="cust-link tappable" bindtap="goToCustomerDetail">
+          <text>查看完整客户详情 →</text>
+        </view>
+      </block>
+    </view>
+
     <!-- 拒绝原因 -->
     <view class="card" wx:if="{{booking.reject_reason}}">
       <text class="card-title">拒绝原因</text>

@@ -1,7 +1,10 @@
 const bookingsService = require('../../../services/bookings')
 const authService = require('../../../services/auth')
+const customersService = require('../../../services/customers')
 
 const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
+const TAG_LABELS = { new: '新客', returning: '回头客', vip: 'VIP' }
 
 // "2026-06-25" → "6月25日 周三"
 const formatDateLabel = (dateStr) => {
@@ -32,7 +35,9 @@ Page({
     statusColor: '',
     artistNotes: '',
     showRejectDialog: false,
-    rejectReason: ''
+    rejectReason: '',
+    customerNote: null,
+    customerTag: ''
   },
 
   onLoad: async function (options) {
@@ -66,13 +71,41 @@ Page({
           loading: false,
           statusLabel: bookingsService.getStatusLabel(data.status),
           statusColor: bookingsService.getStatusColor(data.status),
-          artistNotes: data.artist_notes || ''
+          artistNotes: data.artist_notes || '',
+          customerNote: null,
+          customerTag: ''
         })
+
+        // CUST-04: Load customer note for this booking's user_openid
+        if (data.user_openid) {
+          customersService.getCustomerNote(data.user_openid)
+            .then(note => {
+              this.setData({ customerNote: note })
+            })
+            .catch(err => {
+              console.error('加载客户备注失败:', err)
+            })
+
+          // Also load customer tag (best-effort via detail action)
+          customersService.getCustomerDetail(data.user_openid)
+            .then(detail => {
+              this.setData({ customerTag: detail.tag || '' })
+            })
+            .catch(() => {/* tag is best-effort */})
+        }
       })
       .catch(err => {
         console.error('加载详情失败:', err)
         this.setData({ loading: false })
       })
+  },
+
+  // CUST-04 D-14: Navigate to customer detail page (empty-state guidance + full-detail link)
+  goToCustomerDetail: function () {
+    const openid = this.data.booking && this.data.booking.user_openid
+    if (openid) {
+      wx.navigateTo({ url: `/pages/admin/customers/detail?user_openid=${openid}` })
+    }
   },
 
   onNotesInput: function (e) {

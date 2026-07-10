@@ -248,3 +248,46 @@
   margin-top: 16rpx;
   border: none;
 }
+
+/* ===== CUST-04: 客户档案卡片 ===== */
+.cust-empty {
+  padding: 20rpx 0;
+  font-size: 26rpx;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.cust-tag {
+  display: inline-block;
+  font-size: 20rpx;
+  font-weight: 600;
+  padding: 5rpx 18rpx;
+  border-radius: 999rpx;
+}
+
+.cust-tag--vip {
+  background-color: rgba(212, 175, 55, 0.12);
+  color: var(--gold);
+}
+
+.cust-tag--new {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+.cust-tag--returning {
+  background-color: var(--fill-primary);
+  color: var(--text-secondary);
+}
+
+.cust-allergy {
+  color: var(--red);
+  font-weight: 600;
+}
+
+.cust-link {
+  padding: 20rpx 0 4rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--accent);
+}
