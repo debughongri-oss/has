@@ -8,8 +8,8 @@
 ### 客户档案（Medium）
 
 - [x] **CUST-01**: 化妆师后台查看客户列表——聚合 users + bookings 统计，展示昵称、头像、预约次数、最近预约时间、状态标签（新客/回头客/VIP）
-- [ ] **CUST-02**: 客户详情页——客户基本信息 + 完整历史预约列表 + 该客户的评价记录
-- [ ] **CUST-03**: 化妆师为客户添加/编辑备注（肤质、偏好、过敏史、自定义备注），存储于 customer_notes 集合（按 user_openid 索引）
+- [x] **CUST-02**: 客户详情页——客户基本信息 + 完整历史预约列表 + 该客户的评价记录
+- [x] **CUST-03**: 化妆师为客户添加/编辑备注（肤质、偏好、过敏史、自定义备注），存储于 customer_notes 集合（按 user_openid 索引）
 - [ ] **CUST-04**: 预约管理详情页展示客户备注——化妆师接单/确认前可查看客户偏好和注意事项
 
 ### 评价增强（Medium）
@@ -31,8 +31,8 @@
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | CUST-01 | Phase 20 | Complete |
-| CUST-02 | Phase 20 | Pending |
-| CUST-03 | Phase 20 | Pending |
+| CUST-02 | Phase 20 | Complete |
+| CUST-03 | Phase 20 | Complete |
 | CUST-04 | Phase 20 | Pending |
 | REVW-10 | Phase 21 | Pending |
 | REVW-11 | Phase 21 | Pending |

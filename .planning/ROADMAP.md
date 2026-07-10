@@ -45,7 +45,7 @@
 **Plans**: 4 plans
 - [x] 20-01-PLAN.md — 客户数据云函数 + 服务层 + 路由注册（后端基础设施）
 - [x] 20-02-PLAN.md — 客户列表页 + 预约列表入口（CUST-01）
-- [ ] 20-03-PLAN.md — 客户详情页 + inline 备注编辑（CUST-02, CUST-03）
+- [x] 20-03-PLAN.md — 客户详情页 + inline 备注编辑（CUST-02, CUST-03）
 - [ ] 20-04-PLAN.md — 预约详情客户档案卡片（CUST-04）
 **UI hint**: yes
 
@@ -65,5 +65,5 @@
 
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
-| 20. 客户档案 | v2.3 | 2/4 | In Progress|  |
+| 20. 客户档案 | v2.3 | 3/4 | In Progress|  |
 | 21. 评价增强 | v2.3 | 0/TBD | Not started | - |
