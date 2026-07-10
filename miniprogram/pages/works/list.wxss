@@ -1,7 +1,31 @@
 .page-works {
   min-height: 100vh;
-  background-color: var(--bg);
-  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  background-color: #FBFAF8;
+  padding-bottom: calc(176rpx + env(safe-area-inset-bottom));
+}
+
+/* ===== 页面标题 ===== */
+.works-header {
+  padding: 24rpx var(--page-pad) 20rpx;
+}
+
+.works-title {
+  display: block;
+  font-size: 60rpx;
+  line-height: 1.12;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 2rpx;
+}
+
+.works-subtitle {
+  display: block;
+  margin-top: 14rpx;
+  color: var(--text-tertiary);
+  font-size: 24rpx;
+  line-height: 1.4;
+  letter-spacing: 1rpx;
 }
 
 /* ===== 分类筛选 ===== */
@@ -9,210 +33,309 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background-color: var(--bg);
-  padding: 20rpx 0 16rpx;
+  background-color: rgba(251, 250, 248, 0.96);
+  padding: 8rpx 0 18rpx;
 }
 
 .cat-track {
   display: inline-flex;
+  min-width: 100%;
+  box-sizing: border-box;
   padding: 0 var(--page-pad);
-  gap: 14rpx;
+  gap: 46rpx;
 }
 
-.cat-chip {
+.cat-item {
+  position: relative;
   flex-shrink: 0;
-  font-size: var(--fs-xs);
+  padding: 18rpx 0 16rpx;
   color: var(--text-secondary);
+}
+
+.cat-label {
+  font-size: 28rpx;
+  line-height: 1;
   white-space: nowrap;
-  padding: 14rpx 32rpx;
+}
+
+.cat-indicator {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 5rpx;
   border-radius: 999rpx;
-  background-color: var(--bg-elevated);
-  border: 1rpx solid var(--separator-opaque);
+  background-color: var(--accent-dark);
+  transform: translateX(-50%);
+  transition: width 0.18s ease;
 }
 
-.cat-chip--active {
-  background-color: var(--accent);
-  color: #FFFFFF;
-  border-color: var(--accent);
-  font-weight: 600;
+.cat-item--active {
+  color: var(--accent-dark);
+  font-weight: 700;
 }
 
-/* ===== 精选大图 ===== */
+.cat-item--active .cat-indicator {
+  width: 52rpx;
+}
+
+/* ===== 本月精选 ===== */
+.featured-head {
+  display: flex;
+  align-items: center;
+  padding: 34rpx var(--page-pad) 22rpx;
+}
+
+.featured-mark {
+  width: 14rpx;
+  height: 14rpx;
+  margin-right: 16rpx;
+  background-color: var(--gold);
+  transform: rotate(45deg);
+}
+
+.featured-title {
+  font-size: 34rpx;
+  line-height: 1.2;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.featured-count {
+  margin-left: auto;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
 .hero {
   position: relative;
-  margin: 8rpx var(--page-pad) 0;
-  height: 560rpx;
-  border-radius: 28rpx;
+  height: 460rpx;
+  margin: 0 var(--page-pad);
   overflow: hidden;
-  background-color: var(--accent-light);
-  box-shadow: 0 12rpx 30rpx rgba(0, 0, 0, 0.08);
+  border-radius: 18rpx;
+  background-color: #EFE8E4;
 }
 
 .hero-img {
+  display: block;
   width: 100%;
   height: 100%;
-  display: block;
 }
 
 .hero-badge {
   position: absolute;
   top: 20rpx;
-  left: 20rpx;
-  font-size: 20rpx;
-  color: #FFFFFF;
-  background-color: rgba(0, 0, 0, 0.45);
-  padding: 6rpx 18rpx;
+  right: 20rpx;
+  padding: 7rpx 16rpx;
   border-radius: 999rpx;
+  color: #FFFFFF;
+  background-color: rgba(23, 21, 26, 0.62);
+  font-size: 20rpx;
+  line-height: 1.2;
 }
 
-.hero-scrim {
+.hero-caption {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 56rpx 28rpx 28rpx;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0));
-}
-
-.hero-cat {
-  display: inline-block;
-  font-size: 20rpx;
+  left: 22rpx;
+  bottom: 22rpx;
+  max-width: 70%;
+  padding: 18rpx 22rpx;
+  border-radius: 10rpx;
   color: #FFFFFF;
-  background-color: rgba(255, 255, 255, 0.24);
-  padding: 5rpx 18rpx;
-  border-radius: 999rpx;
-  margin-bottom: 14rpx;
+  background-color: rgba(23, 21, 26, 0.58);
 }
 
 .hero-title {
   display: block;
-  font-size: 38rpx;
-  font-weight: 700;
   color: #FFFFFF;
-  line-height: 1.3;
+  font-size: 32rpx;
+  line-height: 1.2;
+  font-weight: 700;
 }
 
-/* ===== 章节头 ===== */
+.hero-cat {
+  display: block;
+  margin-top: 8rpx;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 22rpx;
+  line-height: 1.2;
+}
+
+/* ===== 双列作品画廊 ===== */
 .gallery-head {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  padding: 44rpx var(--page-pad) 24rpx;
+  align-items: center;
+  padding: 42rpx var(--page-pad) 20rpx;
 }
 
 .gallery-label {
-  font-size: 36rpx;
-  font-weight: 800;
+  flex-shrink: 0;
+  font-size: 28rpx;
+  font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: -0.5rpx;
 }
 
-.gallery-count {
-  font-size: var(--fs-xs);
-  color: var(--text-tertiary);
+.gallery-rule {
+  flex: 1;
+  height: 1rpx;
+  margin-left: 22rpx;
+  background-color: var(--separator-opaque);
 }
 
-/* ===== 瀑布流 ===== */
-.masonry {
+.gallery {
   display: flex;
-  gap: 16rpx;
+  gap: 14rpx;
   padding: 0 var(--page-pad);
 }
 
-.masonry-col {
+.gallery-col {
+  display: flex;
   flex: 1;
   min-width: 0;
-  display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 18rpx;
 }
 
-.card {
-  border-radius: 24rpx;
+.work-item {
   overflow: hidden;
-  background-color: var(--bg-elevated);
-  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
+  border-radius: 14rpx;
+  background-color: #FFFFFF;
+  box-shadow: 0 3rpx 14rpx rgba(56, 41, 35, 0.05);
 }
 
-.card-media {
-  position: relative;
+.work-media {
   width: 100%;
-  height: 360rpx;
+  height: 310rpx;
   overflow: hidden;
+  background-color: #EFE8E4;
 }
 
-.card:nth-child(3n+1) .card-media {
-  height: 440rpx;
+.work-item:nth-child(3n + 1) .work-media {
+  height: 350rpx;
 }
 
-.card:nth-child(3n+3) .card-media {
-  height: 320rpx;
+.work-item:nth-child(3n + 3) .work-media {
+  height: 280rpx;
 }
 
-.card-img {
+.work-img {
+  display: block;
   width: 100%;
   height: 100%;
+}
+
+.work-meta {
+  padding: 16rpx 18rpx 18rpx;
+}
+
+.work-title {
   display: block;
-}
-
-.card-badge {
-  position: absolute;
-  bottom: 12rpx;
-  right: 12rpx;
-  font-size: 20rpx;
-  color: #FFFFFF;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 4rpx 14rpx;
-  border-radius: 999rpx;
-}
-
-.card-meta {
-  padding: 16rpx 18rpx 20rpx;
-}
-
-.card-title {
-  display: block;
-  font-size: var(--fs-sm);
-  font-weight: 600;
   color: var(--text-primary);
+  font-size: 27rpx;
+  line-height: 1.3;
+  font-weight: 600;
 }
 
-.card-cat {
-  display: inline-block;
-  font-size: 20rpx;
-  color: var(--accent);
-  background-color: var(--accent-soft);
-  padding: 3rpx 14rpx;
-  border-radius: 999rpx;
+.work-foot {
+  display: flex;
+  align-items: center;
+  min-height: 30rpx;
   margin-top: 10rpx;
 }
 
-/* ===== 加载更多 / 到底 ===== */
+.work-cat {
+  color: #A78247;
+  font-size: 21rpx;
+  line-height: 1.2;
+}
+
+.work-compare {
+  margin-left: auto;
+  color: var(--text-secondary);
+  font-size: 20rpx;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* ===== 加载状态 ===== */
 .load-more {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 44rpx var(--page-pad) 16rpx;
+  padding: 46rpx var(--page-pad) 12rpx;
 }
 
 .load-more-btn {
   padding: 16rpx 48rpx;
-  background-color: var(--bg-elevated);
   border: 1rpx solid var(--separator-opaque);
   border-radius: 999rpx;
-  font-size: var(--fs-xs);
+  background-color: #FFFFFF;
   color: var(--text-secondary);
+  font-size: var(--fs-xs);
   font-weight: 500;
 }
 
 .list-end {
   display: flex;
   justify-content: center;
-  padding: 48rpx var(--page-pad) 24rpx;
+  padding: 44rpx var(--page-pad) 16rpx;
 }
 
 .list-end-text {
-  font-size: var(--fs-xs);
   color: var(--text-tertiary);
+  font-size: var(--fs-xs);
   letter-spacing: 1rpx;
+}
+
+/* ===== 预约入口 ===== */
+.booking-cta {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  height: 112rpx;
+  margin: 0;
+  padding: 14rpx var(--page-pad);
+  border: 1rpx solid rgba(232, 85, 117, 0.12);
+  border-bottom: none;
+  border-radius: 18rpx 18rpx 0 0;
+  background-color: #FFF7F7;
+  box-shadow: 0 -6rpx 24rpx rgba(67, 43, 45, 0.10);
+}
+
+.booking-copy {
+  flex: 1;
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 28rpx;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.booking-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 176rpx;
+  min-width: 176rpx;
+  max-width: 176rpx;
+  height: 76rpx;
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  border-radius: 999rpx;
+  background-color: var(--accent-dark);
+  color: #FFFFFF;
+  font-size: 27rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.booking-action::after {
+  border: none;
 }

@@ -6,6 +6,9 @@
   <block wx:if="{{!loading && booking}}">
     <!-- 概要 -->
     <view class="card">
+      <view class="hero" wx:if="{{booking.serviceImage}}">
+        <image class="hero-img" src="{{booking.serviceImage}}" mode="aspectFill" />
+      </view>
       <text class="status-pill status-pill--{{booking.status}}">{{statusLabel}}</text>
       <text class="h-svc">{{booking.service_name}}</text>
       <view class="h-div"></view>

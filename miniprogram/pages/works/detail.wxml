@@ -5,10 +5,8 @@
 
   <block wx:if="{{!loading && work}}">
     <view class="gallery">
-      <!-- Top gradient scrim: improves status-bar text legibility under custom nav -->
       <view class="gallery-scrim-top"></view>
 
-      <!-- Before/After comparison mode (has before_image) -->
       <block wx:if="{{work.before_image}}">
         <before-after-slider
           beforeSrc="{{work.before_image}}"
@@ -18,7 +16,6 @@
         />
       </block>
 
-      <!-- Standard swiper mode (no before_image) -->
       <block wx:else>
         <swiper
           class="gallery-swiper"
@@ -41,60 +38,61 @@
         </swiper>
       </block>
 
-      <!-- Image counter pill (swiper mode, multi-image only) -->
       <view class="gallery-counter" wx:if="{{!work.before_image && work.images.length > 1}}">
         <text class="counter-current">{{currentImage + 1}}</text>
         <text class="counter-sep">/</text>
         <text class="counter-total">{{work.images.length}}</text>
       </view>
 
-      <!-- Top-left back button — custom nav mode has no native back arrow.
-           top 与右侧操作簇对齐（均在胶囊下方），见 detail.js actionTop。 -->
       <view class="gallery-back tappable" style="top: {{actionTop}}px" bindtap="goBack"></view>
 
-      <!-- Top-right action cluster: poster (artist only) + share.
-           top 按微信胶囊底部定位(actionTop)，避免被右上胶囊按钮遮挡。 -->
       <view class="gallery-actions" style="top: {{actionTop}}px">
-        <button wx:if="{{isArtist}}" class="gallery-action-btn gallery-action-btn--poster tappable" bindtap="goToPoster"></button>
-        <button class="gallery-action-btn gallery-action-btn--share tappable" open-type="share"></button>
+        <button
+          wx:if="{{isArtist}}"
+          class="gallery-action-btn gallery-action-btn--poster tappable"
+          bindtap="goToPoster"
+        ></button>
+        <button
+          class="gallery-action-btn gallery-action-btn--share tappable"
+          open-type="share"
+        ></button>
       </view>
     </view>
-
-    <!-- Thumbnail strip (swiper mode, multi-image only) — direct jump to any image -->
-    <scroll-view
-      wx:if="{{!work.before_image && work.images.length > 1}}"
-      class="thumb-strip"
-      scroll-x
-      show-scrollbar="{{false}}"
-    >
-      <view
-        wx:for="{{work.images}}"
-        wx:key="index"
-        class="thumb tappable {{currentImage === index ? 'thumb--active' : ''}}"
-        bindtap="onThumbTap"
-        data-index="{{index}}"
-      >
-        <image class="thumb-img" src="{{item}}" mode="aspectFill" />
-      </view>
-    </scroll-view>
 
     <view class="detail-body">
       <view class="detail-head">
         <text class="detail-eyebrow" wx:if="{{work.categoryLabel || work.category}}">{{work.categoryLabel || work.category}}</text>
         <text class="detail-title">{{work.title}}</text>
+
+        <view class="detail-story" wx:if="{{work.description}}">
+          <text class="detail-story-label">作品故事</text>
+          <text class="detail-story-text">{{work.description}}</text>
+        </view>
+
         <view class="detail-meta" wx:if="{{work.created_at}}">
           <view class="detail-meta-icon"></view>
           <text class="detail-meta-text">{{work.created_at}}</text>
         </view>
       </view>
 
-      <view class="detail-story" wx:if="{{work.description}}">
-        <text class="detail-story-label">作品故事</text>
-        <text class="detail-story-text">{{work.description}}</text>
-      </view>
+      <scroll-view
+        class="detail-thumbs"
+        wx:if="{{work.images.length > 1}}"
+        scroll-x
+        show-scrollbar="{{false}}"
+      >
+        <view
+          wx:for="{{work.images}}"
+          wx:key="index"
+          class="thumb tappable {{currentImage === index ? 'thumb--active' : ''}}"
+          bindtap="onThumbTap"
+          data-index="{{index}}"
+        >
+          <image class="thumb-img" src="{{item}}" mode="aspectFill" />
+        </view>
+      </scroll-view>
     </view>
 
-    <!-- 悬浮预约条 -->
     <view class="detail-bar">
       <button class="bar-chat tappable" open-type="contact">
         <view class="bar-chat-icon"></view>

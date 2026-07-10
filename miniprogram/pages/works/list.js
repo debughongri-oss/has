@@ -124,6 +124,10 @@ Page({
     wx.navigateTo({ url: `/pages/works/detail?id=${id}` })
   },
 
+  goToBooking: function () {
+    wx.switchTab({ url: '/pages/booking/create' })
+  },
+
   /**
    * 分享到微信聊天 — MGMT-02
    */

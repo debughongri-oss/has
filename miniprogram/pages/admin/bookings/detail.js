@@ -18,6 +18,7 @@ const normalizeBookingMeta = (booking) => {
   booking.serviceMode = mode
   booking.serviceModeLabel = booking.service_mode_label || (mode === 'home' ? '上门' : '到店')
   booking.serviceAddress = booking.service_address || ''
+  booking.serviceImage = booking.service_image || ''
   booking.contactPhone = contactInfo.phone || ''
   booking.contactWechat = contactInfo.wechat || ''
   return booking

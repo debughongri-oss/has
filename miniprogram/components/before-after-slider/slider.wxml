@@ -16,10 +16,10 @@
   </view>
 
   <!-- Labels -->
-  <view class="ba-label ba-label--before">BEFORE</view>
-  <view class="ba-label ba-label--after">AFTER</view>
+  <view class="ba-label ba-label--before">Before</view>
+  <view class="ba-label ba-label--after">After</view>
 
-  <!-- Fullscreen button (top-right) -->
+  <!-- Fullscreen button (bottom-right, away from page actions) -->
   <view class="ba-fullscreen tappable" bindtap="onFullscreenTap">
     <view class="ba-fullscreen-icon"></view>
   </view>

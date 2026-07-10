@@ -2,9 +2,9 @@
   "usingComponents": {
     "t-loading": "tdesign-miniprogram/loading/loading"
   },
-  "navigationBarTitleText": "作品集",
-  "navigationBarBackgroundColor": "#F7F6F5",
+  "navigationBarTitleText": "",
+  "navigationBarBackgroundColor": "#FBFAF8",
   "navigationBarTextStyle": "black",
-  "backgroundColor": "#F7F6F5",
+  "backgroundColor": "#FBFAF8",
   "enablePullDownRefresh": true
 }

@@ -63,6 +63,14 @@ Page({
 
   onThumbTap: function (e) {
     const index = e.currentTarget.dataset.index
+    if (this.data.work.before_image) {
+      const urls = this.data.work.images
+      wx.previewImage({
+        current: urls[index],
+        urls
+      })
+      return
+    }
     this.setData({ currentImage: index })
   },
 

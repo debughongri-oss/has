@@ -41,9 +41,9 @@
         bindtap="goToDetail"
         data-id="{{item._id}}"
       >
-        <view class="bdate">
-          <text class="bdate-d">{{item.dateShort}}</text>
-          <text class="bdate-t">{{item.booking_time}}</text>
+        <view class="bcover">
+          <image wx:if="{{item.serviceImage}}" class="bcover-img" src="{{item.serviceImage}}" mode="aspectFill" lazy-load="{{true}}" />
+          <view wx:else class="bcover-ph"></view>
         </view>
         <view class="bmain">
           <view class="btop">
@@ -51,8 +51,9 @@
             <text class="badge badge--{{item.status}}">{{item.statusLabel}}</text>
           </view>
           <view class="bmeta-row">
+            <text class="bwhen">{{item.dateShort}} · {{item.booking_time}}</text>
             <text class="mode-tag {{item.isHomeService ? 'mode-tag--home' : ''}}">{{item.serviceModeLabel}}</text>
-            <text class="bcust" wx:if="{{item.user_info.nickname}}">客户 · {{item.user_info.nickname}}</text>
+            <text class="bcust text-ellipsis" wx:if="{{item.user_info.nickname}}">客户 · {{item.user_info.nickname}}</text>
           </view>
           <text class="bnote text-ellipsis-2" wx:if="{{item.notes}}">备注：{{item.notes}}</text>
         </view>

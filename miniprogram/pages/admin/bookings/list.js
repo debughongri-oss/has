@@ -61,6 +61,7 @@ Page({
           statusColor: bookingsService.getStatusColor(b.status),
           serviceModeLabel: getServiceModeLabel(b),
           isHomeService: b.service_mode === 'home',
+          serviceImage: b.service_image || '',
           dateShort: formatDateShort(b.booking_date)
         }))
         const counts = result.statusCounts || {}

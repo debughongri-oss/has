@@ -71,7 +71,7 @@
 /* Labels — semi-transparent white */
 .ba-label {
   position: absolute;
-  top: 24rpx;
+  bottom: 64rpx;
   z-index: 3;
   font-size: 20rpx;
   font-weight: 600;
@@ -89,15 +89,15 @@
 }
 
 .ba-label--after {
-  right: 24rpx;
+  right: 104rpx;
 }
 
 /* Fullscreen button */
 .ba-fullscreen {
   position: absolute;
-  top: 24rpx;
+  bottom: 64rpx;
   right: 24rpx;
-  z-index: 5;
+  z-index: 7;
   width: 64rpx;
   height: 64rpx;
   background: rgba(0, 0, 0, 0.3);

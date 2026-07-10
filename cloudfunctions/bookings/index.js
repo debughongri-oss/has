@@ -39,6 +39,16 @@ const assertDateInWindow = (bookingDate, winDays) => {
   return { ok: true }
 }
 
+// 批量给预约列表注入服务封面：按 service_id 查 services 取 cover_image → 每条预约的 service_image
+const attachServiceCover = async (list) => {
+  const serviceIds = Array.from(new Set(list.map(b => b.service_id).filter(Boolean)))
+  if (!serviceIds.length) return
+  const coverMap = {}
+  const svcRes = await db.collection('services').where({ _id: _.in(serviceIds) }).limit(100).get()
+  svcRes.data.forEach(s => { if (s.cover_image) coverMap[s._id] = s.cover_image })
+  list.forEach(b => { b.service_image = coverMap[b.service_id] || '' })
+}
+
 const STATUS_LABELS = {
   pending: '待确认',
   accepted: '已确认',
@@ -297,6 +307,8 @@ exports.main = async (event, context) => {
           .skip((page - 1) * pageSize)
           .limit(pageSize)
           .get()
+        const list = data.data
+        await attachServiceCover(list)
         // 各状态计数（不受当前筛选影响、不含已取消），供管理端 tab 展示
         const countsAgg = await db.collection('bookings')
           .aggregate()
@@ -307,7 +319,7 @@ exports.main = async (event, context) => {
         countsAgg.list.forEach(g => { statusCounts[g._id] = g.count })
         return {
           errCode: 0,
-          data: { list: data.data, total, page, pageSize, hasMore: page * pageSize < total, statusCounts }
+          data: { list, total, page, pageSize, hasMore: page * pageSize < total, statusCounts }
         }
       } catch (error) {
         console.error('获取预约列表失败:', error)
@@ -326,14 +338,7 @@ exports.main = async (event, context) => {
           .limit(pageSize)
           .get()
         const list = data.data
-        // 关联服务封面：批量按 service_id 取 cover_image 注入每条预约，供列表卡片展示
-        const serviceIds = Array.from(new Set(list.map(b => b.service_id).filter(Boolean)))
-        const coverMap = {}
-        if (serviceIds.length) {
-          const svcRes = await db.collection('services').where({ _id: _.in(serviceIds) }).limit(100).get()
-          svcRes.data.forEach(s => { if (s.cover_image) coverMap[s._id] = s.cover_image })
-        }
-        list.forEach(b => { b.service_image = coverMap[b.service_id] || '' })
+        await attachServiceCover(list)
         return {
           errCode: 0,
           data: { list, total, page, pageSize, hasMore: page * pageSize < total }
@@ -347,6 +352,7 @@ exports.main = async (event, context) => {
     case 'detail': {
       try {
         const res = await db.collection('bookings').doc(event.id).get()
+        await attachServiceCover([res.data])
         return { errCode: 0, data: res.data }
       } catch (error) {
         console.error('获取预约详情失败:', error)

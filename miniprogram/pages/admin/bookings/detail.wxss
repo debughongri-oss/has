@@ -23,6 +23,20 @@
 }
 
 /* ===== 概要头部 ===== */
+.hero {
+  margin: -28rpx -28rpx 24rpx;
+  height: 300rpx;
+  border-radius: 26rpx 26rpx 0 0;
+  overflow: hidden;
+  background-color: var(--accent-soft);
+}
+
+.hero-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 .status-pill {
   display: inline-block;
   font-size: 24rpx;

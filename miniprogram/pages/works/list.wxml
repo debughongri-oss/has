@@ -1,14 +1,22 @@
 <view class="page-works">
+  <view class="works-header">
+    <text class="works-title">作品集</text>
+    <text class="works-subtitle">真实客片 · 持续更新</text>
+  </view>
+
   <view class="cat-bar">
     <scroll-view scroll-x enhanced show-scrollbar="{{false}}">
       <view class="cat-track">
         <view
-          class="cat-chip tappable {{currentCategory === item.key ? 'cat-chip--active' : ''}}"
+          class="cat-item tappable {{currentCategory === item.key ? 'cat-item--active' : ''}}"
           wx:for="{{categories}}"
           wx:key="key"
           bindtap="onCategoryChange"
           data-key="{{item.key}}"
-        >{{item.label}}</view>
+        >
+          <text class="cat-label">{{item.label}}</text>
+          <view class="cat-indicator"></view>
+        </view>
       </view>
     </scroll-view>
   </view>
@@ -18,7 +26,12 @@
   </view>
 
   <block wx:if="{{works.length}}">
-    <!-- 精选大图 -->
+    <view class="featured-head" wx:if="{{heroWork}}">
+      <view class="featured-mark"></view>
+      <text class="featured-title">本月精选</text>
+      <text class="featured-count">{{works.length}} 件</text>
+    </view>
+
     <view
       class="hero tappable"
       wx:if="{{heroWork}}"
@@ -27,65 +40,73 @@
     >
       <image class="hero-img" src="{{heroWork.images[0]}}" mode="aspectFill" lazy-load />
       <view class="hero-badge" wx:if="{{heroWork.hasBeforeAfter}}">前后对比</view>
-      <view class="hero-scrim">
+      <view class="hero-caption">
+        <text class="hero-title text-ellipsis">{{heroWork.title}}</text>
         <text class="hero-cat" wx:if="{{heroWork.categoryLabel}}">{{heroWork.categoryLabel}}</text>
-        <text class="hero-title text-ellipsis-2">{{heroWork.title}}</text>
       </view>
     </view>
 
-    <block wx:if="{{works.length > 1}}">
-      <view class="gallery-head">
-        <text class="gallery-label">{{galleryTitle}}</text>
-        <text class="gallery-count">{{works.length}} 件作品</text>
-      </view>
+    <view class="gallery-head" wx:if="{{works.length > 1}}">
+      <text class="gallery-label">{{galleryTitle}}</text>
+      <view class="gallery-rule"></view>
+    </view>
 
-      <view class="masonry">
-        <view class="masonry-col">
-          <view
-            class="card tappable"
-            wx:for="{{leftColumn}}"
-            wx:key="_id"
-            bindtap="goToDetail"
-            data-id="{{item._id}}"
-          >
-            <view class="card-media">
-              <image class="card-img" src="{{item.images[0]}}" mode="aspectFill" lazy-load />
-              <view class="card-badge" wx:if="{{item.hasBeforeAfter}}">对比</view>
-            </view>
-            <view class="card-meta">
-              <text class="card-title text-ellipsis">{{item.title}}</text>
-              <text class="card-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
-            </view>
+    <view class="gallery" wx:if="{{works.length > 1}}">
+      <view class="gallery-col">
+        <view
+          class="work-item tappable"
+          wx:for="{{leftColumn}}"
+          wx:key="_id"
+          bindtap="goToDetail"
+          data-id="{{item._id}}"
+        >
+          <view class="work-media">
+            <image class="work-img" src="{{item.images[0]}}" mode="aspectFill" lazy-load />
           </view>
-        </view>
-        <view class="masonry-col">
-          <view
-            class="card tappable"
-            wx:for="{{rightColumn}}"
-            wx:key="_id"
-            bindtap="goToDetail"
-            data-id="{{item._id}}"
-          >
-            <view class="card-media">
-              <image class="card-img" src="{{item.images[0]}}" mode="aspectFill" lazy-load />
-              <view class="card-badge" wx:if="{{item.hasBeforeAfter}}">对比</view>
-            </view>
-            <view class="card-meta">
-              <text class="card-title text-ellipsis">{{item.title}}</text>
-              <text class="card-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
+          <view class="work-meta">
+            <text class="work-title text-ellipsis">{{item.title}}</text>
+            <view class="work-foot">
+              <text class="work-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
+              <text class="work-compare" wx:if="{{item.hasBeforeAfter}}">前后对比 ›</text>
             </view>
           </view>
         </view>
       </view>
 
-      <view class="load-more" wx:if="{{hasMore}}">
-        <t-loading wx:if="{{loadingMore}}" theme="circular" size="40rpx" />
-        <view wx:else class="load-more-btn tappable" bindtap="loadMore">展开更多</view>
+      <view class="gallery-col">
+        <view
+          class="work-item tappable"
+          wx:for="{{rightColumn}}"
+          wx:key="_id"
+          bindtap="goToDetail"
+          data-id="{{item._id}}"
+        >
+          <view class="work-media">
+            <image class="work-img" src="{{item.images[0]}}" mode="aspectFill" lazy-load />
+          </view>
+          <view class="work-meta">
+            <text class="work-title text-ellipsis">{{item.title}}</text>
+            <view class="work-foot">
+              <text class="work-cat" wx:if="{{item.categoryLabel}}">{{item.categoryLabel}}</text>
+              <text class="work-compare" wx:if="{{item.hasBeforeAfter}}">前后对比 ›</text>
+            </view>
+          </view>
+        </view>
       </view>
-      <view class="list-end" wx:else>
-        <text class="list-end-text">已展示全部作品</text>
-      </view>
-    </block>
+    </view>
+
+    <view class="load-more" wx:if="{{hasMore}}">
+      <t-loading wx:if="{{loadingMore}}" theme="circular" size="40rpx" />
+      <view wx:else class="load-more-btn tappable" bindtap="loadMore">展开更多</view>
+    </view>
+    <view class="list-end" wx:else>
+      <text class="list-end-text">已展示全部作品</text>
+    </view>
+
+    <view class="booking-cta">
+      <text class="booking-copy">看中喜欢的妆容？</text>
+      <button class="booking-action" bindtap="goToBooking">去预约</button>
+    </view>
   </block>
 
   <view class="empty-container" wx:if="{{!loading && !works.length}}">
