@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: 客户经营 & 口碑增强
 status: executing
-stopped_at: Phase 20 context gathered
-last_updated: "2026-07-10T09:24:27.522Z"
-last_activity: 2026-07-10 -- Phase 20 execution started
+stopped_at: Completed 20-02-PLAN.md (customer list page + bookings entry)
+last_updated: "2026-07-10T09:44:23.522Z"
+last_activity: 2026-07-10
 progress:
   total_phases: 2
   completed_phases: 0
   total_plans: 4
-  completed_plans: 0
-  percent: 0
+  completed_plans: 2
+  percent: 50
 ---
 
 # Project State
 
 **Current focus:** Phase 20 — customer-profiles
 
-Progress: [░░░░░░░░░░] 0% (v2.3, 0/2 phases)
+Progress: [█████░░░░░] 50% (v2.3, 0/2 phases, 2/4 plans in Phase 20)
 
 ## Project Reference
 
@@ -29,9 +29,9 @@ See: .planning/PROJECT.md (updated 2026-07-10)
 ## Current Position
 
 Phase: 20 (customer-profiles) — EXECUTING
-Plan: 1 of 4
-Status: Executing Phase 20
-Last activity: 2026-07-10 -- Phase 20 execution started
+Plan: 3 of 4 (20-01 ✓, 20-02 ✓; next 20-03)
+Status: Executing — Wave 2 UI in progress
+Last activity: 2026-07-10
 
 ## Milestone Goal
 
@@ -62,6 +62,7 @@ v2.0 评价互动 & 预约智能化 (2026-07-02): 评价回复 + 可变时长冲
 - **2 phases for 10 requirements**: Phase 20 (客户档案, 4 reqs) + Phase 21 (评价增强, 6 reqs). 拒绝把评价增强拆成「提交侧」+「管理侧」——REVW-14 (avg_rating 冗余) 需在评价创建/删除时同步更新，跨提交和管理两侧，强耦合不宜分阶段。
 - **Phase 21 依赖 Phase 20 仅作顺序排列**：功能上两阶段独立，无硬依赖；solo-dev 顺序执行避免上下文切换。
 - **两阶段均含 UI 工作**（admin 页面 + 评价表单）→ 都打了 UI hint，触发后续 `/gsd-ui-phase` 建议。
+- **Phase 20 Plan 02**: Fixed customers/list.js require path (3 levels `../../../services/` not 4) — plan had a bug that would crash with module-not-found at runtime.
 
 ### Todos
 
@@ -70,6 +71,6 @@ v2.0 评价互动 & 预约智能化 (2026-07-02): 评价回复 + 可变时长冲
 
 ## Session Continuity
 
-Last session: 2026-07-10T08:48:07.768Z
-Stopped at: Phase 20 context gathered
-Next step: `/gsd-plan-phase 20` 开始规划 Phase 20 客户档案
+Last session: 2026-07-10T09:44:23.520Z
+Stopped at: Completed 20-02-PLAN.md (customer list page + bookings entry)
+Next step: Continue Phase 20 — execute 20-03 (customer detail page) then 20-04 (booking detail CUST-04 linkage)
