@@ -1,0 +1,106 @@
+<view class="page">
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <block wx:if="{{!loading && customer}}">
+    <!-- 客户头部 -->
+    <view class="card profile-header">
+      <view class="pinfo">
+        <view class="pavatar">
+          <image wx:if="{{customer.avatar_url}}" class="pavatar-img" src="{{customer.avatar_url}}" mode="aspectFill" />
+          <view wx:else class="pavatar-ph"></view>
+        </view>
+        <view class="ptext">
+          <view class="ptop">
+            <text class="pname">{{customer.nickname}}</text>
+            <text class="ptag ptag--{{customer.tag}}">{{customer.tagLabel}}</text>
+          </view>
+          <text class="pcount">已完成 {{customer.completed_count}} 次预约</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 备注区 (Task 2 will add edit functionality; this is the display skeleton) -->
+    <view class="card">
+      <view class="section-head">
+        <text class="card-title">客户备注</text>
+        <text class="edit-btn" bindtap="toggleEdit" wx:if="{{!editing}}">编辑</text>
+      </view>
+      <block wx:if="{{note && !editing}}">
+        <view class="dfield" wx:if="{{note.skin_type}}">
+          <text class="dfield-key">肤质</text>
+          <text class="dfield-val">{{note.skin_type}}</text>
+        </view>
+        <view class="dfield" wx:if="{{note.preference}}">
+          <text class="dfield-key">偏好</text>
+          <text class="dfield-val">{{note.preference}}</text>
+        </view>
+        <view class="dfield" wx:if="{{note.allergy}}">
+          <text class="dfield-key">过敏史</text>
+          <text class="dfield-val note-allergy">{{note.allergy}}</text>
+        </view>
+        <view class="dfield" wx:if="{{note.custom_notes}}">
+          <text class="dfield-key">备注</text>
+          <text class="dfield-val">{{note.custom_notes}}</text>
+        </view>
+        <view class="note-empty-inline" wx:if="{{!note.skin_type && !note.preference && !note.allergy && !note.custom_notes}}">
+          <text>暂无备注内容，点击「编辑」添加</text>
+        </view>
+      </block>
+      <view class="note-empty-inline" wx:if="{{!note && !editing}}">
+        <text>暂无客户备注，点击「编辑」添加</text>
+      </view>
+      <!-- Edit form (populated in Task 2) -->
+      <block wx:if="{{editing}}">
+        <view class="note-edit-form" />
+      </block>
+    </view>
+
+    <!-- D-09: 历史预约列表 -->
+    <view class="card" wx:if="{{bookings.length}}">
+      <text class="card-title">历史预约（{{bookings.length}}）</text>
+      <view class="history-list">
+        <view
+          class="history-item tappable"
+          wx:for="{{showAllHistory ? bookings : bookingsPreview}}"
+          wx:key="_id"
+          bindtap="goToBooking"
+          data-id="{{item._id}}"
+        >
+          <view class="htop">
+            <text class="hsvc text-ellipsis">{{item.service_name}}</text>
+            <text class="hbadge hbadge--{{item.status}}">{{item.statusLabel}}</text>
+          </view>
+          <text class="hdate">{{item.dateLabel}} · {{item.booking_time}}</text>
+        </view>
+      </view>
+      <view class="history-toggle tappable" wx:if="{{bookings.length > 5}}" bindtap="toggleHistory">
+        <text>{{showAllHistory ? '收起' : '查看全部 (' + bookings.length + ')'}}</text>
+      </view>
+    </view>
+
+    <!-- D-11: 评价记录列表 -->
+    <view class="card" wx:if="{{reviews.length}}">
+      <text class="card-title">评价记录（{{reviews.length}}）</text>
+      <view class="review-list">
+        <view class="review-item" wx:for="{{reviews}}" wx:key="_id">
+          <view class="rtop">
+            <view class="rstars">
+              <text class="rstars-bg">★★★★★</text>
+              <text class="rstars-fg" style="width:{{item.rating / 5 * 100}}%">★★★★★</text>
+            </view>
+            <text class="rdate">{{item.dateLabel}}</text>
+          </view>
+          <text class="rsvc" wx:if="{{item.service_name}}">{{item.service_name}}</text>
+          <text class="rcontent" wx:if="{{item.content}}">{{item.content}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Empty states -->
+    <view class="card empty-card" wx:if="{{!bookings.length && !reviews.length}}">
+      <text class="empty-text">该客户暂无预约和评价记录</text>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,96 @@
+.page {
+  min-height: 100vh;
+  background-color: var(--bg);
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+/* ===== Cards (copied from bookings/detail.wxss) ===== */
+.card {
+  margin: 24rpx var(--page-pad) 0;
+  background-color: var(--bg-elevated);
+  border-radius: 26rpx;
+  padding: 28rpx;
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
+}
+.card-title {
+  display: block;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  letter-spacing: 1rpx;
+  margin-bottom: 18rpx;
+}
+.section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18rpx; }
+.section-head .card-title { margin-bottom: 0; }
+.edit-btn {
+  font-size: 26rpx; font-weight: 600; color: var(--accent);
+  padding: 6rpx 20rpx; background-color: var(--accent-soft); border-radius: 999rpx;
+}
+
+/* ===== Profile header ===== */
+.pinfo { display: flex; gap: 24rpx; align-items: center; }
+.pavatar { width: 120rpx; height: 120rpx; flex-shrink: 0; border-radius: 50%; overflow: hidden; background-color: var(--accent-soft); }
+.pavatar-img { width: 100%; height: 100%; display: block; }
+.pavatar-ph {
+  width: 100%; height: 100%; background-color: var(--accent-soft);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='8' r='4' fill='%23FF6F8B'/%3E%3Cpath d='M4 20c0-4 4-7 8-7s8 3 8 7' fill='%23FF6F8B'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: center; background-size: 56rpx 56rpx;
+}
+.ptext { flex: 1; min-width: 0; }
+.ptop { display: flex; align-items: center; gap: 12rpx; }
+.pname { font-size: 34rpx; font-weight: 800; color: var(--text-primary); }
+.ptag { font-size: 20rpx; font-weight: 600; padding: 5rpx 18rpx; border-radius: 999rpx; }
+.ptag--vip { background-color: rgba(212,175,55,0.12); color: var(--gold); }
+.ptag--new { background-color: var(--accent-soft); color: var(--accent); }
+.ptag--returning { background-color: var(--fill-primary); color: var(--text-secondary); }
+.pcount { display: block; font-size: 24rpx; color: var(--text-secondary); margin-top: 8rpx; }
+
+/* ===== Detail fields (copied from bookings/detail) ===== */
+.dfield { display: flex; gap: 20rpx; padding: 20rpx 0; border-bottom: 1rpx solid var(--separator); }
+.dfield:last-child { border-bottom: none; }
+.dfield-key { width: 130rpx; flex-shrink: 0; font-size: 26rpx; color: var(--text-secondary); }
+.dfield-val { flex: 1; font-size: 28rpx; color: var(--text-primary); line-height: 1.6; }
+.note-allergy { color: var(--red); font-weight: 600; }
+
+/* ===== Note empty placeholder ===== */
+.note-empty-inline { padding: 20rpx 0; font-size: 26rpx; color: var(--text-tertiary); }
+
+/* ===== History list ===== */
+.history-list { display: flex; flex-direction: column; }
+.history-item {
+  display: flex; flex-direction: column; gap: 8rpx;
+  padding: 20rpx 0; border-bottom: 1rpx solid var(--separator);
+}
+.history-item:last-child { border-bottom: none; }
+.htop { display: flex; align-items: center; gap: 12rpx; }
+.hsvc { flex: 1; min-width: 0; font-size: 28rpx; font-weight: 700; color: var(--text-primary); }
+.hbadge { flex-shrink: 0; font-size: 20rpx; font-weight: 600; padding: 4rpx 14rpx; border-radius: 999rpx; }
+.hbadge--completed { background-color: var(--purple-bg); color: var(--purple); }
+.hbadge--pending { background-color: var(--orange-bg); color: var(--orange); }
+.hbadge--accepted { background-color: var(--green-bg); color: var(--green); }
+.hbadge--rejected, .hbadge--cancelled { background-color: var(--fill-primary); color: var(--text-secondary); }
+.hbadge--no_show { background-color: var(--red-bg); color: var(--red); }
+.hdate { font-size: 24rpx; color: var(--text-tertiary); }
+.history-toggle {
+  text-align: center; padding: 20rpx 0 4rpx;
+  font-size: 26rpx; font-weight: 600; color: var(--accent);
+}
+
+/* ===== Reviews list ===== */
+.review-list { display: flex; flex-direction: column; }
+.review-item { padding: 20rpx 0; border-bottom: 1rpx solid var(--separator); }
+.review-item:last-child { border-bottom: none; }
+.rtop { display: flex; justify-content: space-between; align-items: center; }
+.rstars { position: relative; display: inline-block; font-size: 24rpx; line-height: 1; }
+.rstars-bg { color: var(--separator); }
+.rstars-fg { position: absolute; left: 0; top: 0; overflow: hidden; color: var(--gold); white-space: nowrap; }
+.rdate { font-size: 22rpx; color: var(--text-tertiary); }
+.rsvc { display: block; font-size: 24rpx; color: var(--text-secondary); margin-top: 8rpx; }
+.rcontent { display: block; font-size: 26rpx; color: var(--text-primary); line-height: 1.6; margin-top: 8rpx; }
+
+/* ===== Empty ===== */
+.empty-card { text-align: center; }
+.empty-text { font-size: 26rpx; color: var(--text-tertiary); }
+
+/* ===== Loading ===== */
+.loading-container { display: flex; justify-content: center; align-items: center; height: 50vh; }
