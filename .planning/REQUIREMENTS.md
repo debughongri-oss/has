@@ -1,30 +1,30 @@
 # Requirements: 化妆师个人作品展示与预约小程序
 
-**Milestone:** v2.1 经营工具 & 转化优化
+**Milestone:** v2.3 客户经营 & 口碑增强
 **Core Value:** 客户看到作品后能直接预约化妆服务
 
-## v2.1 Requirements
+## v2.3 Requirements
 
-### Phase 16 — 数据看板（Medium）
+### 客户档案（Medium）
 
-- [ ] **DASH-01**: bookings 云函数新增 `getDashboard` action——返回本月/上月预约数、按状态分布、热门服务 Top3、营收统计（已完成预约的服务价格合计）、评价平均分+总数
-- [ ] **DASH-02**: 新增 admin dashboard 页面——数字卡片展示预约/营收/评价核心指标，热门服务排行
+- [ ] **CUST-01**: 化妆师后台查看客户列表——聚合 users + bookings 统计，展示昵称、头像、预约次数、最近预约时间、状态标签（新客/回头客/VIP）
+- [ ] **CUST-02**: 客户详情页——客户基本信息 + 完整历史预约列表 + 该客户的评价记录
+- [ ] **CUST-03**: 化妆师为客户添加/编辑备注（肤质、偏好、过敏史、自定义备注），存储于 customer_notes 集合（按 user_openid 索引）
+- [ ] **CUST-04**: 预约管理详情页展示客户备注——化妆师接单/确认前可查看客户偏好和注意事项
 
-### Phase 17 — 不可用时间管理（Medium）
+### 评价增强（Medium）
 
-- [ ] **AVAIL-01**: 新建 `time_blocks` 集合 + bookings 云函数新增 `blockTime`/`unblockTime`/`getBlockedTimes` action——化妆师可屏蔽日期或具体时段
-- [ ] **AVAIL-02**: getAvailableSlots 合并 time_blocks 排除——被屏蔽的日期/时段不显示为可用
-- [ ] **AVAIL-03**: admin 日历管理页——化妆师在日历上点选日期/时段进行屏蔽/取消
+- [ ] **REVW-10**: 评价标签快捷选择——预设标签（手法专业/妆面自然/准时/态度好/性价比高），客户评价时可多选，存入 review.tags[]
+- [ ] **REVW-11**: 评价支持带图——客户评价时可上传 1-3 张图片，云存储上传 + msgSecCheck 内容安全审查
+- [ ] **REVW-12**: 匿名评价选项——客户可选择不展示昵称头像，前台评价模块显示「匿名用户」
+- [ ] **REVW-13**: 后台评价管理支持筛选（按评分/时间/标签）+ 排序（最新/最高/最低）
+- [ ] **REVW-14**: artist_profile 冗余 avg_rating + total_reviews——评价创建/删除时同步更新，首页评价统计直接读取冗余字段
+- [ ] **REVW-15**: 客户提交评价后推送通知化妆师（复用订阅消息，phrase「新评价」）
 
-### Phase 18 — 转化优化 Quick Wins（Low）
-
-- [ ] **CONV-01**: 服务卡片展示预计时长（"约60分钟"）——services list + booking create 页面
-- [ ] **CONV-02**: 完成预约自动邀评——预约标记完成时通知中提示评价；客户「我的」页有待评价提醒入口
-
-## Deferred
+## Future Requirements (Deferred)
 
 - **PROF-05**: 化妆师自定义主页主题色
 - **PROF-06**: 化妆师调整主页模块顺序
 
 ---
-*Requirements defined: 2026-07-02*
+*Requirements defined: 2026-07-10*
