@@ -1,0 +1,56 @@
+<view class="admin-customers">
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <block wx:if="{{!loading}}">
+    <!-- D-03: Tag filter bar (reusing .segs pattern from bookings list) -->
+    <view class="filter">
+      <view class="segs">
+        <view
+          class="seg tappable {{currentTag === item.key ? 'seg--on' : ''}}"
+          wx:for="{{tagFilters}}"
+          wx:key="key"
+          bindtap="onTagChange"
+          data-key="{{item.key}}"
+        >
+          <text class="seg-count {{!item.count ? 'is-zero' : ''}}">{{item.count}}</text>
+          <text class="seg-label">{{item.label}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Customer list (D-04: avatar + nickname + count + last date + tag) -->
+    <view class="list" wx:if="{{customers.length}}">
+      <view
+        class="ccard tappable"
+        wx:for="{{customers}}"
+        wx:key="user_openid"
+        bindtap="goToDetail"
+        data-openid="{{item.user_openid}}"
+      >
+        <view class="cavatar">
+          <image wx:if="{{item.avatar_url}}" class="cavatar-img" src="{{item.avatar_url}}" mode="aspectFill" />
+          <view wx:else class="cavatar-ph"></view>
+        </view>
+        <view class="cmain">
+          <view class="ctop">
+            <text class="cname text-ellipsis">{{item.nickname}}</text>
+            <text class="ctag ctag--{{item.tag}}">{{item.tagLabel}}</text>
+          </view>
+          <view class="cmeta">
+            <text class="ccount">已完成 {{item.completed_count}} 次</text>
+            <text class="clast">最近：{{item.lastBookingLabel}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-container" wx:if="{{!customers.length}}">
+      <view class="empty">
+        <view class="empty-icon"></view>
+        <text class="empty-text">暂无客户</text>
+      </view>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,177 @@
+.admin-customers {
+  min-height: 100vh;
+  background-color: var(--bg);
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+}
+
+/* ===== Tag filter (copied from bookings list .segs) ===== */
+.filter {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: var(--bg);
+  padding: 20rpx var(--page-pad) 12rpx;
+}
+
+.segs {
+  display: flex;
+  gap: 10rpx;
+}
+
+.seg {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 16rpx 4rpx;
+  background-color: var(--bg-elevated);
+  border-radius: var(--radius-lg);
+  border: 1rpx solid var(--separator);
+  box-sizing: border-box;
+}
+
+.seg-count {
+  font-size: 36rpx;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.seg-count.is-zero {
+  color: var(--text-tertiary);
+}
+
+.seg-label {
+  font-size: 22rpx;
+  line-height: 1;
+  color: var(--text-secondary);
+}
+
+.seg--on {
+  background-color: var(--accent);
+  border-color: var(--accent);
+}
+
+.seg--on .seg-count,
+.seg--on .seg-count.is-zero,
+.seg--on .seg-label {
+  color: #FFFFFF;
+}
+
+/* ===== Customer card ===== */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  padding: 16rpx var(--page-pad) 0;
+}
+
+.ccard {
+  display: flex;
+  gap: 20rpx;
+  background-color: var(--bg-elevated);
+  border-radius: 24rpx;
+  padding: 22rpx;
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
+}
+
+.cavatar {
+  width: 96rpx;
+  height: 96rpx;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: var(--accent-soft);
+}
+
+.cavatar-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.cavatar-ph {
+  width: 100%;
+  height: 100%;
+  background-color: var(--accent-soft);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='8' r='4' fill='%23FF6F8B'/%3E%3Cpath d='M4 20c0-4 4-7 8-7s8 3 8 7' fill='%23FF6F8B'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 48rpx 48rpx;
+}
+
+.cmain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ctop {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.cname {
+  flex: 1;
+  min-width: 0;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Tag badges — per CONTEXT specifics: VIP=gold, new=accent, returning=text-secondary */
+.ctag {
+  flex-shrink: 0;
+  font-size: 20rpx;
+  font-weight: 600;
+  padding: 5rpx 18rpx;
+  border-radius: 999rpx;
+}
+
+.ctag--vip {
+  background-color: rgba(212, 175, 55, 0.12);
+  color: var(--gold);
+}
+
+.ctag--new {
+  background-color: var(--accent-soft);
+  color: var(--accent);
+}
+
+.ctag--returning {
+  background-color: var(--fill-primary);
+  color: var(--text-secondary);
+}
+
+.cmeta {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-top: 10rpx;
+}
+
+.ccount {
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.clast {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+/* ===== Empty state (copied from bookings list) ===== */
+.empty-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
