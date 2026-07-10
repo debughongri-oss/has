@@ -96,5 +96,12 @@ Page({
    */
   goToReviews: function () {
     wx.navigateTo({ url: '/pages/admin/reviews/list' })
+  },
+
+  /**
+   * 客户管理入口 per Phase 20 CUST-01
+   */
+  goToCustomers: function () {
+    wx.navigateTo({ url: '/pages/admin/customers/list' })
   }
 })

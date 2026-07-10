@@ -30,6 +30,10 @@
         <view class="entry-ic entry-ic--star"></view>
         <text class="entry-label">评价管理</text>
       </view>
+      <view class="entry tappable" bindtap="goToCustomers">
+        <view class="entry-ic entry-ic--cust"></view>
+        <text class="entry-label">客户管理</text>
+      </view>
     </view>
 
     <!-- 预约列表 -->
