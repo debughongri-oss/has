@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: 客户经营 & 口碑增强
-status: Ready to plan
-stopped_at: v2.3 路线图已制定——Phase 20 客户档案 + Phase 21 评价增强，10 项需求全部映射，待规划
-last_updated: "2026-07-10T00:00:00.000Z"
-last_activity: 2026-07-10
+status: planning
+stopped_at: Phase 20 context gathered
+last_updated: "2026-07-10T08:48:07.773Z"
+last_activity: 2026-07-10 — ROADMAP.md created for v2.3 (Phase 20 + Phase 21)
 progress:
   total_phases: 2
   completed_phases: 0
@@ -37,6 +37,7 @@ Last activity: 2026-07-10 — ROADMAP.md created for v2.3 (Phase 20 + Phase 21)
 让化妆师记住每位客户、让评价更有说服力，提升复购和转化
 
 **Target features:**
+
 - 客户档案：客户基本信息 + 历史预约 + 化妆师备注（肤质/偏好/过敏）
 - 评价增强：标签快捷选择 + 评价带图 + 匿名评价 + 后台筛选排序 + avg_rating 冗余 + 评价提交推送
 
@@ -56,16 +57,18 @@ v2.0 评价互动 & 预约智能化 (2026-07-02): 评价回复 + 可变时长冲
 ## Accumulated Context
 
 ### Decisions (v2.3)
+
 - **2 phases for 10 requirements**: Phase 20 (客户档案, 4 reqs) + Phase 21 (评价增强, 6 reqs). 拒绝把评价增强拆成「提交侧」+「管理侧」——REVW-14 (avg_rating 冗余) 需在评价创建/删除时同步更新，跨提交和管理两侧，强耦合不宜分阶段。
 - **Phase 21 依赖 Phase 20 仅作顺序排列**：功能上两阶段独立，无硬依赖；solo-dev 顺序执行避免上下文切换。
 - **两阶段均含 UI 工作**（admin 页面 + 评价表单）→ 都打了 UI hint，触发后续 `/gsd-ui-phase` 建议。
 
 ### Todos
+
 - [ ] 规划 Phase 20: `/gsd-plan-phase 20`
 - [ ] 规划 Phase 21: Phase 20 完成后
 
 ## Session Continuity
 
-Last session: 2026-07-10
-Stopped at: v2.3 ROADMAP.md / STATE.md / REQUIREMENTS.md traceability 全部写入磁盘
+Last session: 2026-07-10T08:48:07.768Z
+Stopped at: Phase 20 context gathered
 Next step: `/gsd-plan-phase 20` 开始规划 Phase 20 客户档案
