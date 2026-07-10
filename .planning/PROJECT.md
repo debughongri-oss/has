@@ -10,61 +10,28 @@
 
 ## Current State
 
-**Shipped:** v1.0 MVP (2026-04-19), v1.1 品牌升级 & 体验增强 (2026-04-24), v1.2 上线前加固 (2026-07-02), v2.0 评价互动 & 预约智能化 (2026-07-02)
-**Status:** No active milestone — run `/gsd-new-milestone` to define next version
+**Shipped:** v1.0 MVP (2026-04-19), v1.1 品牌升级 & 体验增强 (2026-04-24), v1.2 上线前加固 (2026-07-02), v2.0 评价互动 & 预约智能化 (2026-07-02), v2.1 经营工具 & 转化优化 (2026-07-02), v2.2 预约体验增强 (2026-07-10)
+**Status:** v2.3 客户经营 & 口碑增强 — defining requirements
 **Tech stack:** 微信原生框架 (WXML/WXSS/JS) + 微信云开发 (CloudBase) + TDesign MiniProgram
 **Cloud functions:** login, profile, works, services, bookings, booking-reminder, reviews (7 functions)
 **Pages:** 5 TabBar pages + works detail/compare/poster + admin sub-package (works/services/bookings/profile/reviews/calendar management) + booking history + review create
 **v1.2 outcome:** 16 项技术债全部闭环（安全/发布卫生/一致性）。代码具备上线条件。运行时验证（冷启动登录、缓存刷新、并发上传、断网 toast）需在微信开发者工具中手动确认。
 
+## Current Milestone: v2.3 客户经营 & 口碑增强
+
+**Goal:** 让化妆师记住每位客户、让评价更有说服力，提升复购和转化
+
+**Target features:**
+- 客户档案：客户基本信息 + 历史预约 + 化妆师备注（肤质/偏好/过敏）
+- 评价增强：标签快捷选择 + 评价带图 + 匿名评价 + 后台筛选排序 + avg_rating 冗余 + 评价提交推送
+
 ## Requirements
-
-### Validated
-
-- ✓ 微信静默登录 (AUTH-01) — v1.0
-- ✓ 化妆师个人简介展示 (AUTH-02) — v1.0
-- ✓ 作品创建 (PORT-01) — v1.0
-- ✓ 作品编辑 (PORT-02) — v1.0
-- ✓ 作品删除 (PORT-03) — v1.0
-- ✓ 作品列表浏览 (PORT-04) — v1.0
-- ✓ 作品详情图片轮播 (PORT-05) — v1.0
-- ✓ 作品分类筛选 (PORT-06) — v1.0
-- ✓ 服务项目 CRUD (SERV-01/02/03) — v1.0
-- ✓ 服务列表卡片浏览 (SERV-04) — v1.0
-- ✓ 在线预约提交 (BOOK-01/02/03) — v1.0
-- ✓ 预约审核管理 (BOOK-04/05) — v1.0
-- ✓ 预约历史 (BOOK-08) — v1.0
-- ✓ 管理后台 (MGMT-01) — v1.0
-- ✓ 微信分享 (MGMT-02) — v1.0
-- ✓ 服务端身份验证 (SEC-01/02) — v1.1 Phase 6
-- ✓ 简介增强 (PROF-01/02/03/04) — v1.1 Phase 6
-- ✓ 预约备注结构化 (BOOK-09/10/11/12) — v1.1 Phase 6
-- ✓ 前后对比滑块 (PORT-07/08/09) — v1.1 Phase 7
-- ✓ 预约状态变更通知 (BOOK-06/07) — v1.1 Phase 8
-- ✓ 日历视图 (BOOK-13/14) — v1.1 Phase 8
-- ✓ 时间段提示 (BOOK-15/16) — v1.1 Phase 8
-- ✓ 客户评价系统 (REVW-01/02/03/04/05/06) — v1.1 Phase 9
-- ✓ 海报生成 (GROW-01/02/03) — v1.1 Phase 10
-- ✓ 登录态就绪机制 + 冷启动竞态消除 (SEC-03) — v1.2 Phase 11
-- ✓ 身份源统一 artist_profile._openid (SEC-04) — v1.2 Phase 11
-- ✓ 用户信息服务端权威读取 (SEC-05) — v1.2 Phase 11
-- ✓ 用户信息缓存统一 + profile 更新刷新 (SEC-06) — v1.2 Phase 11
-- ✓ 发布包卫生 (HYG-01/02/03) — v1.2 Phase 12
-- ✓ errCode 契约统一 + toast 去重 (HYG-04/05) — v1.2 Phase 12
-- ✓ 设计 token 状态色 + 并发上传 + 聚合统计 + 存储错误上报 (POL-02/04/05/06) — v1.2 Phase 13
 
 ### Active
 
-**v2.0 评价互动 & 预约智能化**（详见 `.planning/REQUIREMENTS.md`）
+**v2.3 客户经营 & 口碑增强**（详见 `.planning/REQUIREMENTS.md`）
 
-**Phase 14 — 化妆师回复评价 (Medium):**
-- [ ] REVW-07: reviews 云函数 reply action（化妆师回复/编辑/删除，含内容安全审查）
-- [ ] REVW-08: 管理后台评价列表增加回复入口和编辑器
-- [ ] REVW-09: 前台评价展示显示化妆师回复
-
-**Phase 15 — 可变时长冲突检测 (Medium):**
-- [ ] BOOK-17: bookings 冲突检查改为时长区间重叠检测 + getAvailableSlots 按时长计算
-- [ ] BOOK-18: 预约创建页实时显示可用时段
+需求定义中——客户档案 + 评价增强两大方向。
 
 **Deferred to later:**
 - PROF-05: 化妆师自定义主页主题色
@@ -144,4 +111,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-*Last updated: 2026-07-02 after v1.2 milestone*
+*Last updated: 2026-07-10 — v2.3 milestone started*
