@@ -23,6 +23,7 @@
     "selectedColor": "#E85575",
     "backgroundColor": "#FBFAF8",
     "borderStyle": "black",
+    "iconSize": 28,
     "list": [
       {
         "pagePath": "pages/index/index",

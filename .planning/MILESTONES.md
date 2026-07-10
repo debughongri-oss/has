@@ -1,5 +1,40 @@
 # Milestones
 
+## v2.2 预约体验增强 (Shipped: 2026-07-10)
+
+**Phases completed:** 1 phase, 5 requirements
+**Timeline:** 归集自 post-v2.1 持续交付（2026-07-09 → 2026-07-10）
+**Git range:** c3356c9..1b6a531 — 5 feat/fix commits
+
+**Key accomplishments:**
+
+- 营收准确性：booking create 时快照 `service_price`，getDashboard 优先读快照——修掉营收恒为 0 的隐性 bug
+- 新预约提醒：下单后给化妆师发订阅消息（复用现有模板），化妆师在个人中心授权开启
+- No-show 追踪：bookings 新增 `no_show` 状态，admin 详情/列表/看板联动
+- 客户自助改期：预约历史页发起改期（原生日期选择 + getAvailableSlots 时段网格），复用冲突检测并排除自身 _id，改期后重置为 pending 待再确认 + 「改期申请」通知
+- 工作时间配置：化妆师配置每周固定休息日 + 每日工作时段窗口，getAvailableSlots 自动合并排除；notifyArtistNewBooking 重构为通用 notifyArtist(booking, phrase)
+
+**Archived:** `.planning/milestones/v2.2-ROADMAP.md`, `.planning/milestones/v2.2-REQUIREMENTS.md`
+
+---
+
+## v2.1 经营工具 & 转化优化 (Shipped: 2026-07-02)
+
+**Phases completed:** 3 phases, 7 requirements
+**Timeline:** 1 day (2026-07-02)
+**Git range:** 3324f72..608b317
+
+**Key accomplishments:**
+
+- 数据看板：bookings getDashboard（本月/上月预约数、按状态分布、热门服务 Top3、营收、评价均分+总数）+ admin 看板页
+- 不可用时间管理：time_blocks 集合 + blockTime/unblockTime/getBlockedTimes + getAvailableSlots 合并屏蔽 + admin 日历管理页（含月份导航、提交守卫、空状态 CTA）
+- 转化优化：服务卡片/预约页展示预计时长 + 预约标记完成时通知邀评
+- 修复：db.RegExp API 适配、正则改范围查询、云函数超时提至 10s
+
+**Archived:** 记录于 `.planning/ROADMAP.md` Phase 16-18（未单独归档文件）
+
+---
+
 ## v2.0 评价互动 & 预约智能化 (Shipped: 2026-07-02)
 
 **Phases completed:** 2 phases, 5 requirements
