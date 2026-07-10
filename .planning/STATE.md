@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: 客户经营 & 口碑增强
-status: Defining requirements
-stopped_at: v2.3 里程碑已启动——客户档案 + 评价增强方向已确认，待定义需求 + 制定路线图
+status: Ready to plan
+stopped_at: v2.3 路线图已制定——Phase 20 客户档案 + Phase 21 评价增强，10 项需求全部映射，待规划
 last_updated: "2026-07-10T00:00:00.000Z"
 last_activity: 2026-07-10
 progress:
-  total_phases: 0
+  total_phases: 2
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -16,9 +16,9 @@ progress:
 
 # Project State
 
-**Current focus:** v2.3 客户经营 & 口碑增强——客户档案 + 评价增强。正在定义需求。
+**Current focus:** v2.3 客户经营 & 口碑增强——路线图已制定，10 项需求映射到 Phase 20 (客户档案) + Phase 21 (评价增强)，等待规划。
 
-Progress: [░░░░░░░░░░] 0% (v2.3)
+Progress: [░░░░░░░░░░] 0% (v2.3, 0/2 phases)
 
 ## Project Reference
 
@@ -28,9 +28,9 @@ See: .planning/PROJECT.md (updated 2026-07-10)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Status: Defining requirements
-Last activity: 2026-07-10 — Milestone v2.3 started
+Phase: 20 (客户档案) — Ready to plan
+Status: Ready to plan
+Last activity: 2026-07-10 — ROADMAP.md created for v2.3 (Phase 20 + Phase 21)
 
 ## Milestone Goal
 
@@ -40,14 +40,32 @@ Last activity: 2026-07-10 — Milestone v2.3 started
 - 客户档案：客户基本信息 + 历史预约 + 化妆师备注（肤质/偏好/过敏）
 - 评价增强：标签快捷选择 + 评价带图 + 匿名评价 + 后台筛选排序 + avg_rating 冗余 + 评价提交推送
 
+## Roadmap (v2.3)
+
+| Phase | Goal | Requirements | Status |
+|-------|------|--------------|--------|
+| 20 客户档案 | 后台集中查看客户信息/历史/偏好，预约时可见备注 | CUST-01~04 | Ready to plan |
+| 21 评价增强 | 标签+带图+匿名评价；后台筛选排序；avg_rating 冗余；评价推送 | REVW-10~15 | Not started |
+
 ## Previously Delivered
 
 v2.2 预约体验增强 (2026-07-10): 营收快照修复 + 新预约提醒 + no-show + 客户改期 + 工作时间配置
 v2.1 经营工具 & 转化优化 (2026-07-02): 数据看板 + 不可用时间管理 + 转化优化
 v2.0 评价互动 & 预约智能化 (2026-07-02): 评价回复 + 可变时长冲突检测
 
+## Accumulated Context
+
+### Decisions (v2.3)
+- **2 phases for 10 requirements**: Phase 20 (客户档案, 4 reqs) + Phase 21 (评价增强, 6 reqs). 拒绝把评价增强拆成「提交侧」+「管理侧」——REVW-14 (avg_rating 冗余) 需在评价创建/删除时同步更新，跨提交和管理两侧，强耦合不宜分阶段。
+- **Phase 21 依赖 Phase 20 仅作顺序排列**：功能上两阶段独立，无硬依赖；solo-dev 顺序执行避免上下文切换。
+- **两阶段均含 UI 工作**（admin 页面 + 评价表单）→ 都打了 UI hint，触发后续 `/gsd-ui-phase` 建议。
+
+### Todos
+- [ ] 规划 Phase 20: `/gsd-plan-phase 20`
+- [ ] 规划 Phase 21: Phase 20 完成后
+
 ## Session Continuity
 
 Last session: 2026-07-10
-Stopped at: v2.3 里程碑已启动，方向确认（客户档案 + 评价增强），PROJECT.md/STATE.md 已更新
-Next step: 定义需求 + 制定路线图，或 `/gsd-plan-phase` 直接规划
+Stopped at: v2.3 ROADMAP.md / STATE.md / REQUIREMENTS.md traceability 全部写入磁盘
+Next step: `/gsd-plan-phase 20` 开始规划 Phase 20 客户档案

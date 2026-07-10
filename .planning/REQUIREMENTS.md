@@ -26,5 +26,23 @@
 - **PROF-05**: 化妆师自定义主页主题色
 - **PROF-06**: 化妆师调整主页模块顺序
 
+## Traceability
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| CUST-01 | Phase 20 | Pending |
+| CUST-02 | Phase 20 | Pending |
+| CUST-03 | Phase 20 | Pending |
+| CUST-04 | Phase 20 | Pending |
+| REVW-10 | Phase 21 | Pending |
+| REVW-11 | Phase 21 | Pending |
+| REVW-12 | Phase 21 | Pending |
+| REVW-13 | Phase 21 | Pending |
+| REVW-14 | Phase 21 | Pending |
+| REVW-15 | Phase 21 | Pending |
+
+**Coverage:** 10/10 v2.3 requirements mapped ✓
+
 ---
 *Requirements defined: 2026-07-10*
+*Traceability added: 2026-07-10 — ROADMAP v2.3 created*
