@@ -35,7 +35,17 @@ Page({
     bookingsPreview: [],  // first 5 for default display
     showAllHistory: false,
     reviews: [],
-    loading: true
+    loading: true,
+    editing: false,
+    editForm: {
+      skin_type: '',
+      skin_type_index: 0,
+      preference: '',
+      allergy: '',
+      custom_notes: ''
+    },
+    skinTypeOptions: ['干性', '油性', '混合性', '敏感性', '不确定'],
+    saving: false
   },
 
   onLoad: async function (options) {
@@ -111,5 +121,79 @@ Page({
   goToBooking: function (e) {
     const id = e.currentTarget.dataset.id
     wx.navigateTo({ url: `/pages/admin/bookings/detail?id=${id}` })
+  },
+
+  // D-08: Toggle to edit mode — populate form from existing note or empty
+  toggleEdit: function () {
+    const note = this.data.note
+    const skinOptions = ['干性', '油性', '混合性', '敏感性', '不确定']
+    let skinIdx = 0
+    if (note && note.skin_type) {
+      skinIdx = skinOptions.indexOf(note.skin_type)
+      if (skinIdx < 0) { skinOptions.unshift(note.skin_type); skinIdx = 0 }
+    }
+    this.setData({
+      editing: true,
+      editForm: {
+        skin_type: note ? (note.skin_type || '') : '',
+        skin_type_index: skinIdx,
+        preference: note ? (note.preference || '') : '',
+        allergy: note ? (note.allergy || '') : '',
+        custom_notes: note ? (note.custom_notes || '') : ''
+      },
+      skinTypeOptions: skinOptions
+    })
+  },
+
+  cancelEdit: function () {
+    this.setData({ editing: false })
+  },
+
+  onSkinTypeChange: function (e) {
+    const idx = Number(e.detail.value)
+    const val = this.data.skinTypeOptions[idx]
+    this.setData({
+      'editForm.skin_type_index': idx,
+      'editForm.skin_type': val
+    })
+  },
+
+  onPreferenceInput: function (e) {
+    this.setData({ 'editForm.preference': e.detail.value })
+  },
+
+  onAllergyInput: function (e) {
+    this.setData({ 'editForm.allergy': e.detail.value })
+  },
+
+  onCustomNotesInput: function (e) {
+    this.setData({ 'editForm.custom_notes': e.detail.value })
+  },
+
+  // D-07: Save note (upsert handled by cloud function)
+  saveNote: function () {
+    if (this.data.saving) return
+    this.setData({ saving: true })
+    const form = this.data.editForm
+    customersService.saveCustomerNote(this.data.userOpenid, {
+      skin_type: form.skin_type,
+      preference: form.preference,
+      allergy: form.allergy,
+      custom_notes: form.custom_notes
+    })
+      .then(() => {
+        wx.showToast({ title: '备注已保存', icon: 'success' })
+        this.setData({ editing: false, saving: false })
+        // Reload note to reflect saved state
+        return customersService.getCustomerNote(this.data.userOpenid)
+      })
+      .then(noteData => {
+        this.setData({ note: noteData })
+      })
+      .catch(err => {
+        console.error('保存备注失败:', err)
+        wx.showToast({ title: '保存失败', icon: 'none' })
+        this.setData({ saving: false })
+      })
   }
 })

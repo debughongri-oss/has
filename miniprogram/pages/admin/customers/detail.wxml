@@ -51,9 +51,61 @@
       <view class="note-empty-inline" wx:if="{{!note && !editing}}">
         <text>暂无客户备注，点击「编辑」添加</text>
       </view>
-      <!-- Edit form (populated in Task 2) -->
+      <!-- D-08: Inline note editing form -->
       <block wx:if="{{editing}}">
-        <view class="note-edit-form" />
+        <view class="note-edit-form">
+          <!-- Skin type picker -->
+          <view class="efield">
+            <text class="efield-label">肤质</text>
+            <picker bindchange="onSkinTypeChange" value="{{editForm.skin_type_index}}" range="{{skinTypeOptions}}">
+              <view class="picker-val">{{editForm.skin_type || '请选择'}}</view>
+            </picker>
+          </view>
+          <!-- Preference -->
+          <view class="efield">
+            <text class="efield-label">偏好</text>
+            <textarea
+              class="efield-ta"
+              placeholder="客户偏好（如喜欢自然妆感、偏爱某品牌…）"
+              placeholder-class="ta-ph"
+              value="{{editForm.preference}}"
+              bindinput="onPreferenceInput"
+              maxlength="500"
+              auto-height
+            />
+          </view>
+          <!-- Allergy -->
+          <view class="efield">
+            <text class="efield-label">过敏史</text>
+            <textarea
+              class="efield-ta efield-ta--alert"
+              placeholder="过敏信息（如对某化妆品成分过敏…）"
+              placeholder-class="ta-ph"
+              value="{{editForm.allergy}}"
+              bindinput="onAllergyInput"
+              maxlength="500"
+              auto-height
+            />
+          </view>
+          <!-- Custom notes -->
+          <view class="efield">
+            <text class="efield-label">自定义备注</text>
+            <textarea
+              class="efield-ta"
+              placeholder="其他备注信息"
+              placeholder-class="ta-ph"
+              value="{{editForm.custom_notes}}"
+              bindinput="onCustomNotesInput"
+              maxlength="1000"
+              auto-height
+            />
+          </view>
+          <!-- Save / Cancel buttons -->
+          <view class="edit-actions">
+            <view class="edit-btn-cancel tappable" bindtap="cancelEdit">取消</view>
+            <view class="edit-btn-save tappable {{saving ? 'is-disabled' : ''}}" bindtap="saveNote">{{saving ? '保存中...' : '保存'}}</view>
+          </view>
+        </view>
       </block>
     </view>
 

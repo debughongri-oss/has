@@ -55,6 +55,34 @@
 /* ===== Note empty placeholder ===== */
 .note-empty-inline { padding: 20rpx 0; font-size: 26rpx; color: var(--text-tertiary); }
 
+/* ===== Inline note edit form (D-08) ===== */
+.note-edit-form { display: flex; flex-direction: column; gap: 20rpx; }
+.efield { display: flex; flex-direction: column; gap: 10rpx; }
+.efield-label { font-size: 26rpx; font-weight: 600; color: var(--text-secondary); }
+.efield-ta {
+  width: 100%; min-height: 80rpx; padding: 20rpx;
+  background-color: var(--fill-primary); border-radius: 18rpx;
+  font-size: 28rpx; line-height: 1.6; color: var(--text-primary); box-sizing: border-box;
+}
+.efield-ta--alert { background-color: var(--red-bg); }
+.ta-ph { color: var(--text-tertiary); }
+.picker-val {
+  padding: 20rpx; background-color: var(--fill-primary); border-radius: 18rpx;
+  font-size: 28rpx; color: var(--text-primary);
+}
+.edit-actions { display: flex; gap: 16rpx; margin-top: 8rpx; }
+.edit-btn-cancel {
+  flex: 1; text-align: center; padding: 20rpx 0;
+  background-color: var(--fill-primary); border-radius: 18rpx;
+  font-size: 28rpx; font-weight: 600; color: var(--text-secondary);
+}
+.edit-btn-save {
+  flex: 1; text-align: center; padding: 20rpx 0;
+  background-color: var(--accent); border-radius: 18rpx;
+  font-size: 28rpx; font-weight: 600; color: #FFFFFF;
+}
+.edit-btn-save.is-disabled { opacity: 0.6; }
+
 /* ===== History list ===== */
 .history-list { display: flex; flex-direction: column; }
 .history-item {
