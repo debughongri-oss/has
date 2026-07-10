@@ -72,7 +72,9 @@
         "profile/edit",
         "reviews/list",
         "dashboard/dashboard",
-        "availability/availability"
+        "availability/availability",
+        "customers/list",
+        "customers/detail"
       ]
     }
   ],
