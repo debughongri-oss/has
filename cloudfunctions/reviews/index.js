@@ -292,15 +292,47 @@ exports.main = async (event, context) => {
     }
 
     case 'list': {
-      // D-19: 分页查询 reviews，按 created_at 倒序
+      // REVW-13/D-15: 服务端筛选（rating_filter/tag_filter）+ 排序（sort_by）+ 分页
       const { page = 1, pageSize = 10 } = event
+      const ratingFilter = event.rating_filter
+      const tagFilter = event.tag_filter
+      // T-21-02 mitigate: sort_by 枚举校验（默认 latest）
+      const sortByRaw = typeof event.sort_by === 'string' ? event.sort_by : 'latest'
+      const sortBy = ['latest', 'highest', 'lowest'].indexOf(sortByRaw) >= 0 ? sortByRaw : 'latest'
       try {
-        const total = (await db.collection('reviews').count()).total
-        const data = await db.collection('reviews')
-          .orderBy('created_at', 'desc')
+        // 构造 where（参数化，无字符串拼接）
+        const where = {}
+        // rating_filter 数值校验 1-5
+        if (typeof ratingFilter === 'number' && ratingFilter >= 1 && ratingFilter <= 5) {
+          where.rating = ratingFilter
+        }
+        // tag_filter 白名单校验（数组 contains 查询）
+        if (typeof tagFilter === 'string' && ALLOWED_TAG_KEYS.indexOf(tagFilter) >= 0) {
+          where.tags = db.command.in([tagFilter])
+        }
+
+        let baseQuery = db.collection('reviews')
+        if (Object.keys(where).length > 0) {
+          baseQuery = baseQuery.where(where)
+        }
+
+        const total = (await baseQuery.count()).total
+
+        // 排序：latest→created_at desc；highest→rating desc + created_at desc；lowest→rating asc + created_at desc
+        let dataQuery = baseQuery
+        if (sortBy === 'highest') {
+          dataQuery = dataQuery.orderBy('rating', 'desc').orderBy('created_at', 'desc')
+        } else if (sortBy === 'lowest') {
+          dataQuery = dataQuery.orderBy('rating', 'asc').orderBy('created_at', 'desc')
+        } else {
+          dataQuery = dataQuery.orderBy('created_at', 'desc')
+        }
+
+        const data = await dataQuery
           .skip((page - 1) * pageSize)
           .limit(pageSize)
           .get()
+
         return {
           errCode: 0,
           data: {
@@ -321,52 +353,114 @@ exports.main = async (event, context) => {
     }
 
     case 'getStats': {
-      // POL-06: 改用数据库聚合管道，替代拉取 1000 条内存计算
+      // REVW-14/D-20/D-21: avg/total 读 artist_profile 冗余字段（零计算）
+      // REVW-10/D-04: 新增 topTags 高频标签聚合
+      // 保留 recent 最近 3 条评价，新增 tags/images/is_anonymous 投影供展示层使用
       try {
-        const $ = db.command.aggregate
+        let average = '0.0'
+        let total = 0
 
-        // 聚合查询：服务端计算 total + average
-        const statsResult = await db.collection('reviews').aggregate()
-          .group({
-            _id: null,
-            total: $.sum(1),
-            avgRating: $.avg('$rating')
-          })
-          .end()
+        // 优先读 artist_profile 冗余字段（D-20）
+        let profileOk = false
+        try {
+          const profileRes = await db.collection('artist_profile').limit(1).get()
+          const profile = profileRes.data[0]
+          if (profile && (profile.avg_rating !== undefined || profile.total_reviews !== undefined)) {
+            // 容忍缺失字段（旧资料）：undefined → 0
+            total = profile.total_reviews ?? 0
+            const avg = profile.avg_rating ?? 0
+            average = Number(avg).toFixed(1)
+            profileOk = true
+          }
+        } catch (e) {
+          // artist_profile 集合不存在 → 走聚合兜底
+        }
 
-        // 集合为空时聚合返回空 list
-        if (!statsResult.list || statsResult.list.length === 0) {
-          return {
-            errCode: 0,
-            data: { average: '0.0', total: 0, recent: [] }
+        // 兜底：profile 不存在/无冗余字段 → 实时聚合计算
+        if (!profileOk) {
+          const $ = db.command.aggregate
+          const statsResult = await db.collection('reviews').aggregate()
+            .group({
+              _id: null,
+              total: $.sum(1),
+              avgRating: $.avg('$rating')
+            })
+            .end()
+          if (statsResult.list && statsResult.list.length > 0) {
+            const stats = statsResult.list[0]
+            average = Number(stats.avgRating || 0).toFixed(1)
+            total = stats.total
           }
         }
 
-        const stats = statsResult.list[0]
-        const average = Number(stats.avgRating || 0).toFixed(1)
+        // 最近 3 条评价（独立小查询，含 REVW-10/11/12 新字段投影）
+        let recent = []
+        try {
+          const recentResult = await db.collection('reviews')
+            .orderBy('created_at', 'desc')
+            .limit(3)
+            .field({
+              rating: true,
+              content: true,
+              user_nickname: true,
+              user_avatar: true,
+              created_at: true,
+              artist_reply: true,
+              tags: true,
+              images: true,
+              is_anonymous: true
+            })
+            .get()
 
-        // 最近 3 条评价（独立小查询，仅取需要的字段）
-        const recentResult = await db.collection('reviews')
-          .orderBy('created_at', 'desc')
-          .limit(3)
-          .field({ rating: true, content: true, user_nickname: true, created_at: true, artist_reply: true })
-          .get()
+          recent = (recentResult.data || []).map(r => ({
+            rating: r.rating,
+            content: r.content ? r.content.slice(0, 30) : '',
+            user_nickname: r.user_nickname || '',
+            user_avatar: r.user_avatar || '',
+            artist_reply: r.artist_reply || '',
+            tags: Array.isArray(r.tags) ? r.tags : [],
+            images: Array.isArray(r.images) ? r.images : [],
+            is_anonymous: !!r.is_anonymous,
+            created_at: r.created_at
+          }))
+        } catch (e) {
+          if (!isCollectionMissing(e)) throw e
+          // reviews 集合不存在 → recent = []
+        }
 
-        const recent = (recentResult.data || []).map(r => ({
-          rating: r.rating,
-          content: r.content ? r.content.slice(0, 30) : '',
-          user_nickname: r.user_nickname || '',
-          artist_reply: r.artist_reply || '',
-          created_at: r.created_at
-        }))
+        // REVW-10/D-04: topTags 高频标签聚合（top 5）
+        // 微信云数据库 aggregate unwind 支持有限 → 拉取全量 tags 字段（评价量小）在 JS 算频次
+        let topTags = []
+        try {
+          const allTagsRes = await db.collection('reviews')
+            .field({ tags: true })
+            .get()
+          const freq = {}
+          for (const r of (allTagsRes.data || [])) {
+            if (Array.isArray(r.tags)) {
+              for (const t of r.tags) {
+                if (typeof t === 'string' && ALLOWED_TAG_KEYS.indexOf(t) >= 0) {
+                  freq[t] = (freq[t] || 0) + 1
+                }
+              }
+            }
+          }
+          topTags = Object.keys(freq)
+            .map(key => ({ key, label: TAG_LABELS[key] || key, count: freq[key] }))
+            .sort((a, b) => b.count - a.count)
+            .slice(0, 5)
+        } catch (e) {
+          if (!isCollectionMissing(e)) throw e
+          // reviews 集合不存在 → topTags = []
+        }
 
         return {
           errCode: 0,
-          data: { average, total: stats.total, recent }
+          data: { average, total, recent, topTags }
         }
       } catch (error) {
         if (isCollectionMissing(error)) {
-          return { errCode: 0, data: { average: '0.0', total: 0, recent: [] } }
+          return { errCode: 0, data: { average: '0.0', total: 0, recent: [], topTags: [] } }
         }
         console.error('获取评价统计失败:', error)
         return { errCode: -1, errMsg: '获取评价统计失败' }
