@@ -39,7 +39,53 @@
     />
   </view>
 
+  <!-- REVW-10: 服务标签（可多选，最多 5 个） -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">服务标签</text>
+      <text class="card-meta">可多选 · {{selectedTagKeys.length}}/5</text>
+    </view>
+    <view class="tag-row">
+      <view
+        class="tag-chip {{selectedTagKeys.indexOf(item.key) >= 0 ? 'tag-chip--on' : ''}}"
+        wx:for="{{tags}}"
+        wx:key="key"
+        bindtap="onToggleTag"
+        data-key="{{item.key}}"
+      >{{item.label}}</view>
+    </view>
+  </view>
+
+  <!-- REVW-11: 添加图片（最多 3 张） -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">添加图片</text>
+      <text class="card-meta">{{images.length}}/{{maxImages}}</text>
+    </view>
+    <view class="img-grid">
+      <view class="img-cell" wx:for="{{images}}" wx:key="*this">
+        <image src="{{item}}" mode="aspectFill" />
+        <view class="img-remove" catchtap="onRemoveImage" data-index="{{index}}">×</view>
+      </view>
+      <view class="img-cell img-add" wx:if="{{images.length < maxImages}}" bindtap="onChooseImage">
+        <text class="img-add-plus">+</text>
+        <text class="img-add-label">添加图片</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- REVW-12: 匿名评价开关（默认关闭） -->
+  <view class="card anon-card">
+    <view class="anon-row">
+      <view class="anon-text">
+        <text class="anon-title">匿名评价</text>
+        <text class="anon-hint">勾选后他人将看不到你的昵称头像</text>
+      </view>
+      <switch checked="{{isAnonymous}}" bindchange="onToggleAnonymous" color="#C9A96E" />
+    </view>
+  </view>
+
   <button class="submit-btn" bindtap="onSubmit" disabled="{{submitting || rating === 0}}">
-    {{submitting ? '提交中...' : '提交评价'}}
+    {{submitting ? (uploading ? '上传图片中...' : '提交中...') : '提交评价'}}
   </button>
 </view>
