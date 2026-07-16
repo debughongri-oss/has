@@ -142,7 +142,11 @@
               <text class="rstars-bg">★★★★★</text>
               <text class="rstars-fg" style="width:{{item.rating / 5 * 100}}%">★★★★★</text>
             </view>
-            <text class="rdate">{{item.dateLabel}}</text>
+            <view class="rdate-wrap">
+              <!-- REVW-12/D-12: 客户详情页对匿名评价加标记（化妆师仍见真实客户身份上下文） -->
+              <text class="anon-tag" wx:if="{{item.is_anonymous}}">匿名评价</text>
+              <text class="rdate">{{item.dateLabel}}</text>
+            </view>
           </view>
           <text class="rsvc" wx:if="{{item.service_name}}">{{item.service_name}}</text>
           <text class="rcontent" wx:if="{{item.content}}">{{item.content}}</text>

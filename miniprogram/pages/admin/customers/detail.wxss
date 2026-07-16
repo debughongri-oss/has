@@ -112,7 +112,10 @@
 .rstars { position: relative; display: inline-block; font-size: 24rpx; line-height: 1; }
 .rstars-bg { color: var(--separator); }
 .rstars-fg { position: absolute; left: 0; top: 0; overflow: hidden; color: var(--gold); white-space: nowrap; }
+.rdate-wrap { display: flex; align-items: center; gap: 8rpx; }
 .rdate { font-size: 22rpx; color: var(--text-tertiary); }
+/* REVW-12/D-12: 客户详情页匿名评价标记 */
+.anon-tag { font-size: 18rpx; color: var(--gold); background-color: var(--gold-bg); padding: 3rpx 10rpx; border-radius: 999rpx; line-height: 1.4; }
 .rsvc { display: block; font-size: 24rpx; color: var(--text-secondary); margin-top: 8rpx; }
 .rcontent { display: block; font-size: 26rpx; color: var(--text-primary); line-height: 1.6; margin-top: 8rpx; }
 

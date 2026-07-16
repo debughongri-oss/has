@@ -3,10 +3,52 @@
     <t-loading theme="circular" size="80rpx" text="加载中..." />
   </view>
 
+  <!-- REVW-13: 筛选 + 排序控制条 -->
+  <view class="filter-bar" wx:if="{{!loading}}">
+    <scroll-view class="segs" scroll-x enable-flex>
+      <view
+        class="seg tappable {{currentRating === item.key ? 'seg--on' : ''}}"
+        wx:for="{{ratingSegs}}"
+        wx:key="key"
+        bindtap="onRatingSeg"
+        data-key="{{item.key}}"
+      >
+        <text class="seg-label">{{item.label}}</text>
+      </view>
+    </scroll-view>
+
+    <scroll-view class="segs" scroll-x enable-flex>
+      <view
+        class="seg tappable {{currentTag === item.key ? 'seg--on' : ''}}"
+        wx:for="{{tagSegs}}"
+        wx:key="key"
+        bindtap="onTagSeg"
+        data-key="{{item.key}}"
+      >
+        <text class="seg-label">{{item.label}}</text>
+      </view>
+    </scroll-view>
+
+    <view class="sort-row">
+      <text class="sort-label">排序</text>
+      <view
+        class="sort-opt tappable {{sortBy === item.key ? 'sort-opt--on' : ''}}"
+        wx:for="{{sortOptions}}"
+        wx:key="key"
+        bindtap="onSortChange"
+        data-key="{{item.key}}"
+      >{{item.label}}</view>
+    </view>
+  </view>
+
   <view class="list" wx:if="{{!loading && reviews.length}}">
     <view class="card" wx:for="{{reviews}}" wx:key="_id">
       <view class="rtop">
-        <text class="rname">{{item.user_nickname || '匿名用户'}}</text>
+        <view class="rname-wrap">
+          <text class="rname">{{item.user_nickname || '匿名用户'}}</text>
+          <!-- REVW-12/D-12: 后台仍显示真实昵称，但加「匿名」徽标提示该评价对客户侧匿名 -->
+          <text class="anon-mark" wx:if="{{item.isAnonymous}}">匿名</text>
+        </view>
         <text class="rtime">{{item.timeLabel}}</text>
       </view>
       <view class="rrate">
@@ -16,7 +58,28 @@
         </view>
         <text class="rsvc" wx:if="{{item.service_name}}">{{item.service_name}}</text>
       </view>
+
+      <!-- REVW-10: 标签 chips -->
+      <view class="rtags" wx:if="{{item.tagLabels.length}}">
+        <text class="rtag" wx:for="{{item.tagLabels}}" wx:for-item="tl" wx:key="*this">{{tl}}</text>
+      </view>
+
       <text class="rcontent" wx:if="{{item.content}}">{{item.content}}</text>
+
+      <!-- REVW-11: 评价图片缩略图（点击 wx.previewImage 全屏查看） -->
+      <view class="rthumbs" wx:if="{{item.thumb}}">
+        <image
+          class="rthumb"
+          wx:for="{{item.images}}"
+          wx:for-item="img"
+          wx:key="*this"
+          src="{{img}}"
+          mode="aspectFill"
+          bindtap="onPreviewImage"
+          data-url="{{img}}"
+          data-id="{{item._id}}"
+        ></image>
+      </view>
 
       <!-- 化妆师回复展示 (REVW-09) -->
       <view class="reply-display" wx:if="{{item.artist_reply}}">
@@ -24,9 +87,20 @@
         <text class="reply-text">{{item.artist_reply}}</text>
       </view>
 
-      <!-- 回复按钮 -->
-      <view class="reply-action" bindtap="onToggleReply" data-id="{{item._id}}">
-        <text>{{replyingId === item._id ? '取消' : (item.artist_reply ? '修改回复' : '回复')}}</text>
+      <view class="card-actions">
+        <!-- 回复按钮 -->
+        <view class="reply-action tappable" bindtap="onToggleReply" data-id="{{item._id}}">
+          <text>{{replyingId === item._id ? '取消' : (item.artist_reply ? '修改回复' : '回复')}}</text>
+        </view>
+
+        <!-- REVW-14: 删除按钮 -->
+        <view
+          class="delete-action tappable {{deletingId === item._id ? 'delete-action--disabled' : ''}}"
+          bindtap="onDeleteReview"
+          data-id="{{item._id}}"
+        >
+          <text>{{deletingId === item._id ? '删除中...' : '删除'}}</text>
+        </view>
       </view>
 
       <!-- 回复编辑器 (REVW-08) -->

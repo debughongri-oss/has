@@ -4,6 +4,67 @@
   padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
 }
 
+/* ===== REVW-13: 筛选 + 排序控制条 ===== */
+.filter-bar {
+  padding: 16rpx var(--page-pad) 0;
+  background-color: var(--bg-elevated);
+  border-bottom: 1rpx solid var(--separator);
+}
+
+.segs {
+  display: flex;
+  white-space: nowrap;
+  padding: 12rpx 0;
+  gap: 12rpx;
+}
+
+.seg {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10rpx 24rpx;
+  border-radius: 999rpx;
+  background-color: var(--fill-primary);
+  flex-shrink: 0;
+}
+
+.seg-label {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+.seg--on {
+  background-color: var(--accent);
+}
+
+.seg--on .seg-label {
+  color: #FFFFFF;
+}
+
+.sort-row {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 12rpx 0 16rpx;
+}
+
+.sort-label {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+.sort-opt {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  padding: 4rpx 0;
+}
+
+.sort-opt--on {
+  color: var(--accent);
+  font-weight: 700;
+  border-bottom: 3rpx solid var(--accent);
+}
+
 .list {
   display: flex;
   flex-direction: column;
@@ -24,15 +85,39 @@
   align-items: center;
 }
 
+.rname-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex: 1;
+  min-width: 0;
+}
+
 .rname {
   font-size: 30rpx;
   font-weight: 700;
   color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* REVW-12/D-12: 匿名评价标记（后台仍显示真实昵称） */
+.anon-mark {
+  font-size: 18rpx;
+  color: var(--gold);
+  background-color: var(--gold-bg);
+  padding: 3rpx 10rpx;
+  border-radius: 999rpx;
+  flex-shrink: 0;
+  line-height: 1.4;
 }
 
 .rtime {
   font-size: 22rpx;
   color: var(--text-tertiary);
+  flex-shrink: 0;
+  margin-left: 12rpx;
 }
 
 .rrate {
@@ -50,6 +135,24 @@
   border-radius: 999rpx;
 }
 
+/* REVW-10: 标签 chips */
+.rtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 14rpx;
+}
+
+.rtag {
+  font-size: 20rpx;
+  color: var(--text-secondary);
+  background-color: var(--fill-primary);
+  border: 1rpx solid var(--separator);
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+  line-height: 1.5;
+}
+
 .rcontent {
   display: block;
   font-size: var(--fs-sm);
@@ -58,6 +161,29 @@
   margin-top: 18rpx;
   padding-top: 18rpx;
   border-top: 1rpx solid var(--separator);
+}
+
+/* REVW-11: 评价图片缩略图 */
+.rthumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 14rpx;
+}
+
+.rthumb {
+  width: 130rpx;
+  height: 130rpx;
+  border-radius: 12rpx;
+  background-color: var(--bg);
+}
+
+/* 卡片操作区（回复 + 删除） */
+.card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14rpx;
 }
 
 /* 化妆师回复展示 (REVW-09) */
@@ -84,11 +210,20 @@
 
 /* 回复操作按钮 */
 .reply-action {
-  margin-top: 14rpx;
-  align-self: flex-start;
   font-size: 22rpx;
   color: var(--accent);
   padding: 6rpx 0;
+}
+
+/* REVW-14: 删除操作 */
+.delete-action {
+  font-size: 22rpx;
+  color: #D9534F;
+  padding: 6rpx 0;
+}
+
+.delete-action--disabled {
+  opacity: 0.5;
 }
 
 /* 回复编辑器 (REVW-08) */
