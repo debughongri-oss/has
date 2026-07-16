@@ -3,6 +3,20 @@ cloud.init({ env: cloud.DYNAMIC_CURRENT_ENV })
 const db = cloud.database()
 const { requireArtist } = require('./shared/auth')
 
+// REVW-10/D-01: 评价标签白名单（云函数无法 import miniprogram 常量，复制同一份清单）
+// 与 miniprogram/utils/constants.js REVIEW_TAGS 保持同步
+const ALLOWED_TAG_KEYS = ['professional', 'natural', 'punctual', 'friendly', 'value']
+const TAG_LABELS = {
+  professional: '手法专业',
+  natural: '妆面自然',
+  punctual: '准时',
+  friendly: '态度好',
+  value: '性价比高'
+}
+
+// REVW-15/D-22: 订阅消息模板 ID（云函数无法 import miniprogram 常量，复制同一份）
+const SUBSCRIBE_TEMPLATE_ID = '-i6OevJwdS5fGFXCsB9Xux4zaaxUkXTR0xfLg5T48jM'
+
 // reviews 集合尚未创建（还没有任何评价）时，查询会抛错，视为「空数据」处理
 const isCollectionMissing = (error) => {
   if (!error) return false
@@ -11,13 +25,103 @@ const isCollectionMissing = (error) => {
 }
 
 /**
+ * REVW-14/D-19: 重算 artist_profile.avg_rating / total_reviews（recompute 策略，并发安全）
+ *
+ * 选择重算而非增量：微信云数据库事务能力弱；增量 (old_avg*old_total ± new)/new_total
+ * 在并发写下沉受 FP 漂移 + race。单化妆师评价量小 → 重算成本可忽略。符合 POL-06。
+ * 自愈：删除/数据漂移后下一次写自动校正。
+ */
+async function syncArtistRating() {
+  try {
+    const $ = db.command.aggregate
+    const res = await db.collection('reviews').aggregate()
+      .group({ _id: null, total: $.sum(1), avgRating: $.avg('$rating') })
+      .end()
+    const total = (res.list[0] && res.list[0].total) || 0
+    const avg = (res.list[0] && res.list[0].avgRating) || 0
+
+    const existing = await db.collection('artist_profile').limit(1).get()
+    if (existing.data.length) {
+      await db.collection('artist_profile').doc(existing.data[0]._id)
+        .update({
+          data: {
+            avg_rating: Number(avg.toFixed(2)),
+            total_reviews: total,
+            updated_at: db.serverDate()
+          }
+        })
+    } else {
+      await db.collection('artist_profile').add({
+        data: {
+          avg_rating: Number(avg.toFixed(2)),
+          total_reviews: total
+        }
+      })
+    }
+  } catch (error) {
+    if (isCollectionMissing(error)) {
+      // reviews 集合不存在 → 视为 0 条评价，写 0 兜底
+      const existing = await db.collection('artist_profile').limit(1).get()
+      if (existing.data.length) {
+        await db.collection('artist_profile').doc(existing.data[0]._id)
+          .update({ data: { avg_rating: 0, total_reviews: 0, updated_at: db.serverDate() } })
+      }
+      return
+    }
+    // 其它错误不阻塞主流程，仅记录（评价已写入，统计漂移会在下次写时自愈）
+    console.error('syncArtistRating 失败:', error)
+  }
+}
+
+/**
+ * REVW-15/D-22/D-23: 推送订阅消息给化妆师（phrase5=新评价）
+ * 推送失败静默吞掉（与 booking-reminder D-10 一致），绝不阻塞评价创建。
+ */
+async function notifyArtistNewReview(serviceName, rating) {
+  try {
+    // 收件人 = artist_profile._openid（化妆师身份）
+    const profileRes = await db.collection('artist_profile').limit(1).get()
+    const profile = profileRes.data[0]
+    if (!profile || !profile._openid) return
+
+    // thing 字段 ≤ 20 字符限制
+    const safeService = (serviceName || '化妆服务').slice(0, 20)
+    const now = new Date()
+    const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
+
+    await cloud.openapi.subscribeMessage.send({
+      touser: profile._openid,
+      templateId: SUBSCRIBE_TEMPLATE_ID,
+      page: 'pages/admin/reviews/list',
+      data: {
+        thing1: { value: safeService },
+        date2: { value: dateStr },
+        date3: { value: timeStr },
+        thing4: { value: `${rating}星好评` },
+        phrase5: { value: '新评价' }
+      }
+    })
+  } catch (error) {
+    // D-23: 推送失败静默吞掉，仅记录日志
+    console.error('新评价推送失败（已忽略）:', error)
+  }
+}
+
+/**
  * reviews 云函数 — 评价系统
- * Actions: create, list, getStats, getByBooking
+ * Actions: create, list, getStats, getByBooking, reply, delete
  *
  * D-01: 独立 reviews 集合
  * D-08/D-09: msgSecCheck 内容安全审查（微信审核硬要求）
  * D-11: 服务端双重防重复（booking_id 唯一查重 + booking 状态校验）
- * D-17: getStats 实时聚合计算
+ * D-17 (POL-06): getStats 改读 artist_profile 冗余字段（avg_rating/total_reviews）
+ * REVW-10: 评价标签（tags[]，5 个预设白名单）
+ * REVW-11: 评价图片（images[]，最多 3 张，imgSecCheck fail-closed）
+ * REVW-12: 匿名评价（is_anonymous）
+ * REVW-13: 服务端筛选排序（rating_filter/tag_filter/sort_by）
+ * REVW-14: avg_rating/total_reviews 冗余同步（recompute 策略）+ delete action
+ * REVW-15: 新评价订阅消息推送（phrase5=新评价，失败静默）
  */
 exports.main = async (event, context) => {
   const wxContext = cloud.getWXContext()
@@ -27,6 +131,10 @@ exports.main = async (event, context) => {
     case 'create': {
       // SEC-05: 移除对 event.user_nickname/user_avatar 的信任，改由服务端按 openid 查 users 集合取权威值
       const { booking_id, rating, content } = event
+      // REVW-10/11/12: 新增增强字段
+      const rawTags = Array.isArray(event.tags) ? event.tags : []
+      const rawImages = Array.isArray(event.images) ? event.images : []
+      const isAnonymous = !!event.is_anonymous
       try {
         // 参数校验
         if (!booking_id) {
@@ -34,6 +142,25 @@ exports.main = async (event, context) => {
         }
         if (!rating || rating < 1 || rating > 5) {
           return { errCode: -1, errMsg: '请选择评分（1-5星）' }
+        }
+
+        // REVW-10/D-01: 标签白名单过滤（T-21-01 mitigate）
+        const validTags = []
+        const seenTagKeys = new Set()
+        for (const t of rawTags) {
+          if (typeof t === 'string' && ALLOWED_TAG_KEYS.indexOf(t) >= 0 && !seenTagKeys.has(t)) {
+            validTags.push(t)
+            seenTagKeys.add(t)
+          }
+        }
+        if (validTags.length > 5) {
+          return { errCode: -1, errMsg: '最多选择 5 个标签' }
+        }
+
+        // REVW-11/D-06: 图片数量上限 3 张（T-21-06 mitigate）
+        const imageFileIDs = rawImages.filter(x => typeof x === 'string' && x).slice(0, 3)
+        if (rawImages.length > 3) {
+          return { errCode: -1, errMsg: '最多上传 3 张图片' }
         }
 
         // D-11 双重防护 Step 1: 验证预约存在 + 属于当前用户 + 已完成状态
@@ -90,13 +217,43 @@ exports.main = async (event, context) => {
           }
         }
 
+        // REVW-11/D-07: 图片内容安全审查（imgSecCheck，逐张同步，fail-closed）
+        // 与 msgSecCheck D-24 一致：违规或 API 失败均阻止提交
+        for (const fileID of imageFileIDs) {
+          try {
+            const dl = await cloud.downloadFile({ fileID })
+            const buffer = dl.fileContent
+            if (!buffer) {
+              return { errCode: -1, errMsg: '图片安全检查失败，请稍后重试' }
+            }
+            const imgResult = await cloud.openapi.security.imgSecCheck({
+              media: {
+                contentType: 'image/jpeg',
+                value: buffer
+              }
+            })
+            // errCode 87014 = 内容违规；其它非 0 也视为不通过
+            if (imgResult.errCode === 87014) {
+              return { errCode: -1, errMsg: '评价图片包含不当内容，请删除后重新提交' }
+            }
+            if (imgResult.errCode && imgResult.errCode !== 0) {
+              console.error('imgSecCheck 违规 errCode:', imgResult.errCode)
+              return { errCode: -1, errMsg: '评价图片包含不当内容，请删除后重新提交' }
+            }
+          } catch (imgErr) {
+            // API 调用失败 → fail-closed 阻止提交
+            console.error('imgSecCheck 调用失败:', imgErr)
+            return { errCode: -1, errMsg: '图片安全检查失败，请稍后重试' }
+          }
+        }
+
         // SEC-05: 服务端权威读取用户昵称/头像，客户端传入被忽略
         const userRes = await db.collection('users').where({ _openid: openid }).limit(1).get()
         const user = userRes.data[0] || {}
         const userNickname = user.nickname || ''
         const userAvatar = user.avatar_url || ''
 
-        // D-02: 写入 reviews 集合
+        // D-02: 写入 reviews 集合（含 REVW-10/11/12 新字段）
         const reviewData = {
           booking_id: booking_id,
           user_openid: openid,
@@ -106,11 +263,23 @@ exports.main = async (event, context) => {
           service_name: booking.data.service_name || '',
           rating: rating,
           content: trimmedContent,
+          // REVW-10: 评价标签（已白名单过滤）
+          tags: validTags,
+          // REVW-11: 评价图片 fileID 数组（已 imgSecCheck 通过）
+          images: imageFileIDs,
+          // REVW-12: 匿名标记（服务端存原始值，展示层 D-11 控制公开展示）
+          is_anonymous: isAnonymous,
           created_at: db.serverDate(),
           updated_at: db.serverDate()
         }
 
         const res = await db.collection('reviews').add({ data: reviewData })
+
+        // REVW-14/D-19: 同步 artist_profile 冗余字段（不阻塞返回，但失败也不影响评价写入）
+        await syncArtistRating()
+
+        // REVW-15/D-22: 推送新评价通知给化妆师（失败静默吞掉，不阻塞）
+        await notifyArtistNewReview(booking.data.service_name, rating)
 
         return {
           errCode: 0,
@@ -280,6 +449,54 @@ exports.main = async (event, context) => {
       } catch (error) {
         console.error('回复评价失败:', error)
         return { errCode: -1, errMsg: '回复失败' }
+      }
+    }
+
+    case 'delete': {
+      // REVW-14/D-18: 删除评价（仅化妆师可操作）
+      // 流程：requireArtist 鉴权 → 删云存储图片 → 删 reviews 文档 → 同步 artist_profile 冗余
+      const { review_id } = event
+      try {
+        if (!review_id) {
+          return { errCode: -1, errMsg: '缺少评价ID' }
+        }
+
+        // T-21-04 mitigate: 仅化妆师可删除
+        const authCheck = await requireArtist(wxContext, db)
+        if (!authCheck.ok) return authCheck.response
+
+        // 取评价文档（确认存在 + 拿 images 用于清理）
+        let review
+        try {
+          const r = await db.collection('reviews').doc(review_id).get()
+          review = r.data
+        } catch (e) {
+          return { errCode: -1, errMsg: '评价不存在' }
+        }
+        if (!review) {
+          return { errCode: -1, errMsg: '评价不存在' }
+        }
+
+        // D-09: 删除评价关联的云存储图片（防孤立文件累积，best-effort 不阻塞删除）
+        if (Array.isArray(review.images) && review.images.length > 0) {
+          try {
+            // 服务端 SDK 使用 cloud.deleteFile（非 miniprogram 的 wx.cloud.deleteCloudFile）
+            await cloud.deleteFile({ fileList: review.images })
+          } catch (delErr) {
+            console.error('删除评价图片失败（已忽略）:', delErr)
+          }
+        }
+
+        // 删除 reviews 文档
+        await db.collection('reviews').doc(review_id).remove()
+
+        // REVW-14: 同步 artist_profile 冗余字段
+        await syncArtistRating()
+
+        return { errCode: 0 }
+      } catch (error) {
+        console.error('删除评价失败:', error)
+        return { errCode: -1, errMsg: '删除评价失败' }
       }
     }
 
