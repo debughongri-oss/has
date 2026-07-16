@@ -152,11 +152,22 @@
         </view>
         <view class="review-quote" wx:if="{{reviewStats.recent && reviewStats.recent[0] && reviewStats.recent[0].content}}">
           <text class="review-quote-text">{{reviewStats.recent[0].content}}</text>
-          <text class="review-quote-from">— {{reviewStats.recent[0].user_nickname || '匿名客户'}}</text>
+          <text class="review-quote-from">— {{reviewStats.recent[0].displayNickname}}</text>
         </view>
         <view class="review-reply" wx:if="{{reviewStats.recent && reviewStats.recent[0] && reviewStats.recent[0].artist_reply}}">
           <text class="review-reply-label">化妆师回复</text>
           <text class="review-reply-text">{{reviewStats.recent[0].artist_reply}}</text>
+        </view>
+      </view>
+
+      <!-- REVW-10/D-04: 大家这样说 — 高频标签聚合（口碑转化） -->
+      <view class="tag-cloud" wx:if="{{reviewStats.topTags && reviewStats.topTags.length}}">
+        <text class="tag-cloud-title">大家这样说</text>
+        <view class="tag-cloud-list">
+          <view class="cloud-chip" wx:for="{{reviewStats.topTags}}" wx:key="key">
+            <text class="cloud-chip-label">{{item.label}}</text>
+            <text class="cloud-chip-count">×{{item.count}}</text>
+          </view>
         </view>
       </view>
     </view>

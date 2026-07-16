@@ -108,11 +108,34 @@ Page({
 
   /**
    * 加载评价统计 per D-16/D-17
+   * REVW-14/D-20: avg/total 优先读已加载的 artist_profile 冗余字段（零计算、与首页其它展示一致）
+   * REVW-10/D-04: 拉取 topTags 高频标签聚合（服务端算，用于「大家这样说」标签云）
+   * REVW-12/D-11: 公开侧匿名化——is_anonymous 评价展示「匿名客户」
+   * D-08: 首页评价摘要不渲染图片（保持加载轻量），recent 对象保留 images 字段但 WXML 不渲染
    */
   loadReviewStats: function () {
     reviewsService.getReviewStats()
       .then(data => {
-        this.setData({ reviewStats: data })
+        // REVW-14: 优先用已加载 profile 的冗余字段（避免与首页其它展示产生漂移）
+        const artist = this.data.artist
+        const avg = (artist && artist.avg_rating != null)
+          ? Number(artist.avg_rating).toFixed(1)
+          : data.average
+        const total = (artist && artist.total_reviews != null)
+          ? artist.total_reviews
+          : data.total
+
+        // REVW-12/D-11: 公开侧匿名化展示
+        const recent = (data.recent || []).map(r => Object.assign({}, r, {
+          displayNickname: r.is_anonymous ? '匿名客户' : (r.user_nickname || '匿名客户')
+        }))
+
+        // REVW-10/D-04: 高频标签 top 5
+        const topTags = (data.topTags || []).slice(0, 5)
+
+        this.setData({
+          reviewStats: { average: avg, total: total, recent: recent, topTags: topTags }
+        })
       })
       .catch(err => {
         console.error('加载评价统计失败:', err)
