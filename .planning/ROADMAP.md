@@ -59,7 +59,7 @@
   3. 首页评价统计（均分、总数）直接读取 artist_profile 冗余字段；新建/删除评价时冗余字段自动同步更新（无需重新跑聚合）
   4. 客户提交新评价后化妆师收到订阅消息推送（phrase「新评价」），化妆师无需主动刷新即可感知
 **Plans**: 4 plans
-- [ ] 21-01-PLAN.md — 评价云函数扩展（create 标签/图片/匿名 + imgSecCheck + avg_rating 冗余同步 + 推送 + delete）+ 共享层（REVW-10~15 后端）
+- [x] 21-01-PLAN.md — 评价云函数扩展（create 标签/图片/匿名 + imgSecCheck + avg_rating 冗余同步 + 推送 + delete）+ 共享层（REVW-10~15 后端）
 - [ ] 21-02-PLAN.md — 客户评价表单（标签 chip + 图片网格 + 匿名开关）（REVW-10/11/12 客户端）
 - [ ] 21-03-PLAN.md — 后台评价管理（筛选/排序/删除/缩略图/匿名标记）+ 客户详情匿名标记 + 化妆师订阅授权（REVW-13/14/12/15）
 - [ ] 21-04-PLAN.md — 首页评价统计读冗余字段 + 「大家这样说」标签云（REVW-14/10）
@@ -70,4 +70,4 @@
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 20. 客户档案 | v2.3 | 4/4 | ✓ Complete | 2026-07-16 |
-| 21. 评价增强 | v2.3 | 0/4 | Ready to plan → planned | - |
+| 21. 评价增强 | v2.3 | 1/4 | In Progress|  |

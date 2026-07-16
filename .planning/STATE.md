@@ -2,21 +2,21 @@
 gsd_state_version: 1.0
 milestone: v2.3
 milestone_name: 客户经营 & 口碑增强
-status: Phase 21 planned 2026-07-16 (4 plans across 2 waves; commit 63c4f44). Research skipped — CONTEXT.md is research-quality (Level 0-1, all patterns exist in codebase). Next: `/gsd-execute-phase 21`.
-stopped_at: Phase 21 planned — ready to execute
-last_updated: "2026-07-16T06:10:00.000Z"
+status: executing
+stopped_at: Phase 21 context gathered
+last_updated: "2026-07-16T06:35:19.879Z"
 last_activity: 2026-07-16
 progress:
   total_phases: 2
   completed_phases: 1
-  total_plans: 4
-  completed_plans: 0
-  percent: 50
+  total_plans: 8
+  completed_plans: 5
+  percent: 63
 ---
 
 # Project State
 
-**Current focus:** Phase 21 — review-enhancement (next; ready to plan)
+**Current focus:** Phase 21 — review-enhancement
 
 Progress: [█████░░░░░] 50% (v2.3, 1/2 phases complete; Phase 20 shipped all 4 plans)
 
@@ -28,9 +28,10 @@ See: .planning/PROJECT.md (updated 2026-07-10)
 
 ## Current Position
 
-Phase: 20 (customer-profiles) — ✓ COMPLETE (all 4 plans shipped: 20-01 cloud fn+service, 20-02 list page, 20-03 detail page+inline edit, 20-04 booking-detail card)
+Phase: 21 (review-enhancement) — EXECUTING
+Plan: 2 of 4
 Phase: 21 (review-enhancement) — PLANNED (4 plans, 2 waves; commit 63c4f44) → next: `/gsd-execute-phase 21`
-Status: Phase 21 planned 2026-07-16. Research skipped (CONTEXT.md is research-quality; Level 0-1 — imgSecCheck & subscribeMessage patterns already exist in codebase). Wave 1 = backend core (21-01); Wave 2 = parallel UI (21-02 client form, 21-03 admin mgmt, 21-04 index). avg_rating sync strategy = recompute aggregate (concurrency-safe).
+Status: Ready to execute
 Last activity: 2026-07-16
 
 ## Milestone Goal
