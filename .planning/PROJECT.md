@@ -10,28 +10,29 @@
 
 ## Current State
 
-**Shipped:** v1.0 MVP (2026-04-19), v1.1 品牌升级 & 体验增强 (2026-04-24), v1.2 上线前加固 (2026-07-02), v2.0 评价互动 & 预约智能化 (2026-07-02), v2.1 经营工具 & 转化优化 (2026-07-02), v2.2 预约体验增强 (2026-07-10)
-**Status:** v2.3 客户经营 & 口碑增强 — defining requirements
+**Shipped:** v1.0 MVP (2026-04-19), v1.1 品牌升级 & 体验增强 (2026-04-24), v1.2 上线前加固 (2026-07-02), v2.0 评价互动 & 预约智能化 (2026-07-02), v2.1 经营工具 & 转化优化 (2026-07-02), v2.2 预约体验增强 (2026-07-10), v2.3 客户经营 & 口碑增强 (2026-07-16)
+**Status:** v2.3 客户经营 & 口碑增强 — ✓ COMPLETE (Phase 20 客户档案 + Phase 21 评价增强 全部 4+4 plans shipped). Milestone ready for release.
 **Tech stack:** 微信原生框架 (WXML/WXSS/JS) + 微信云开发 (CloudBase) + TDesign MiniProgram
-**Cloud functions:** login, profile, works, services, bookings, booking-reminder, reviews (7 functions)
-**Pages:** 5 TabBar pages + works detail/compare/poster + admin sub-package (works/services/bookings/profile/reviews/calendar management) + booking history + review create
-**v1.2 outcome:** 16 项技术债全部闭环（安全/发布卫生/一致性）。代码具备上线条件。运行时验证（冷启动登录、缓存刷新、并发上传、断网 toast）需在微信开发者工具中手动确认。
+**Cloud functions:** login, profile, works, services, bookings, booking-reminder, reviews, customers (8 functions)
+**Pages:** 5 TabBar pages + works detail/compare/poster + admin sub-package (works/services/bookings/profile/reviews/calendar/customers management) + booking history + review create
+**v2.3 outcome:** 客户档案（列表/详情/备注/预约联动）+ 评价增强（标签/带图/匿名/筛选排序/avg_rating 冗余/新评价推送）。10/10 v2.3 需求完成。代码具备上线条件；运行时验证（imgSecCheck fail-closed、订阅消息授权+推送、筛选排序交互）需在微信开发者工具中手动确认（详见 21-VERIFICATION.md）。
 
-## Current Milestone: v2.3 客户经营 & 口碑增强
+## Current Milestone: v2.3 客户经营 & 口碑增强 — ✓ COMPLETE
 
 **Goal:** 让化妆师记住每位客户、让评价更有说服力，提升复购和转化
 
 **Target features:**
-- 客户档案：客户基本信息 + 历史预约 + 化妆师备注（肤质/偏好/过敏）
-- 评价增强：标签快捷选择 + 评价带图 + 匿名评价 + 后台筛选排序 + avg_rating 冗余 + 评价提交推送
+- 客户档案：客户基本信息 + 历史预约 + 化妆师备注（肤质/偏好/过敏）— ✓ Phase 20 delivered
+- 评价增强：标签快捷选择 + 评价带图 + 匿名评价 + 后台筛选排序 + avg_rating 冗余 + 评价提交推送 — ✓ Phase 21 delivered
 
 ## Requirements
 
-### Active
+### Validated in v2.3
 
-**v2.3 客户经营 & 口碑增强**（详见 `.planning/REQUIREMENTS.md`）
+**v2.3 客户经营 & 口碑增强** — 全部 10 需求完成（详见 `.planning/REQUIREMENTS.md`）
 
-需求定义中——客户档案 + 评价增强两大方向。
+- ✓ CUST-01~04 (Phase 20): 客户列表/详情/备注/预约联动
+- ✓ REVW-10~15 (Phase 21): 标签/带图/匿名/筛选排序/avg_rating 冗余/新评价推送
 
 **Deferred to later:**
 - PROF-05: 化妆师自定义主页主题色
@@ -111,4 +112,4 @@ This document evolves at phase transitions and milestone boundaries.
 
 ---
 
-*Last updated: 2026-07-10 — v2.3 milestone started*
+*Last updated: 2026-07-16 — v2.3 milestone complete (Phase 20 + 21 shipped)*
