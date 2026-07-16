@@ -112,6 +112,7 @@ exports.main = async (event, context) => {
 /**
  * 默认化妆师资料 — 占位数据
  * 用户看到后知道这是模板，需要化妆师填写真实信息
+ * REVW-14/D-17: avg_rating / total_reviews 冗余字段默认 0（新资料稳定读取）
  */
 function getDefaultProfile() {
   return {
@@ -132,6 +133,9 @@ function getDefaultProfile() {
       work_start: '09:00',
       work_end: '18:00'
     },
+    // REVW-14: 评价冗余统计字段（创建/删除评价时由 reviews 云函数同步）
+    avg_rating: 0,
+    total_reviews: 0,
     created_at: new Date(),
     updated_at: new Date()
   }

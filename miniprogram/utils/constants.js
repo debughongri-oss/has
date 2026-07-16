@@ -46,6 +46,16 @@ const SKIN_TYPE_OPTIONS = [
   { key: 'unknown', label: '不确定' }
 ]
 
+// 评价标签预设（REVW-10 / D-01）— 固定 5 标签，前后端共享
+// 云函数无法 import miniprogram 代码，需在 reviews/index.js 复制同一份清单做服务端白名单校验
+const REVIEW_TAGS = [
+  { key: 'professional', label: '手法专业' },
+  { key: 'natural', label: '妆面自然' },
+  { key: 'punctual', label: '准时' },
+  { key: 'friendly', label: '态度好' },
+  { key: 'value', label: '性价比高' }
+]
+
 // 图片相关配置
 const IMAGE_CONFIG = {
   MAX_COUNT: 9,            // 单次最多选择图片数
@@ -62,6 +72,7 @@ module.exports = {
   SERVICE_CATEGORIES,
   STYLE_TAGS,
   SKIN_TYPE_OPTIONS,
+  REVIEW_TAGS,
   IMAGE_CONFIG,
   SUBSCRIBE_TEMPLATE_ID
 }
