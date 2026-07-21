@@ -111,6 +111,7 @@ Page({
    * REVW-14/D-20: avg/total 优先读已加载的 artist_profile 冗余字段（零计算、与首页其它展示一致）
    * REVW-10/D-04: 拉取 topTags 高频标签聚合（服务端算，用于「大家这样说」标签云）
    * REVW-12/D-11: 公开侧匿名化——is_anonymous 评价展示「匿名客户」
+   * v2.3-r2: 评分分布 + featured testimonials (含作品缩略图 service_cover)
    * D-08: 首页评价摘要不渲染图片（保持加载轻量），recent 对象保留 images 字段但 WXML 不渲染
    */
   loadReviewStats: function () {
@@ -126,9 +127,26 @@ Page({
           : data.total
 
         // REVW-12/D-11: 公开侧匿名化展示
-        const recent = (data.recent || []).map(r => Object.assign({}, r, {
+        const recentAll = (data.recent || []).map(r => Object.assign({}, r, {
           displayNickname: r.is_anonymous ? '匿名客户' : (r.user_nickname || '匿名客户')
         }))
+
+        // v2.3-r2: featured = 有内容 + 评分 >= 4 的最近 2 条（用于带作品图的精选 testimonial）
+        const featured = recentAll
+          .filter(r => r.content && r.rating >= 4)
+          .slice(0, 2)
+
+        // v2.3-r2: 评分分布条 — 每档宽度 = 该档数 / total * 100
+        const rawDist = data.distribution || { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
+        const safeTotal = total > 0 ? total : 1
+        const distribution = [5, 4, 3, 2, 1].map(star => {
+          const count = rawDist[String(star)] || rawDist[star] || 0
+          return {
+            star: star,
+            count: count,
+            percent: Math.round(count / safeTotal * 100)
+          }
+        })
 
         // REVW-10/D-04: 高频标签 top 5 — 按热度分级渲染（hot/warm/normal）
         const topTags = (data.topTags || []).slice(0, 5).map((t, i) => Object.assign({}, t, {
@@ -136,7 +154,14 @@ Page({
         }))
 
         this.setData({
-          reviewStats: { average: avg, total: total, recent: recent, topTags: topTags }
+          reviewStats: {
+            average: avg,
+            total: total,
+            distribution: distribution,
+            featured: featured,
+            recent: recentAll,
+            topTags: topTags
+          }
         })
       })
       .catch(err => {

@@ -356,6 +356,7 @@ exports.main = async (event, context) => {
       // REVW-14/D-20/D-21: avg/total 读 artist_profile 冗余字段（零计算）
       // REVW-10/D-04: 新增 topTags 高频标签聚合
       // 保留 recent 最近 3 条评价，新增 tags/images/is_anonymous 投影供展示层使用
+      // v2.3-r2: 新增 distribution (5★/4★/3★/2★/1★ 计数) + recent 附 service_cover 作品缩略图
       try {
         let average = '0.0'
         let total = 0
@@ -393,7 +394,24 @@ exports.main = async (event, context) => {
           }
         }
 
-        // 最近 3 条评价（独立小查询，含 REVW-10/11/12 新字段投影）
+        // v2.3-r2: rating 分布（5★/4★/3★/2★/1★ 各档计数）— 用于首页分布条
+        // aggregate group by rating 字段，1 次查询拿到全档
+        const distribution = { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }
+        try {
+          const $ = db.command.aggregate
+          const distRes = await db.collection('reviews').aggregate()
+            .group({ _id: '$rating', count: $.sum(1) })
+            .end()
+          for (const row of (distRes.list || [])) {
+            const k = row._id
+            if (k >= 1 && k <= 5) distribution[String(k)] = row.count
+          }
+        } catch (e) {
+          if (!isCollectionMissing(e)) throw e
+          // reviews 集合不存在 → distribution 保持全 0
+        }
+
+        // 最近 3 条评价（独立小查询，含 REVW-10/11/12 新字段投影 + service_id 用于附作品封面）
         let recent = []
         try {
           const recentResult = await db.collection('reviews')
@@ -408,7 +426,9 @@ exports.main = async (event, context) => {
               artist_reply: true,
               tags: true,
               images: true,
-              is_anonymous: true
+              is_anonymous: true,
+              service_id: true,
+              service_name: true
             })
             .get()
 
@@ -421,8 +441,24 @@ exports.main = async (event, context) => {
             tags: Array.isArray(r.tags) ? r.tags : [],
             images: Array.isArray(r.images) ? r.images : [],
             is_anonymous: !!r.is_anonymous,
+            service_id: r.service_id || '',
+            service_name: r.service_name || '',
+            service_cover: '',  // 占位，下一步批量填充
             created_at: r.created_at
           }))
+
+          // v2.3-r2: 批量附 service_cover 作品缩略图（每条评价配对应服务的封面图）
+          // 模式参考 customers/index.js attachServiceCover
+          const serviceIds = Array.from(new Set(recent.map(r => r.service_id).filter(Boolean)))
+          if (serviceIds.length) {
+            const svcRes = await db.collection('services')
+              .where({ _id: db.command.in(serviceIds) })
+              .limit(100)
+              .get()
+            const coverMap = {}
+            svcRes.data.forEach(s => { if (s.cover_image) coverMap[s._id] = s.cover_image })
+            recent.forEach(r => { r.service_cover = coverMap[r.service_id] || '' })
+          }
         } catch (e) {
           if (!isCollectionMissing(e)) throw e
           // reviews 集合不存在 → recent = []
@@ -456,11 +492,11 @@ exports.main = async (event, context) => {
 
         return {
           errCode: 0,
-          data: { average, total, recent, topTags }
+          data: { average, total, distribution, recent, topTags }
         }
       } catch (error) {
         if (isCollectionMissing(error)) {
-          return { errCode: 0, data: { average: '0.0', total: 0, recent: [], topTags: [] } }
+          return { errCode: 0, data: { average: '0.0', total: 0, distribution: { '1': 0, '2': 0, '3': 0, '4': 0, '5': 0 }, recent: [], topTags: [] } }
         }
         console.error('获取评价统计失败:', error)
         return { errCode: -1, errMsg: '获取评价统计失败' }

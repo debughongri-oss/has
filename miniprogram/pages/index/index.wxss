@@ -513,7 +513,7 @@
 .cloud-chip-count {
   font-size: 22rpx;
   color: var(--gold);
-  margin-left: 6rpx;
+  margin-left: 4rpx;
 }
 
 .stars {
@@ -523,6 +523,11 @@
   line-height: 1;
   letter-spacing: 4rpx;
   white-space: nowrap;
+}
+
+.stars--sm {
+  font-size: 20rpx;
+  letter-spacing: 2rpx;
 }
 
 .stars-bg {
@@ -538,46 +543,198 @@
   white-space: nowrap;
 }
 
+/* ===== v2.3-r2: 评分分布条 ===== */
+.dist {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-top: 22rpx;
+  padding-top: 22rpx;
+  border-top: 1rpx solid var(--separator);
+}
+
+.dist-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.dist-star {
+  width: 56rpx;
+  font-size: 21rpx;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.dist-track {
+  flex: 1;
+  height: 10rpx;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 999rpx;
+  overflow: hidden;
+}
+
+.dist-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  transition: width 0.4s ease;
+}
+
+/* 5★ 实金渐变（最强证据），4★ 中金，3★ 弱金，1-2★ 灰 */
+.dist-fill--5 {
+  background: linear-gradient(to right, var(--gold), #DDBE82);
+}
+.dist-fill--4 {
+  background: rgba(201, 169, 110, 0.55);
+}
+.dist-fill--3 {
+  background: rgba(201, 169, 110, 0.32);
+}
+.dist-fill--2,
+.dist-fill--1 {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.dist-count {
+  width: 56rpx;
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== v2.3-r2: 作品×评价联动 — featured testimonial ===== */
+.featured-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+  margin: 16rpx var(--page-pad) 0;
+}
+
+.featured-card {
+  display: flex;
+  gap: 18rpx;
+  align-items: flex-start;
+  padding: 20rpx;
+  background-color: var(--bg-elevated);
+  border-radius: 22rpx;
+  box-shadow: 0 4rpx 16rpx rgba(60, 40, 30, 0.05);
+}
+
+.featured-thumb {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 14rpx;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: var(--gold-bg);
+}
+
+.featured-thumb-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.featured-thumb--ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--gold-bg), rgba(255, 111, 139, 0.08));
+}
+
+.featured-thumb-initial {
+  font-size: 20rpx;
+  color: var(--gold);
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.2;
+  padding: 4rpx;
+}
+
+.featured-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.featured-meta {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.featured-svc {
+  font-size: 19rpx;
+  font-weight: 700;
+  color: var(--accent);
+  background-color: var(--accent-soft);
+  padding: 4rpx 12rpx;
+  border-radius: 999rpx;
+}
+
+.featured-quote {
+  display: block;
+  font-size: 25rpx;
+  color: var(--text-primary);
+  line-height: 1.55;
+  margin-top: 8rpx;
+}
+
+.featured-from {
+  display: block;
+  font-size: 21rpx;
+  color: var(--text-tertiary);
+  margin-top: 6rpx;
+}
+
+/* ===== v2.3-r2: CTA 主次分明（预约 dominant + 联系次） ===== */
 .cta-panel {
   margin: 44rpx var(--page-pad) 0;
 }
 
-.cta-bar {
+.cta-stack {
   display: flex;
-  height: 108rpx;
-  background-color: #FFFFFF;
-  border-radius: 0;
-  overflow: hidden;
-  border: 1rpx solid rgba(0, 0, 0, 0.08);
+  flex-direction: column;
+  gap: 12rpx;
 }
 
-.cta-contact,
-.cta-book {
-  flex: 1;
-  height: 108rpx;
+.cta-book,
+.cta-contact {
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 0;
   padding: 0;
   margin: 0;
-  font-size: 31rpx;
-  font-weight: 800;
   line-height: 1;
 }
 
-.cta-contact {
-  background-color: #FFFFFF;
-  color: #17151A;
-}
-
 .cta-book {
+  height: 100rpx;
+  font-size: 32rpx;
+  font-weight: 800;
+  letter-spacing: 1rpx;
   background: linear-gradient(135deg, #FF6F8B 0%, #E85575 100%);
   color: #FFFFFF;
+  border-radius: var(--radius-md);
+  box-shadow: 0 10rpx 24rpx rgba(232, 85, 117, 0.34);
 }
 
-.cta-contact::after,
-.cta-book::after {
+.cta-contact {
+  height: 72rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+  background-color: #FFFFFF;
+  color: var(--text-primary);
+  border: 1rpx solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-md);
+}
+
+.cta-book::after,
+.cta-contact::after {
   border: none;
 }
 

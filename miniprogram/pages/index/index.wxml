@@ -136,6 +136,8 @@
           <view class="section-rule"></view>
         </view>
       </view>
+
+      <!-- v2.3-r2: 评分概览 + 分布条（不可造假的证据） -->
       <view class="review-card">
         <view class="review-top">
           <view class="review-score">
@@ -150,13 +152,39 @@
             <text class="review-count">{{reviewStats.total}} 条真实评价</text>
           </view>
         </view>
-        <view class="review-quote" wx:if="{{reviewStats.recent && reviewStats.recent[0] && reviewStats.recent[0].content}}">
-          <text class="review-quote-text">{{reviewStats.recent[0].content}}</text>
-          <text class="review-quote-from">— {{reviewStats.recent[0].displayNickname}}</text>
+
+        <!-- v2.3-r2: 评分分布条 -->
+        <view class="dist" wx:if="{{reviewStats.distribution && reviewStats.distribution.length}}">
+          <view class="dist-row" wx:for="{{reviewStats.distribution}}" wx:key="star">
+            <text class="dist-star">{{item.star}}★</text>
+            <view class="dist-track">
+              <view class="dist-fill dist-fill--{{item.star}}" style="width:{{item.percent}}%"></view>
+            </view>
+            <text class="dist-count">{{item.count}}</text>
+          </view>
         </view>
-        <view class="review-reply" wx:if="{{reviewStats.recent && reviewStats.recent[0] && reviewStats.recent[0].artist_reply}}">
-          <text class="review-reply-label">化妆师回复</text>
-          <text class="review-reply-text">{{reviewStats.recent[0].artist_reply}}</text>
+      </view>
+
+      <!-- v2.3-r2: 作品×评价联动 — 精选 testimonial 配作品缩略图 -->
+      <view class="featured-list" wx:if="{{reviewStats.featured && reviewStats.featured.length}}">
+        <view class="featured-card" wx:for="{{reviewStats.featured}}" wx:key="created_at">
+          <view class="featured-thumb" wx:if="{{item.service_cover}}">
+            <image class="featured-thumb-img" src="{{item.service_cover}}" mode="aspectFill" lazy-load />
+          </view>
+          <view class="featured-thumb featured-thumb--ph" wx:else>
+            <text class="featured-thumb-initial">{{item.service_name}}</text>
+          </view>
+          <view class="featured-body">
+            <view class="featured-meta">
+              <view class="stars stars--sm">
+                <text class="stars-bg">★★★★★</text>
+                <text class="stars-fg" style="width:{{item.rating / 5 * 100}}%">★★★★★</text>
+              </view>
+              <text class="featured-svc" wx:if="{{item.service_name}}">{{item.service_name}}</text>
+            </view>
+            <text class="featured-quote">{{item.content}}</text>
+            <text class="featured-from">— {{item.displayNickname}}</text>
+          </view>
         </view>
       </view>
 
@@ -169,20 +197,20 @@
         <view class="tag-cloud-list">
           <view class="cloud-chip cloud-chip--{{item.tier}}" wx:for="{{reviewStats.topTags}}" wx:key="key">
             <text class="cloud-chip-label">{{item.label}}</text>
-            <text class="cloud-chip-count">×{{item.count}}</text>
+            <text class="cloud-chip-count" wx:if="{{item.tier === 'hot'}}"> {{item.count}}</text>
           </view>
         </view>
       </view>
     </view>
 
-    <!-- 预约 CTA -->
+    <!-- v2.3-r2: 预约 CTA — 主次分明，预约 dominant -->
     <view class="cta-panel">
-      <view class="cta-bar">
-        <button class="cta-contact" open-type="contact">
-          <text>微信联系</text>
-        </button>
+      <view class="cta-stack">
         <button class="cta-book" bindtap="goToBooking">
-          <text>预约化妆</text>
+          <text>立即预约化妆</text>
+        </button>
+        <button class="cta-contact" open-type="contact">
+          <text>微信联系（先问问）</text>
         </button>
       </view>
     </view>
