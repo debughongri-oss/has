@@ -42,6 +42,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;  /* v2.3-r2 fix: 防止 .stars 被 column flex 默认 stretch 撑宽，破坏星条叠加 */
   gap: 8rpx;
 }
 
@@ -300,13 +301,5 @@
   color: var(--text-tertiary);
 }
 
-/* 复用 app.wxss 的 stars-bg / stars-fg（这里仅在 rstars 里用，靠 app 全局提供颜色） */
-.stars-bg { color: rgba(0, 0, 0, 0.12); }
-.stars-fg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  color: var(--gold);
-  overflow: hidden;
-  white-space: nowrap;
-}
+/* 注：.stars / .stars-bg / .stars-fg 由 app.wxss 全局提供，不在此重复定义。
+   关键修复在 .stats-meta 加了 align-items: flex-start，防止 column flex 把 .stars 横向拉伸。 */

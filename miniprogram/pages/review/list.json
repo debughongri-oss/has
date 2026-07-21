@@ -1,4 +1,6 @@
 {
   "navigationBarTitleText": "客户评价",
-  "usingComponents": {}
+  "usingComponents": {
+    "t-loading": "tdesign-miniprogram/loading/loading"
+  }
 }

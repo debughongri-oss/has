@@ -372,6 +372,7 @@
 .review-meta {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;  /* v2.3-r2 fix: 防止 .stars 被 column flex 默认 stretch 撑宽 */
   gap: 8rpx;
 }
 
