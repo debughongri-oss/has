@@ -53,6 +53,7 @@ exports.main = async (event, context) => {
     case 'list': {
       // CUST-01: 客户列表（聚合 users + bookings 统计）
       // D-01/D-02: 标签仅按 completed 计数；D-03: tag 可选筛选；D-04: 按最近预约倒序
+      // v2.3-r2: 新增 attention 三类风险客户（allergy/churn/new_customer）+ last_service_name
       const authCheck = await requireArtist(wxContext, db)
       if (!authCheck.ok) return authCheck.response
 
@@ -77,12 +78,15 @@ exports.main = async (event, context) => {
               nickname: (b.user_info && b.user_info.nickname) || '微信用户',
               avatar_url: (b.user_info && b.user_info.avatar_url) || '',
               completed_count: 0,
-              last_booking_date: b.booking_date || ''
+              last_booking_date: b.booking_date || '',
+              // v2.3-r2: 最近一次预约的服务名（首条即最近，bookings 已倒序）
+              last_service_name: b.service_name || ''
             }
           }
           // 保留最新（bookings 已按倒序返回，首条即最新；后续只在更晚时覆盖——防御性）
           if (b.booking_date && b.booking_date > userMap[oid].last_booking_date) {
             userMap[oid].last_booking_date = b.booking_date
+            userMap[oid].last_service_name = b.service_name || ''
           }
           if (b.status === 'completed') userMap[oid].completed_count++
         })
@@ -96,13 +100,114 @@ exports.main = async (event, context) => {
         // D-04: 按最近预约时间倒序（JS 分组可能打乱原顺序，统一重排）
         customers.sort((a, b) => (b.last_booking_date || '').localeCompare(a.last_booking_date || ''))
 
+        // v2.3-r2: 计算 attention 三类风险客户
+        //   allergy: 客户备注里有过敏信息（最危险，化妆师接单前必读）
+        //   churn: completed_count >= 2 且 60+ 天未到店（高价值流失客户，可唤醒）
+        //   new_customer: completed_count <= 1 且 14 天内首次到店（适合推二次激活）
+        const attention = { allergy: [], churn: [], new_customer: [] }
+        try {
+          // 取所有客户备注（用于过敏检测 + 后续 detail 联动）
+          const notesRes = await db.collection('customer_notes')
+            .where({ _openid: openid })
+            .get()
+          const allergyMap = {}
+          ;(notesRes.data || []).forEach(n => {
+            if (n.allergy && String(n.allergy).trim()) {
+              allergyMap[n.user_openid] = String(n.allergy).trim()
+            }
+          })
+
+          const now = new Date()
+          const daysSince = (dateStr) => {
+            if (!dateStr) return Infinity
+            const d = new Date(dateStr)
+            if (isNaN(d.getTime())) return Infinity
+            return Math.floor((now - d) / (1000 * 60 * 60 * 24))
+          }
+
+          customers.forEach(c => {
+            // 过敏
+            if (allergyMap[c.user_openid]) {
+              attention.allergy.push({
+                user_openid: c.user_openid,
+                nickname: c.nickname,
+                avatar_url: c.avatar_url,
+                tag: c.tag,
+                allergy: allergyMap[c.user_openid],
+                last_service_name: c.last_service_name,
+                last_booking_date: c.last_booking_date,
+                completed_count: c.completed_count,
+                days_since_last: daysSince(c.last_booking_date)
+              })
+            }
+            // 流失风险（排除过敏客户，避免重复置顶）
+            if (!allergyMap[c.user_openid] && c.completed_count >= 2 && daysSince(c.last_booking_date) >= 60) {
+              attention.churn.push({
+                user_openid: c.user_openid,
+                nickname: c.nickname,
+                avatar_url: c.avatar_url,
+                tag: c.tag,
+                last_service_name: c.last_service_name,
+                last_booking_date: c.last_booking_date,
+                completed_count: c.completed_count,
+                days_since_last: daysSince(c.last_booking_date)
+              })
+            }
+            // 新客（排除过敏客户）
+            if (!allergyMap[c.user_openid] && c.completed_count <= 1 && daysSince(c.last_booking_date) <= 14) {
+              attention.new_customer.push({
+                user_openid: c.user_openid,
+                nickname: c.nickname,
+                avatar_url: c.avatar_url,
+                tag: c.tag,
+                last_service_name: c.last_service_name,
+                last_booking_date: c.last_booking_date,
+                completed_count: c.completed_count,
+                days_since_last: daysSince(c.last_booking_date)
+              })
+            }
+          })
+
+          // 为列表卡标注过敏/流失/新客指示器（避免在客户端再算一次）
+          const attentionOpenids = new Set()
+          attention.allergy.forEach(a => attentionOpenids.add(a.user_openid + ':allergy'))
+          attention.churn.forEach(a => attentionOpenids.add(a.user_openid + ':churn'))
+          attention.new_customer.forEach(a => attentionOpenids.add(a.user_openid + ':new'))
+          customers.forEach(c => {
+            c.has_allergy = !!allergyMap[c.user_openid]
+            c.is_churn_risk = !c.has_allergy && c.completed_count >= 2 && daysSince(c.last_booking_date) >= 60
+            c.is_new_customer = !c.has_allergy && c.completed_count <= 1 && daysSince(c.last_booking_date) <= 14
+          })
+
+          // 各类按 days_since_last 升序（最该先联系的在前）
+          attention.allergy.sort((a, b) => a.days_since_last - b.days_since_last)
+          attention.churn.sort((a, b) => b.days_since_last - a.days_since_last)  // 流失越久越紧急
+          attention.new_customer.sort((a, b) => a.days_since_last - b.days_since_last)
+        } catch (e) {
+          // customer_notes 集合首次未创建 = 无人有过敏备注 → attention 各项保持空
+          if (!isCollectionMissing(e)) {
+            console.error('build attention 失败（已降级）:', e)
+          }
+        }
+
         // D-03: 若指定 tag 则按标签筛选
         if (tag) customers = customers.filter(c => c.tag === tag)
 
-        return { errCode: 0, data: { list: customers, total: customers.length } }
+        return {
+          errCode: 0,
+          data: { list: customers, total: customers.length, attention }
+        }
       } catch (error) {
         // bookings 集合理应存在（系统已上线多版本），但保持与 reviews 一致的优雅降级
-        if (isCollectionMissing(error)) return { errCode: 0, data: { list: [], total: 0 } }
+        if (isCollectionMissing(error)) {
+          return {
+            errCode: 0,
+            data: {
+              list: [], total: 0,
+              attention: { allergy: [], churn: [], new_customer: [] }
+            }
+          }
+        }
         console.error('获取客户列表失败:', error)
         return { errCode: -1, errMsg: '获取客户列表失败' }
       }

@@ -4,24 +4,147 @@
   </view>
 
   <block wx:if="{{!loading}}">
-    <!-- D-03: Tag filter bar (reusing .segs pattern from bookings list) -->
-    <view class="filter">
-      <view class="segs">
+    <!-- v2.3-r2: 搜索框 -->
+    <view class="search">
+      <view class="search-box">
+        <text class="search-icon">⌕</text>
+        <input
+          class="search-input"
+          placeholder="搜索昵称 / 服务名"
+          placeholder-class="search-ph"
+          value="{{searchKeyword}}"
+          bindinput="onSearchInput"
+        />
+        <text class="search-clear" wx:if="{{searchKeyword}}" bindtap="onClearSearch">×</text>
+      </view>
+    </view>
+
+    <!-- v2.3-r2: 需要关注（仅在未搜索时显示，避免分散注意力） -->
+    <block wx:if="{{hasAttention && !isSearching}}">
+      <view class="att-head">
+        <text class="att-title">需要关注</text>
+        <text class="att-count">{{attention.allergy.length + attention.churn.length + attention.new_customer.length}}</text>
+      </view>
+
+      <!-- 过敏（红 · 安全闸门） -->
+      <view class="att-section" wx:if="{{attention.allergy.length}}">
         <view
-          class="seg tappable {{currentTag === item.key ? 'seg--on' : ''}}"
+          class="att-card att-card--allergy tappable"
+          wx:for="{{attention.allergy}}"
+          wx:key="user_openid"
+          bindtap="goToDetail"
+          data-openid="{{item.user_openid}}"
+        >
+          <view class="att-icon att-icon--allergy">!</view>
+          <view class="att-body">
+            <view class="att-row">
+              <text class="att-name">{{item.nickname}}</text>
+              <text class="att-flag att-flag--allergy">{{item.allergy}} 过敏</text>
+            </view>
+            <text class="att-sub">最近：{{item.lastServiceName || '未记录'}} · {{item.daysLabel}} · 已完成 {{item.completed_count}} 次</text>
+          </view>
+          <text class="att-arrow">›</text>
+        </view>
+      </view>
+
+      <!-- 流失风险（金 · 唤醒） -->
+      <view class="att-section" wx:if="{{attention.churn.length}}">
+        <view
+          class="att-card att-card--churn tappable"
+          wx:for="{{attention.churn}}"
+          wx:key="user_openid"
+          bindtap="goToDetail"
+          data-openid="{{item.user_openid}}"
+        >
+          <view class="att-icon att-icon--churn">↻</view>
+          <view class="att-body">
+            <view class="att-row">
+              <text class="att-name">{{item.nickname}}</text>
+              <text class="att-flag att-flag--churn">{{item.daysLabel}}未到店</text>
+            </view>
+            <text class="att-sub">最近：{{item.lastServiceName || '未记录'}} · 曾完成 {{item.completed_count}} 次</text>
+          </view>
+          <text class="att-arrow">›</text>
+        </view>
+      </view>
+
+      <!-- 新客（蓝 · 欢迎回访） -->
+      <view class="att-section" wx:if="{{attention.new_customer.length}}">
+        <view
+          class="att-card att-card--new tappable"
+          wx:for="{{attention.new_customer}}"
+          wx:key="user_openid"
+          bindtap="goToDetail"
+          data-openid="{{item.user_openid}}"
+        >
+          <view class="att-icon att-icon--new">✦</view>
+          <view class="att-body">
+            <view class="att-row">
+              <text class="att-name">{{item.nickname}}</text>
+              <text class="att-flag att-flag--new">新客户</text>
+            </view>
+            <text class="att-sub">最近：{{item.lastServiceName || '未记录'}} · {{item.daysLabel}}</text>
+          </view>
+          <text class="att-arrow">›</text>
+        </view>
+      </view>
+    </block>
+
+    <!-- 筛选段（搜索时隐藏） -->
+    <view class="filter" wx:if="{{!isSearching}}">
+      <view class="filter-row">
+        <view
+          class="filter-pill tappable {{currentTag === item.key ? 'filter-pill--on' : ''}}"
           wx:for="{{tagFilters}}"
           wx:key="key"
           bindtap="onTagChange"
           data-key="{{item.key}}"
         >
-          <text class="seg-count {{!item.count ? 'is-zero' : ''}}">{{item.count}}</text>
-          <text class="seg-label">{{item.label}}</text>
+          <text>{{item.label}}</text>
+          <text class="filter-pill-count {{!item.count ? 'is-zero' : ''}}">{{item.count}}</text>
         </view>
       </view>
     </view>
 
-    <!-- Customer list (D-04: avatar + nickname + count + last date + tag) -->
-    <view class="list" wx:if="{{customers.length}}">
+    <!-- 搜索结果（覆盖默认列表） -->
+    <view class="list" wx:if="{{isSearching}}">
+      <view class="list-section-label">
+        <text>搜索结果（{{searchedCustomers.length}}）</text>
+      </view>
+      <view
+        class="ccard tappable"
+        wx:for="{{searchedCustomers}}"
+        wx:key="user_openid"
+        bindtap="goToDetail"
+        data-openid="{{item.user_openid}}"
+      >
+        <view class="cavatar">
+          <image wx:if="{{item.avatar_url}}" class="cavatar-img" src="{{item.avatar_url}}" mode="aspectFill" />
+          <view wx:else class="cavatar-ph cavatar-ph--initial">{{item.avatarInitial}}</view>
+        </view>
+        <view class="cmain">
+          <view class="ctop">
+            <text class="cname text-ellipsis">{{item.nickname}}</text>
+            <text class="ctag ctag--{{item.tag}}">{{item.tagLabel}}</text>
+            <text class="cflag cflag--allergy" wx:if="{{item.hasAllergy}}">⚠</text>
+            <text class="cflag cflag--churn" wx:elif="{{item.isChurnRisk}}">↻</text>
+          </view>
+          <view class="cmeta">
+            <text class="clast-svc" wx:if="{{item.lastServiceName}}">{{item.lastServiceName}} ·</text>
+            <text class="ccount">已完成 {{item.completed_count}} 次</text>
+          </view>
+        </view>
+      </view>
+      <view class="empty-inline" wx:if="{{!searchedCustomers.length}}">
+        <text>未找到匹配「{{searchKeyword}}」的客户</text>
+      </view>
+    </view>
+
+    <!-- 默认客户列表 -->
+    <view class="list" wx:if="{{!isSearching && customers.length}}">
+      <view class="list-section-label" wx:if="{{hasAttention}}">
+        <text>全部客户（{{customers.length}}）</text>
+      </view>
       <view
         class="ccard tappable"
         wx:for="{{customers}}"
@@ -31,22 +154,25 @@
       >
         <view class="cavatar">
           <image wx:if="{{item.avatar_url}}" class="cavatar-img" src="{{item.avatar_url}}" mode="aspectFill" />
-          <view wx:else class="cavatar-ph"></view>
+          <view wx:else class="cavatar-ph cavatar-ph--initial">{{item.avatarInitial}}</view>
         </view>
         <view class="cmain">
           <view class="ctop">
             <text class="cname text-ellipsis">{{item.nickname}}</text>
             <text class="ctag ctag--{{item.tag}}">{{item.tagLabel}}</text>
+            <text class="cflag cflag--allergy" wx:if="{{item.hasAllergy}}">⚠</text>
+            <text class="cflag cflag--churn" wx:elif="{{item.isChurnRisk}}">↻</text>
           </view>
           <view class="cmeta">
+            <text class="clast-svc" wx:if="{{item.lastServiceName}}">{{item.lastServiceName}} ·</text>
             <text class="ccount">已完成 {{item.completed_count}} 次</text>
-            <text class="clast">最近：{{item.lastBookingLabel}}</text>
+            <text class="clast"> · {{item.lastBookingLabel}}</text>
           </view>
         </view>
       </view>
     </view>
 
-    <view class="empty-container" wx:if="{{!customers.length}}">
+    <view class="empty-container" wx:if="{{!isSearching && !customers.length}}">
       <view class="empty">
         <view class="empty-icon"></view>
         <text class="empty-text">暂无客户</text>

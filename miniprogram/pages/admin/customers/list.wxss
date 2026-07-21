@@ -4,84 +4,253 @@
   padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
 }
 
-/* ===== Tag filter (copied from bookings list .segs) ===== */
-.filter {
+/* ===== v2.3-r2: 搜索框（sticky） ===== */
+.search {
   position: sticky;
   top: 0;
-  z-index: 10;
+  z-index: 30;
   background-color: var(--bg);
-  padding: 20rpx var(--page-pad) 12rpx;
+  padding: 16rpx var(--page-pad) 12rpx;
 }
 
-.segs {
+.search-box {
   display: flex;
-  gap: 10rpx;
-}
-
-.seg {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 8rpx;
-  padding: 16rpx 4rpx;
+  gap: 12rpx;
   background-color: var(--bg-elevated);
-  border-radius: var(--radius-lg);
-  border: 1rpx solid var(--separator);
-  box-sizing: border-box;
+  border-radius: 999rpx;
+  padding: 14rpx 24rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.04);
 }
 
-.seg-count {
-  font-size: 36rpx;
-  font-weight: 800;
+.search-icon {
+  font-size: 28rpx;
+  color: var(--text-tertiary);
   line-height: 1;
-  color: var(--text-primary);
-  font-variant-numeric: tabular-nums;
 }
 
-.seg-count.is-zero {
+.search-input {
+  flex: 1;
+  font-size: 26rpx;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.search-ph {
   color: var(--text-tertiary);
 }
 
-.seg-label {
-  font-size: 22rpx;
+.search-clear {
+  font-size: 32rpx;
+  color: var(--text-tertiary);
   line-height: 1;
-  color: var(--text-secondary);
+  padding: 0 4rpx;
 }
 
-.seg--on {
+/* ===== v2.3-r2: 需要关注 section ===== */
+.att-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10rpx;
+  padding: 16rpx var(--page-pad) 6rpx;
+}
+
+.att-title {
+  font-size: 24rpx;
+  font-weight: 800;
+  color: var(--accent-dark);
+  letter-spacing: 1rpx;
+}
+
+.att-count {
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #FFFFFF;
   background-color: var(--accent);
-  border-color: var(--accent);
+  padding: 2rpx 12rpx;
+  border-radius: 999rpx;
+  line-height: 1.4;
 }
 
-.seg--on .seg-count,
-.seg--on .seg-count.is-zero,
-.seg--on .seg-label {
+.att-section {
+  padding: 4rpx var(--page-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.att-card {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 16rpx 18rpx;
+  background-color: var(--bg-elevated);
+  border-radius: 16rpx;
+  border-width: 1rpx;
+  border-style: solid;
+}
+
+.att-card--allergy {
+  background-color: var(--red-bg);
+  border-color: rgba(196, 84, 74, 0.22);
+}
+
+.att-card--churn {
+  background-color: var(--gold-bg);
+  border-color: rgba(201, 169, 110, 0.28);
+}
+
+.att-card--new {
+  background-color: var(--blue-bg);
+  border-color: rgba(90, 127, 160, 0.22);
+}
+
+.att-icon {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 800;
+  color: #FFFFFF;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.att-icon--allergy { background-color: var(--red); }
+.att-icon--churn { background-color: var(--gold); }
+.att-icon--new { background-color: var(--blue); }
+
+.att-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.att-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10rpx;
+  flex-wrap: wrap;
+}
+
+.att-name {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.att-flag {
+  font-size: 20rpx;
+  font-weight: 700;
+  padding: 3rpx 12rpx;
+  border-radius: 999rpx;
+  line-height: 1.4;
+}
+
+.att-flag--allergy { color: var(--red); background-color: rgba(196, 84, 74, 0.1); }
+.att-flag--churn { color: #A78247; background-color: rgba(201, 169, 110, 0.14); }
+.att-flag--new { color: var(--blue); background-color: rgba(90, 127, 160, 0.1); }
+
+.att-sub {
+  display: block;
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  margin-top: 4rpx;
+}
+
+.att-arrow {
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+/* ===== Filter pills (compact) ===== */
+.filter {
+  padding: 12rpx var(--page-pad) 4rpx;
+}
+
+.filter-row {
+  display: flex;
+  gap: 8rpx;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 8rpx 18rpx;
+  border-radius: 999rpx;
+  background-color: var(--bg-elevated);
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.filter-pill--on {
+  background-color: var(--accent);
   color: #FFFFFF;
 }
 
-/* ===== Customer card ===== */
+.filter-pill-count {
+  font-size: 20rpx;
+  font-weight: 700;
+  padding: 1rpx 8rpx;
+  border-radius: 999rpx;
+  background-color: var(--fill-primary);
+  line-height: 1.4;
+}
+
+.filter-pill-count.is-zero {
+  color: var(--text-tertiary);
+}
+
+.filter-pill--on .filter-pill-count,
+.filter-pill--on .filter-pill-count.is-zero {
+  background-color: rgba(255, 255, 255, 0.22);
+  color: #FFFFFF;
+}
+
+/* ===== Section labels ===== */
 .list {
   display: flex;
   flex-direction: column;
-  gap: 16rpx;
+  gap: 12rpx;
   padding: 16rpx var(--page-pad) 0;
 }
 
+.list-section-label {
+  padding: 12rpx 4rpx 4rpx;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  font-weight: 700;
+  letter-spacing: 1rpx;
+}
+
+.empty-inline {
+  padding: 60rpx 0;
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--text-tertiary);
+}
+
+/* ===== Customer card ===== */
 .ccard {
   display: flex;
-  gap: 20rpx;
+  gap: 18rpx;
+  align-items: center;
   background-color: var(--bg-elevated);
-  border-radius: 24rpx;
-  padding: 22rpx;
-  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
+  border-radius: 20rpx;
+  padding: 20rpx;
+  box-shadow: 0 4rpx 14rpx rgba(0, 0, 0, 0.04);
 }
 
 .cavatar {
-  width: 96rpx;
-  height: 96rpx;
+  width: 72rpx;
+  height: 72rpx;
   flex-shrink: 0;
   border-radius: 50%;
   overflow: hidden;
@@ -94,14 +263,16 @@
   display: block;
 }
 
-.cavatar-ph {
-  width: 100%;
-  height: 100%;
-  background-color: var(--accent-soft);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='8' r='4' fill='%23FF6F8B'/%3E%3Cpath d='M4 20c0-4 4-7 8-7s8 3 8 7' fill='%23FF6F8B'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 48rpx 48rpx;
+/* v2.3-r2: 头像 fallback 用 nickname[0] + 渐变（与 index 页一致） */
+.cavatar-ph--initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #DFA0AA, #B98266);
+  color: #FFFFFF;
+  font-size: 30rpx;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .cmain {
@@ -110,29 +281,31 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  gap: 6rpx;
 }
 
 .ctop {
   display: flex;
   align-items: center;
-  gap: 12rpx;
+  gap: 10rpx;
 }
 
 .cname {
   flex: 1;
   min-width: 0;
-  font-size: 30rpx;
+  font-size: 28rpx;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-/* Tag badges — per CONTEXT specifics: VIP=gold, new=accent, returning=text-secondary */
+/* Tag badges — VIP=gold, new=accent, returning=blue (v2.3-r2 改蓝，避免灰像禁用) */
 .ctag {
   flex-shrink: 0;
-  font-size: 20rpx;
+  font-size: 18rpx;
   font-weight: 600;
-  padding: 5rpx 18rpx;
+  padding: 4rpx 14rpx;
   border-radius: 999rpx;
+  line-height: 1.4;
 }
 
 .ctag--vip {
@@ -146,19 +319,34 @@
 }
 
 .ctag--returning {
-  background-color: var(--fill-primary);
-  color: var(--text-secondary);
+  background-color: var(--blue-bg);
+  color: var(--blue);
 }
+
+/* v2.3-r2: 风险角标（列表里也看得到） */
+.cflag {
+  font-size: 22rpx;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.cflag--allergy { color: var(--red); }
+.cflag--churn { color: var(--gold); }
 
 .cmeta {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  margin-top: 10rpx;
+  flex-wrap: wrap;
+  gap: 4rpx;
+}
+
+.clast-svc {
+  font-size: 22rpx;
+  color: var(--text-secondary);
 }
 
 .ccount {
-  font-size: 24rpx;
+  font-size: 22rpx;
   font-weight: 700;
   color: var(--accent);
 }
@@ -168,7 +356,7 @@
   color: var(--text-tertiary);
 }
 
-/* ===== Empty state (copied from bookings list) ===== */
+/* ===== Empty state (kept from original) ===== */
 .empty-container {
   display: flex;
   justify-content: center;

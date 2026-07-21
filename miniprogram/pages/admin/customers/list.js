@@ -15,6 +15,22 @@ const formatDateShort = (dateStr) => {
   return parts.length === 3 ? `${Number(parts[1])}/${Number(parts[2])}` : dateStr
 }
 
+// "2026-06-25" → "3 天前" / "上周" / "上月" / "3 月前" 等
+const formatRelativeDate = (dateStr) => {
+  if (!dateStr) return ''
+  const d = new Date(dateStr)
+  if (isNaN(d.getTime())) return formatDateShort(dateStr)
+  const days = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24))
+  if (days <= 0) return '今天'
+  if (days === 1) return '昨天'
+  if (days <= 7) return `${days} 天前`
+  if (days <= 14) return '上周'
+  if (days <= 30) return `${Math.floor(days / 7)} 周前`
+  if (days <= 60) return '上月'
+  return `${Math.floor(days / 30)} 月前`
+}
+
+// v2.3-r2: 客户列表重设计 — 风险优先视图 + 搜索
 Page({
   data: {
     customers: [],
@@ -25,7 +41,14 @@ Page({
       { key: 'new', label: '新客', count: 0 },
       { key: 'returning', label: '回头客', count: 0 },
       { key: 'vip', label: 'VIP', count: 0 }
-    ]
+    ],
+    // v2.3-r2: 需要关注（过敏/流失/新客）
+    attention: { allergy: [], churn: [], new_customer: [] },
+    hasAttention: false,
+    // v2.3-r2: 搜索
+    searchKeyword: '',
+    searchedCustomers: [],
+    isSearching: false
   },
 
   onLoad: async function () {
@@ -54,12 +77,44 @@ Page({
     const tag = this.data.currentTag || undefined
     customersService.getCustomerList(tag)
       .then(result => {
-        const customers = (result.list || []).map(c => ({
+        const all = result.list || []
+        const customers = all.map(c => ({
           ...c,
           tagLabel: TAG_LABELS[c.tag] || c.tag,
-          lastBookingLabel: formatDateShort(c.last_booking_date)
+          lastBookingLabel: formatDateShort(c.last_booking_date),
+          lastServiceName: c.last_service_name || '',
+          // v2.3-r2: 风险指示器（来自云函数）
+          hasAllergy: !!c.has_allergy,
+          isChurnRisk: !!c.is_churn_risk,
+          isNewCustomer: !!c.is_new_customer,
+          // 头像 fallback 取 nickname 首字符（与 index 页 profile 一致）
+          avatarInitial: (c.nickname || '?').charAt(0)
         }))
-        this.setData({ customers, loading: false })
+
+        // v2.3-r2: 需要关注三类客户（服务端已算好）
+        const att = result.attention || { allergy: [], churn: [], new_customer: [] }
+        const formatAttention = (arr) => arr.map(a => ({
+          ...a,
+          lastBookingLabel: formatRelativeDate(a.last_booking_date),
+          lastServiceName: a.last_service_name || '',
+          daysLabel: a.days_since_last === Infinity ? '从未到店' : `${a.days_since_last} 天前`,
+          avatarInitial: (a.nickname || '?').charAt(0)
+        }))
+        const attention = {
+          allergy: formatAttention(att.allergy || []),
+          churn: formatAttention(att.churn || []),
+          new_customer: formatAttention(att.new_customer || [])
+        }
+        const hasAttention = attention.allergy.length + attention.churn.length + attention.new_customer.length > 0
+
+        this.setData({
+          customers,
+          loading: false,
+          attention,
+          hasAttention,
+          // 重新计算搜索结果（如果在搜索中）
+          searchedCustomers: this.data.searchKeyword ? this.filterByKeyword(customers, this.data.searchKeyword) : []
+        })
         this.updateTagCounts()
       })
       .catch(err => {
@@ -85,6 +140,36 @@ Page({
   onTagChange: function (e) {
     this.setData({ currentTag: e.currentTarget.dataset.key })
     this.loadCustomers()
+  },
+
+  // v2.3-r2: 搜索（昵称/服务名，本地过滤，300ms 防抖）
+  _searchTimer: null,
+  onSearchInput: function (e) {
+    const keyword = (e.detail.value || '').trim()
+    if (this._searchTimer) clearTimeout(this._searchTimer)
+    this._searchTimer = setTimeout(() => {
+      const isSearching = keyword.length > 0
+      const searchedCustomers = isSearching ? this.filterByKeyword(this.data.customers, keyword) : []
+      this.setData({
+        searchKeyword: keyword,
+        isSearching,
+        searchedCustomers
+      })
+    }, 300)
+  },
+
+  onClearSearch: function () {
+    if (this._searchTimer) clearTimeout(this._searchTimer)
+    this.setData({ searchKeyword: '', isSearching: false, searchedCustomers: [] })
+  },
+
+  filterByKeyword: function (customers, keyword) {
+    const kw = keyword.toLowerCase()
+    return customers.filter(c => {
+      const nickname = (c.nickname || '').toLowerCase()
+      const service = (c.lastServiceName || '').toLowerCase()
+      return nickname.indexOf(kw) >= 0 || service.indexOf(kw) >= 0
+    })
   },
 
   goToDetail: function (e) {
