@@ -6,7 +6,7 @@
     <text class="summary-time">{{booking.booking_date}} {{booking.booking_time}}</text>
   </view>
 
-  <!-- 评分 -->
+  <!-- 评分（情感核心 · hero） -->
   <view class="card rate-card">
     <text class="rate-title">服务评分</text>
     <view class="rate-stars">
@@ -23,23 +23,7 @@
     <text class="rate-feedback {{rating ? 'rate-feedback--on' : ''}}">{{rating ? ratingLabel : '轻触星星打分'}}</text>
   </view>
 
-  <!-- 文字评价 -->
-  <view class="card">
-    <view class="card-head">
-      <text class="card-title">文字评价</text>
-      <text class="card-meta">{{contentLength}}/{{maxLength}}</text>
-    </view>
-    <textarea
-      class="ta"
-      placeholder="说说你的体验，帮助更多人了解（选填）..."
-      placeholder-class="ph"
-      maxlength="{{maxLength}}"
-      value="{{content}}"
-      bindinput="onContentInput"
-    />
-  </view>
-
-  <!-- REVW-10: 服务标签（可多选，最多 5 个） -->
+  <!-- 服务标签（低门槛 · 前置，提升完成率） -->
   <view class="card">
     <view class="card-head">
       <text class="card-title">服务标签</text>
@@ -56,7 +40,7 @@
     </view>
   </view>
 
-  <!-- REVW-11: 添加图片（最多 3 张） -->
+  <!-- 添加图片 -->
   <view class="card">
     <view class="card-head">
       <text class="card-title">添加图片</text>
@@ -74,18 +58,39 @@
     </view>
   </view>
 
-  <!-- REVW-12: 匿名评价开关（默认关闭） -->
+  <!-- 文字评价（高门槛 · 后置） -->
+  <view class="card">
+    <view class="card-head">
+      <text class="card-title">文字评价</text>
+      <text class="card-meta">{{contentLength}}/{{maxLength}}</text>
+    </view>
+    <textarea
+      class="ta"
+      placeholder="说说你的体验，帮助更多人了解（选填）..."
+      placeholder-class="ph"
+      maxlength="{{maxLength}}"
+      value="{{content}}"
+      bindinput="onContentInput"
+    />
+  </view>
+
+  <!-- 匿名评价（自定义品牌开关） -->
   <view class="card anon-card">
-    <view class="anon-row">
+    <view class="anon-row tappable" bindtap="onToggleAnonymous">
       <view class="anon-text">
         <text class="anon-title">匿名评价</text>
         <text class="anon-hint">勾选后他人将看不到你的昵称头像</text>
       </view>
-      <switch checked="{{isAnonymous}}" bindchange="onToggleAnonymous" color="#C9A96E" />
+      <view class="toggle {{isAnonymous ? 'toggle--on' : ''}}">
+        <view class="toggle-knob"></view>
+      </view>
     </view>
   </view>
 
-  <button class="submit-btn" bindtap="onSubmit" disabled="{{submitting || rating === 0}}">
-    {{submitting ? (uploading ? '上传图片中...' : '提交中...') : '提交评价'}}
-  </button>
+  <!-- 固定底部提交条（拇指可达） -->
+  <view class="submit-bar">
+    <button class="submit-btn" bindtap="onSubmit" disabled="{{submitting || rating === 0}}">
+      {{submitting ? (uploading ? '上传图片中...' : '提交中...') : '提交评价'}}
+    </button>
+  </view>
 </view>

@@ -132,10 +132,10 @@ Page({
   },
 
   /**
-   * REVW-12/D-10: 匿名评价开关（默认关闭）
+   * REVW-12/D-10: 匿名评价开关（默认关闭）— 自定义品牌开关，点击切换
    */
-  onToggleAnonymous: function (e) {
-    this.setData({ isAnonymous: e.detail.value })
+  onToggleAnonymous: function () {
+    this.setData({ isAnonymous: !this.data.isAnonymous })
   },
 
   /**

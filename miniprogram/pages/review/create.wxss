@@ -1,7 +1,8 @@
 .page-review {
   min-height: 100vh;
   background-color: var(--bg);
-  padding: 24rpx var(--page-pad) calc(48rpx + env(safe-area-inset-bottom));
+  /* 留出固定提交条的高度 + 安全区 */
+  padding: 24rpx var(--page-pad) calc(180rpx + env(safe-area-inset-bottom));
 }
 
 /* ===== 卡片 ===== */
@@ -58,12 +59,13 @@
   margin-top: 10rpx;
 }
 
-/* ===== 评分 ===== */
+/* ===== 评分 hero（美妆品牌淡腮红渐变） ===== */
 .rate-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40rpx 28rpx 36rpx;
+  padding: 44rpx 28rpx 40rpx;
+  background-image: radial-gradient(circle at 50% 22%, var(--accent-light), var(--bg-elevated) 70%);
 }
 
 .rate-title {
@@ -73,22 +75,23 @@
 }
 
 .rate-stars {
-  margin: 28rpx 0 20rpx;
+  margin: 30rpx 0 22rpx;
 }
 
 .rate-input {
   display: flex;
-  gap: 18rpx;
+  gap: 22rpx;
 }
 
 .rate-star {
-  font-size: 72rpx;
+  font-size: 84rpx;
   line-height: 1;
-  color: rgba(0, 0, 0, 0.14);
+  color: rgba(201, 169, 110, 0.24);
 }
 
 .rate-star--on {
   color: var(--gold);
+  text-shadow: 0 4rpx 14rpx rgba(201, 169, 110, 0.4);
 }
 
 .rate-feedback {
@@ -115,7 +118,7 @@
   color: var(--text-tertiary);
 }
 
-/* ===== REVW-10: 标签 chip ===== */
+/* ===== 标签 chip ===== */
 .tag-row {
   display: flex;
   flex-wrap: wrap;
@@ -123,7 +126,7 @@
 }
 
 .tag-chip {
-  padding: 12rpx 28rpx;
+  padding: 14rpx 30rpx;
   border-radius: 999rpx;
   border: 2rpx solid var(--accent-medium);
   font-size: 26rpx;
@@ -140,7 +143,7 @@
   box-shadow: 0 4rpx 12rpx rgba(255, 111, 139, 0.32);
 }
 
-/* ===== REVW-11: 图片网格 ===== */
+/* ===== 图片网格 ===== */
 .img-grid {
   display: flex;
   flex-wrap: wrap;
@@ -181,13 +184,13 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2rpx dashed var(--accent-medium);
-  background-color: var(--accent-soft);
+  border: 2rpx dashed var(--gold);
+  background-color: var(--gold-bg);
 }
 
 .img-add-plus {
   font-size: 56rpx;
-  color: var(--accent);
+  color: var(--gold);
   line-height: 1;
   font-weight: 300;
 }
@@ -198,7 +201,7 @@
   margin-top: 8rpx;
 }
 
-/* ===== REVW-12: 匿名评价 ===== */
+/* ===== 匿名评价 + 自定义品牌开关 ===== */
 .anon-row {
   display: flex;
   align-items: center;
@@ -224,15 +227,56 @@
   margin-top: 6rpx;
 }
 
-/* ===== 提交 ===== */
+.toggle {
+  width: 88rpx;
+  height: 50rpx;
+  border-radius: 999rpx;
+  background-color: var(--fill-primary);
+  position: relative;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toggle--on {
+  background-color: var(--gold);
+}
+
+.toggle-knob {
+  position: absolute;
+  top: 4rpx;
+  left: 4rpx;
+  width: 42rpx;
+  height: 42rpx;
+  border-radius: 50%;
+  background-color: #FFFFFF;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.18);
+  transition: transform 0.2s ease;
+}
+
+.toggle--on .toggle-knob {
+  transform: translateX(38rpx);
+}
+
+/* ===== 固定底部提交条 ===== */
+.submit-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18rpx var(--page-pad) calc(18rpx + env(safe-area-inset-bottom));
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12rpx);
+  border-top: 1rpx solid var(--separator);
+  z-index: 50;
+}
+
 .submit-btn {
-  margin-top: 32rpx;
   width: 100%;
-  height: 100rpx;
+  height: 96rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--accent-dark);
+  background: linear-gradient(135deg, #FF6F8B 0%, #E85575 100%);
   color: #FFFFFF;
   border-radius: 24rpx;
   font-size: var(--fs-base);
@@ -250,4 +294,5 @@
 
 .submit-btn[disabled] {
   opacity: 0.45;
+  box-shadow: none;
 }
