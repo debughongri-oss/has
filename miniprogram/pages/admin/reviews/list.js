@@ -31,6 +31,8 @@ Page({
       { key: 'highest', label: '最高' },
       { key: 'lowest', label: '最低' }
     ],
+    // ADM-01: 折叠状态（默认只显示评分段，标签/排序收进 "筛选 ⌄"）
+    filterExpanded: false,
     // REVW-14: 删除状态
     deletingId: ''
   },
@@ -183,6 +185,14 @@ Page({
   },
 
   /**
+   * ADM-01: 展开/收起次要筛选（标签 + 排序）
+   * 默认收起以节省列表可见区；点 "筛选 ⌄" 展开
+   */
+  onToggleFilterExpand: function () {
+    this.setData({ filterExpanded: !this.data.filterExpanded })
+  },
+
+  /**
    * REVW-11: 图片预览（wx.previewImage 接受 cloud fileID 作为 urls）
    */
   onPreviewImage: function (e) {
@@ -242,6 +252,25 @@ Page({
 
   onReplyInput: function (e) {
     this.setData({ replyText: e.detail.value })
+  },
+
+  /**
+   * ADM-02: 显式删除已有回复（仅当 artist_reply 存在时显示）
+   * 走 wx.showModal 二次确认 → 清空 replyText → 复用 onSubmitReply
+   */
+  onDeleteReply: function () {
+    var self = this
+    wx.showModal({
+      title: '删除回复',
+      content: '确定删除这条回复？',
+      confirmText: '删除',
+      confirmColor: '#E85575',
+      success: function (res) {
+        if (!res.confirm) return
+        self.setData({ replyText: '' })
+        self.onSubmitReply()
+      }
+    })
   },
 
   onSubmitReply: function () {

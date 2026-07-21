@@ -23,10 +23,9 @@
     </view>
   </view>
 
-  <!-- REVW-13: 筛选 + 排序控制条（吸顶 · 带分组标签） -->
+  <!-- REVW-13: 筛选控制条（吸顶 · ADM-01: 默认只显示评分段，标签/排序折叠） -->
   <view class="filter-bar" wx:if="{{!loading}}">
-    <view class="filter-group">
-      <text class="filter-label">评分</text>
+    <view class="filter-group filter-group--primary">
       <scroll-view class="segs" scroll-x enable-flex>
         <view
           class="seg tappable {{currentRating === item.key ? 'seg--on' : ''}}"
@@ -38,33 +37,43 @@
           <text class="seg-label">{{item.label}}</text>
         </view>
       </scroll-view>
-    </view>
-
-    <view class="filter-group">
-      <text class="filter-label">标签</text>
-      <scroll-view class="segs" scroll-x enable-flex>
-        <view
-          class="seg tappable {{currentTag === item.key ? 'seg--on' : ''}}"
-          wx:for="{{tagSegs}}"
-          wx:key="key"
-          bindtap="onTagSeg"
-          data-key="{{item.key}}"
-        >
-          <text class="seg-label">{{item.label}}</text>
-        </view>
-      </scroll-view>
-    </view>
-
-    <view class="sort-row">
-      <text class="sort-label">排序</text>
       <view
-        class="sort-opt tappable {{sortBy === item.key ? 'sort-opt--on' : ''}}"
-        wx:for="{{sortOptions}}"
-        wx:key="key"
-        bindtap="onSortChange"
-        data-key="{{item.key}}"
-      >{{item.label}}</view>
+        class="filter-toggle tappable {{filterExpanded ? 'filter-toggle--on' : ''}}"
+        bindtap="onToggleFilterExpand"
+      >
+        <text class="filter-toggle-label">筛选</text>
+        <text class="filter-toggle-arrow">{{filterExpanded ? '⌃' : '⌄'}}</text>
+        <view class="filter-toggle-badge" wx:if="{{currentTag || sortBy !== 'latest'}}">·</view>
+      </view>
     </view>
+
+    <block wx:if="{{filterExpanded}}">
+      <view class="filter-group">
+        <text class="filter-label">标签</text>
+        <scroll-view class="segs" scroll-x enable-flex>
+          <view
+            class="seg tappable {{currentTag === item.key ? 'seg--on' : ''}}"
+            wx:for="{{tagSegs}}"
+            wx:key="key"
+            bindtap="onTagSeg"
+            data-key="{{item.key}}"
+          >
+            <text class="seg-label">{{item.label}}</text>
+          </view>
+        </scroll-view>
+      </view>
+
+      <view class="sort-row">
+        <text class="sort-label">排序</text>
+        <view
+          class="sort-opt tappable {{sortBy === item.key ? 'sort-opt--on' : ''}}"
+          wx:for="{{sortOptions}}"
+          wx:key="key"
+          bindtap="onSortChange"
+          data-key="{{item.key}}"
+        >{{item.label}}</view>
+      </view>
+    </block>
   </view>
 
   <view class="list" wx:if="{{!loading && reviews.length}}">
@@ -115,15 +124,13 @@
         <text class="reply-text">{{item.artist_reply}}</text>
       </view>
 
-      <view class="card-actions">
-        <!-- 回复按钮 -->
-        <view class="reply-action tappable" bindtap="onToggleReply" data-id="{{item._id}}">
-          <text>{{replyingId === item._id ? '取消' : (item.artist_reply ? '修改回复' : '回复')}}</text>
+      <view class="card-actions" wx:if="{{replyingId !== item._id}}">
+        <!-- ADM-02: 显式按钮替代文字链接，触控区 80+rpx -->
+        <view class="action-btn action-btn--reply tappable" bindtap="onToggleReply" data-id="{{item._id}}">
+          <text>{{item.artist_reply ? '修改回复' : '写回复'}}</text>
         </view>
-
-        <!-- REVW-14: 删除按钮 -->
         <view
-          class="delete-action tappable {{deletingId === item._id ? 'delete-action--disabled' : ''}}"
+          class="action-btn action-btn--delete tappable {{deletingId === item._id ? 'action-btn--disabled' : ''}}"
           bindtap="onDeleteReview"
           data-id="{{item._id}}"
         >
@@ -131,22 +138,28 @@
         </view>
       </view>
 
-      <!-- 回复编辑器 (REVW-08) -->
+      <!-- 回复编辑器 (REVW-08 · ADM-02: 显式 3 按钮) -->
       <view class="reply-editor" wx:if="{{replyingId === item._id}}">
         <textarea
           class="reply-input"
-          placeholder="输入回复内容（留空删除回复）"
+          placeholder="输入回复内容..."
           placeholder-class="reply-ph"
           value="{{replyText}}"
           maxlength="200"
           bindinput="onReplyInput"
           auto-height
         />
-        <button
-          class="reply-submit"
-          bindtap="onSubmitReply"
-          disabled="{{replySubmitting}}"
-        >{{replySubmitting ? '提交中...' : (replyText ? '提交回复' : '删除回复')}}</button>
+        <view class="reply-actions">
+          <view class="reply-action-btn reply-action-btn--cancel tappable" bindtap="onToggleReply" data-id="{{item._id}}">
+            <text>取消</text>
+          </view>
+          <view class="reply-action-btn reply-action-btn--delete tappable" wx:if="{{item.artist_reply}}" bindtap="onDeleteReply">
+            <text>删除回复</text>
+          </view>
+          <view class="reply-action-btn reply-action-btn--save tappable {{replySubmitting ? 'reply-action-btn--disabled' : ''}}" bindtap="onSubmitReply">
+            <text>{{replySubmitting ? '提交中...' : '保存回复'}}</text>
+          </view>
+        </view>
       </view>
     </view>
   </view>

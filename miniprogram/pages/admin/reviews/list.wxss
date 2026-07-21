@@ -86,10 +86,15 @@
   border-bottom: 1rpx solid var(--separator);
 }
 
+/* ADM-01: 主行 = 评分段 + 折叠按钮，单行紧凑 */
 .filter-group {
   display: flex;
   align-items: center;
   gap: 16rpx;
+  padding: 8rpx 0;
+}
+
+.filter-group--primary {
   padding: 8rpx 0;
 }
 
@@ -130,6 +135,53 @@
 
 .seg--on .seg-label {
   color: #FFFFFF;
+}
+
+/* ADM-01: 筛选折叠按钮 */
+.filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
+  background-color: var(--fill-primary);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.filter-toggle--on {
+  background-color: var(--gold-bg);
+}
+
+.filter-toggle-label {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.filter-toggle--on .filter-toggle-label {
+  color: #A78247;
+}
+
+.filter-toggle-arrow {
+  font-size: 18rpx;
+  color: var(--text-tertiary);
+  line-height: 1;
+}
+
+.filter-toggle--on .filter-toggle-arrow {
+  color: #A78247;
+}
+
+/* 角标：当前有非默认筛选时给个点提示 */
+.filter-toggle-badge {
+  position: absolute;
+  top: 6rpx;
+  right: 6rpx;
+  width: 10rpx;
+  height: 10rpx;
+  border-radius: 50%;
+  background-color: var(--accent);
 }
 
 .sort-row {
@@ -307,14 +359,41 @@
   background-color: var(--bg);
 }
 
-/* 卡片操作区（回复 + 删除） */
+/* ADM-02: 显式按钮替代文字链接，触控区 80+rpx */
 .card-actions {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  gap: 12rpx;
   margin-top: 18rpx;
   padding-top: 16rpx;
   border-top: 1rpx solid var(--separator);
+}
+
+.action-btn {
+  flex: 1;
+  text-align: center;
+  padding: 14rpx 0;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* 写回复 / 修改回复：粉色实心（主操作） */
+.action-btn--reply {
+  background-color: var(--accent);
+  color: #FFFFFF;
+  box-shadow: 0 3rpx 10rpx rgba(255, 111, 139, 0.28);
+}
+
+/* 删除：red-bg token（ADM-03: 替换硬编码 #D9534F） */
+.action-btn--delete {
+  flex: 0 0 140rpx;
+  background-color: var(--red-bg);
+  color: var(--red);
+}
+
+.action-btn--disabled {
+  opacity: 0.5;
 }
 
 /* 化妆师回复展示 (REVW-09) */
@@ -339,25 +418,7 @@
   line-height: 1.6;
 }
 
-/* 回复操作按钮 */
-.reply-action {
-  font-size: 22rpx;
-  color: var(--accent);
-  padding: 6rpx 0;
-}
-
-/* REVW-14: 删除操作 */
-.delete-action {
-  font-size: 22rpx;
-  color: #D9534F;
-  padding: 6rpx 0;
-}
-
-.delete-action--disabled {
-  opacity: 0.5;
-}
-
-/* 回复编辑器 (REVW-08) */
+/* ADM-02: 回复编辑器 — 3 显式按钮 */
 .reply-editor {
   margin-top: 14rpx;
   display: flex;
@@ -372,7 +433,7 @@
   font-size: var(--fs-xs);
   color: var(--text-primary);
   background-color: var(--fill-primary);
-  border-radius: var(--radius-sm);
+  border-radius: 14rpx;
   line-height: 1.6;
   box-sizing: border-box;
 }
@@ -381,22 +442,37 @@
   color: var(--text-tertiary);
 }
 
-.reply-submit {
-  align-self: flex-end;
-  font-size: 24rpx;
-  color: #FFFFFF;
-  background-color: var(--accent-dark);
-  padding: 12rpx 36rpx;
-  border-radius: var(--radius-sm);
+.reply-actions {
+  display: flex;
+  gap: 10rpx;
+  justify-content: flex-end;
+}
+
+.reply-action-btn {
+  padding: 12rpx 24rpx;
+  border-radius: 10rpx;
+  font-size: 22rpx;
+  font-weight: 700;
   line-height: 1.4;
-  border: none;
 }
 
-.reply-submit::after {
-  border: none;
+.reply-action-btn--cancel {
+  background-color: var(--fill-primary);
+  color: var(--text-secondary);
 }
 
-.reply-submit[disabled] {
+.reply-action-btn--delete {
+  background-color: var(--red-bg);
+  color: var(--red);
+}
+
+.reply-action-btn--save {
+  background-color: var(--accent);
+  color: #FFFFFF;
+  padding: 12rpx 36rpx;
+}
+
+.reply-action-btn--disabled {
   opacity: 0.5;
 }
 
