@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>v2.3 UI/UX Round 2 — Cases 01 & 04 深度重设计</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background-color: #F5F1EB;
+    color: #17151A;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "tnum" 1;
+  }
+  .serif { font-family: 'STSong', 'Songti SC', 'Source Han Serif SC', Georgia, serif; }
+  .mono { font-family: 'SF Mono', 'JetBrains Mono', monospace; }
+
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+  section { padding: 96px 0; border-bottom: 1px solid rgba(23, 21, 26, 0.08); }
+  section:last-child { border-bottom: none; }
+
+  /* ===== Cover ===== */
+  .cover {
+    padding: 120px 0 80px;
+    background: #17151A;
+    color: #FFF;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(201, 169, 110, 0.22), transparent 70%);
+    pointer-events: none;
+  }
+  .cover::after {
+    content: '';
+    position: absolute;
+    bottom: -150px; right: -150px;
+    width: 450px; height: 450px;
+    background: radial-gradient(circle, rgba(255, 111, 139, 0.18), transparent 70%);
+    pointer-events: none;
+  }
+  .cover-meta {
+    font-size: 12px; letter-spacing: 4px; text-transform: uppercase;
+    color: #C9A96E; font-weight: 700; margin-bottom: 28px;
+    display: inline-flex; align-items: center; gap: 12px;
+  }
+  .cover-meta::before {
+    content: ''; width: 32px; height: 1px; background: #C9A96E;
+  }
+  .cover h1 {
+    font-size: clamp(44px, 6.5vw, 80px); line-height: 1.04; font-weight: 800;
+    letter-spacing: -2px; max-width: 920px; margin-bottom: 32px;
+  }
+  .cover h1 em {
+    font-style: italic; font-weight: 400; color: #FF6F8B;
+    font-family: 'STSong', Georgia, serif;
+  }
+  .cover-lead {
+    font-size: 18px; max-width: 680px; color: rgba(255,255,255,0.7);
+    line-height: 1.65; margin-bottom: 56px;
+  }
+  .cover-diff {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+    max-width: 900px; padding-top: 40px;
+    border-top: 1px solid rgba(255,255,255,0.12);
+  }
+  .diff-card {
+    padding: 24px 0;
+  }
+  .diff-label {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(255,255,255,0.45); font-weight: 700; margin-bottom: 12px;
+  }
+  .diff-label.new { color: #C9A96E; }
+  .diff-title { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 10px; }
+  .diff-desc { font-size: 14px; color: rgba(255,255,255,0.6); line-height: 1.55; }
+
+  /* ===== Case Section ===== */
+  .case { background-color: #FFFFFF; }
+  .case:nth-child(even) { background-color: #FAF7F2; }
+
+  .case-header {
+    display: grid; grid-template-columns: 80px 1fr; gap: 24px;
+    align-items: baseline; margin-bottom: 32px;
+  }
+  .case-num {
+    font-family: 'STSong', Georgia, serif; font-style: italic;
+    font-size: 56px; font-weight: 700; color: #C9A96E; line-height: 1;
+  }
+  .case-num .ring {
+    display: inline-block; padding: 2px 10px;
+    background: rgba(201,169,110,0.15); border-radius: 99px;
+    font-size: 14px; vertical-align: middle; margin-left: 8px;
+    font-style: normal; font-family: -apple-system, sans-serif;
+    font-weight: 700; color: #A78247;
+  }
+  .case-title-block { display: flex; flex-direction: column; gap: 12px; }
+  .case-locus {
+    font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: rgba(23, 21, 26, 0.45); font-weight: 700;
+  }
+  .case-title {
+    font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; font-weight: 800;
+    letter-spacing: -1px;
+  }
+  .case-summary {
+    font-size: 17px; color: rgba(23, 21, 26, 0.65); max-width: 760px;
+    line-height: 1.65; margin-top: 8px;
+  }
+
+  /* Direction change callout */
+  .pivot {
+    margin: 32px 0; padding: 28px 32px;
+    background: linear-gradient(135deg, rgba(201, 169, 110, 0.08), rgba(255, 111, 139, 0.04));
+    border-radius: 16px;
+    border-left: 4px solid #C9A96E;
+  }
+  .pivot-label {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: #A78247; font-weight: 700; margin-bottom: 14px;
+  }
+  .pivot-text {
+    font-size: 16px; color: #17151A; line-height: 1.7;
+  }
+  .pivot-text strong { color: #E85575; }
+  .pivot-arrow {
+    display: inline-block; padding: 0 12px;
+    color: #C9A96E; font-weight: 700;
+  }
+
+  /* ===== Mockup layout (single big mockup + annotations) ===== */
+  .studio {
+    display: grid; grid-template-columns: 380px 1fr; gap: 64px;
+    margin: 56px 0; align-items: start;
+  }
+  .studio-frame {
+    position: sticky; top: 32px;
+  }
+  .frame-label {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding-bottom: 14px; margin-bottom: 20px;
+    border-bottom: 1px solid rgba(23, 21, 26, 0.1);
+  }
+  .frame-tag {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 700; color: #E85575;
+  }
+  .frame-name { font-size: 13px; color: rgba(23, 21, 26, 0.55); }
+
+  /* iPhone frame, larger */
+  .phone {
+    width: 360px; aspect-ratio: 9 / 19.5;
+    background: #17151A; border-radius: 44px; padding: 10px;
+    margin: 0 auto; box-shadow: 0 32px 64px rgba(23, 21, 26, 0.22);
+    position: relative;
+  }
+  .phone-screen {
+    width: 100%; height: 100%; background: #F4F2F4;
+    border-radius: 34px; overflow: hidden; position: relative;
+    font-size: 12px; line-height: 1.5;
+  }
+  .phone-notch {
+    position: absolute; top: 18px; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 26px; background: #17151A; border-radius: 14px;
+    z-index: 100;
+  }
+  .phone-content {
+    width: 100%; height: 100%; overflow: hidden;
+    padding-top: 54px;
+  }
+  .mp-page { padding: 14px 14px; height: 100%; overflow: hidden; position: relative; }
+  .mp-card {
+    background: #FFFFFF; border-radius: 14px; padding: 12px;
+    margin-bottom: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.04);
+  }
+  .mp-text { font-size: 11px; color: #17151A; }
+  .mp-text-mute { color: rgba(0,0,0,0.5); font-size: 11px; }
+  .mp-text-faint { color: rgba(0,0,0,0.32); font-size: 10px; }
+  .mp-row { display: flex; align-items: center; gap: 8px; }
+  .mp-stars { color: #C9A96E; font-size: 11px; letter-spacing: 1px; }
+
+  /* Annotation column */
+  .annot-list { display: flex; flex-direction: column; gap: 28px; padding-top: 8px; }
+  .annot-item {
+    display: grid; grid-template-columns: 36px 1fr; gap: 18px;
+    align-items: baseline;
+  }
+  .annot-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #E85575; color: #FFF;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 800; line-height: 1;
+    box-shadow: 0 4px 12px rgba(232,85,117,0.32);
+  }
+  .annot-num.gold { background: #C9A96E; box-shadow: 0 4px 12px rgba(201,169,110,0.32); }
+  .annot-num.dark { background: #17151A; box-shadow: 0 4px 12px rgba(23,21,26,0.22); }
+  .annot-body { padding-top: 4px; }
+  .annot-title {
+    font-size: 17px; font-weight: 700; color: #17151A;
+    line-height: 1.3; margin-bottom: 8px;
+  }
+  .annot-text {
+    font-size: 14px; color: rgba(23,21,26,0.7); line-height: 1.65;
+  }
+  .annot-text strong { color: #17151A; font-weight: 700; }
+  .annot-text code {
+    background: rgba(23,21,26,0.05); padding: 1px 6px; border-radius: 3px;
+    font-family: 'SF Mono', monospace; font-size: 12px;
+  }
+  .annot-meta {
+    margin-top: 10px; padding: 8px 12px;
+    background: rgba(201,169,110,0.08); border-radius: 6px;
+    font-size: 12px; color: #A78247; font-weight: 600;
+    display: inline-block;
+  }
+  .annot-meta.red { background: rgba(196,84,74,0.08); color: #C4544A; }
+
+  /* ===== Trade-off Table ===== */
+  .tradeoff {
+    margin: 48px 0; padding: 32px; background: #FFFFFF;
+    border-radius: 14px; border: 1px solid rgba(23,21,26,0.06);
+  }
+  .case:nth-child(even) .tradeoff { background: #FFFFFF; }
+  .tradeoff-title {
+    font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(23,21,26,0.5); font-weight: 700; margin-bottom: 20px;
+  }
+  .tradeoff-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    border-top: 1px solid rgba(23,21,26,0.08);
+  }
+  .tradeoff-col {
+    padding: 20px 24px 20px 0;
+    border-bottom: 1px solid rgba(23,21,26,0.06);
+  }
+  .tradeoff-col + .tradeoff-col {
+    padding-left: 24px; padding-right: 0;
+    border-left: 1px solid rgba(23,21,26,0.08);
+  }
+  .tradeoff-col-head {
+    font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
+    font-weight: 700; margin-bottom: 10px;
+  }
+  .tradeoff-col-head.v1 { color: rgba(23,21,26,0.4); }
+  .tradeoff-col-head.v2 { color: #E85575; }
+  .tradeoff-col-body { font-size: 14px; color: #17151A; line-height: 1.6; }
+  .tradeoff-col-body strong { font-weight: 700; }
+
+  /* ===== Footer ===== */
+  footer {
+    padding: 48px 0 36px; background: #17151A; color: rgba(255,255,255,0.6);
+  }
+  footer .wrap { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 24px; }
+  footer .serif { color: rgba(255,255,255,0.9); font-size: 20px; }
+  footer .meta { font-size: 13px; }
+
+  @media (max-width: 980px) {
+    .wrap { padding: 0 24px; }
+    .cover { padding: 80px 0 60px; }
+    .cover-diff { grid-template-columns: 1fr; gap: 24px; }
+    .studio { grid-template-columns: 1fr; gap: 40px; }
+    .studio-frame { position: static; }
+    .phone { margin: 0 auto; }
+    .case-header { grid-template-columns: 1fr; gap: 8px; }
+    .case-num { font-size: 40px; }
+    .tradeoff-grid { grid-template-columns: 1fr; }
+    .tradeoff-col + .tradeoff-col { padding-left: 0; border-left: none; }
+    section { padding: 64px 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<section class="cover">
+  <div class="wrap">
+    <div class="cover-meta">Round 2 · Deeper Redesign · 2026-07-21</div>
+    <h1>不延伸 v1 的方向，<br/>换两个<em>根本不同</em>的思路</h1>
+    <p class="cover-lead">
+      v1 给 01 和 04 的方案是"补丁式"的——加横滑、加搜索、加徽章。
+      这一轮换两个范式：01 把评价和作品图绑定（化妆师独有的可信度杠杆），
+      04 把"列表"升级成"需要关注的客户视图"（让系统主动浮起风险）。
+    </p>
+
+    <div class="cover-diff">
+      <div class="diff-card">
+        <div class="diff-label">v1 · Case 01 方向</div>
+        <div class="diff-title">横滑评价卡 + CTA 主次</div>
+        <div class="diff-desc">2-3 条 latest review 横滑。问题：和其他小程序的评价区无差异，缺化妆师独有的证据。</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-label new">v2 · Case 01 新方向</div>
+        <div class="diff-title">作品×评价联动 social proof</div>
+        <div class="diff-desc">每条评价配对应作品的缩略图。化妆师的口碑=作品+评价，二者同框最强。</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-label">v1 · Case 04 方向</div>
+        <div class="diff-title">搜索 + 卡片加徽章</div>
+        <div class="diff-desc">加搜索 + 过敏/服务徽章。问题：仍是数据库式列表，化妆师要主动找问题。</div>
+      </div>
+      <div class="diff-card">
+        <div class="diff-label new">v2 · Case 04 新方向</div>
+        <div class="diff-title">经营视图 · 风险优先</div>
+        <div class="diff-desc">"需要关注"section 主动浮起：过敏 / 流失风险 / 新客欢迎。列表降级为索引。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASE 01 v2 ============ -->
+<section class="case">
+  <div class="wrap">
+    <header class="case-header">
+      <div class="case-num">01<span class="ring">R2</span></div>
+      <div class="case-title-block">
+        <div class="case-locus">客户侧 · 首页 · 客户评价模块</div>
+        <h2 class="case-title">作品×评价联动 — 化妆师独有的可信度</h2>
+        <p class="case-summary">
+          其他行业（餐饮/美发/医美）的评价只能是"文字+星"。化妆师不同——每条评价背后都有一件具体作品。
+          把"作品缩略图 + 客户评价"同框展示，让口碑不再是空的形容词，而是有视觉证据的具象推荐。
+        </p>
+      </div>
+    </header>
+
+    <div class="pivot">
+      <div class="pivot-label">Direction Pivot · v1 → v2</div>
+      <div class="pivot-text">
+        v1 做"横滑评价卡 + 标签云简化"——和其他小程序没区别。
+        <strong>v2 换思路：每条评价都带上对应作品的缩略图</strong>
+        <span class="pivot-arrow">→</span>
+        客户看到的不只是"小红说好"，而是"小红做的这个新娘妆 + 小红说好"。
+        这是化妆师品类独有的 social proof 杠杆，餐厅/美发店都抄不走。
+      </div>
+    </div>
+
+    <div class="studio">
+      <!-- Phone mockup -->
+      <div class="studio-frame">
+        <div class="frame-label">
+          <div class="frame-tag">v2 · 新方向</div>
+          <div class="frame-name">作品×评价联动</div>
+        </div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="mp-page">
+                <!-- Hero (compact reference) -->
+                <div class="mp-card" style="display:flex;gap:10px;align-items:center;padding:10px 12px;">
+                  <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#DFA0AA,#B98266);flex-shrink:0;"></div>
+                  <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:800;line-height:1.1;">陈化妆师</div>
+                    <div style="font-size:9px;color:rgba(0,0,0,0.4);">Makeup Artist</div>
+                  </div>
+                </div>
+
+                <!-- Section label -->
+                <div style="display:flex;justify-content:space-between;align-items:baseline;padding:6px 2px 8px;">
+                  <div>
+                    <div style="font-size:15px;font-weight:800;">客户评价</div>
+                    <div style="width:20px;height:1.5px;background:#C9A96E;margin-top:4px;"></div>
+                  </div>
+                  <div style="font-size:10px;color:#E85575;font-weight:700;">查看全部 126 条 ›</div>
+                </div>
+
+                <!-- Stats hero with distribution -->
+                <div class="mp-card" style="padding:12px;">
+                  <div style="display:flex;align-items:baseline;gap:6px;">
+                    <span style="font-size:32px;font-weight:800;line-height:1;letter-spacing:-1px;">4.8</span>
+                    <span style="font-size:11px;color:rgba(0,0,0,0.32);">/ 5.0</span>
+                    <div style="flex:1;text-align:right;">
+                      <span class="mp-stars" style="font-size:11px;">★★★★★</span>
+                    </div>
+                  </div>
+                  <div style="font-size:9px;color:rgba(0,0,0,0.5);margin-top:3px;">126 条真实评价</div>
+
+                  <!-- Rating distribution bars (NEW) -->
+                  <div style="margin-top:10px;display:flex;flex-direction:column;gap:3px;">
+                    <div style="display:flex;align-items:center;gap:6px;font-size:8px;">
+                      <span style="width:14px;color:rgba(0,0,0,0.5);">5★</span>
+                      <div style="flex:1;height:5px;background:rgba(0,0,0,0.05);border-radius:99px;overflow:hidden;">
+                        <div style="width:81%;height:100%;background:linear-gradient(to right,#C9A96E,#DDBE82);border-radius:99px;"></div>
+                      </div>
+                      <span style="width:18px;text-align:right;color:#17151A;font-weight:700;">102</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;font-size:8px;">
+                      <span style="width:14px;color:rgba(0,0,0,0.5);">4★</span>
+                      <div style="flex:1;height:5px;background:rgba(0,0,0,0.05);border-radius:99px;overflow:hidden;">
+                        <div style="width:14%;height:100%;background:rgba(201,169,110,0.55);border-radius:99px;"></div>
+                      </div>
+                      <span style="width:18px;text-align:right;color:rgba(0,0,0,0.5);">18</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:6px;font-size:8px;">
+                      <span style="width:14px;color:rgba(0,0,0,0.5);">3★</span>
+                      <div style="flex:1;height:5px;background:rgba(0,0,0,0.05);border-radius:99px;overflow:hidden;">
+                        <div style="width:3%;height:100%;background:rgba(201,169,110,0.32);border-radius:99px;"></div>
+                      </div>
+                      <span style="width:18px;text-align:right;color:rgba(0,0,0,0.32);">4</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Featured testimonial WITH WORK THUMBNAIL -->
+                <div class="mp-card" style="padding:10px;">
+                  <div style="display:flex;gap:9px;align-items:flex-start;">
+                    <!-- Work thumbnail -->
+                    <div style="width:48px;height:48px;border-radius:8px;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#FF6F8B 0%,#C9A96E 100%);position:relative;">
+                      <div style="position:absolute;inset:0;background:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23FFF\' opacity=\'0.3\' d=\'M12 2L14.5 8L21 9L16 13.5L17.5 20L12 16.5L6.5 20L8 13.5L3 9L9.5 8Z\'/%3E%3C/svg%3E') center/24px no-repeat;"></div>
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                      <div style="display:flex;align-items:center;gap:5px;">
+                        <span class="mp-stars" style="font-size:9px;">★★★★★</span>
+                        <span style="font-size:8px;color:rgba(0,0,0,0.32);">·</span>
+                        <span style="font-size:9px;color:#FF6F8B;font-weight:700;background:rgba(255,111,139,0.1);padding:1px 5px;border-radius:99px;">新娘妆</span>
+                      </div>
+                      <div style="font-size:10px;color:#17151A;line-height:1.45;margin-top:4px;">"手法温柔，妆面自然，强烈推荐给所有备婚的姐妹！"</div>
+                      <div style="font-size:8px;color:rgba(0,0,0,0.32);margin-top:3px;">— 小红 · 7 月</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Second testimonial with work thumbnail -->
+                <div class="mp-card" style="padding:10px;">
+                  <div style="display:flex;gap:9px;align-items:flex-start;">
+                    <div style="width:48px;height:48px;border-radius:8px;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#DDBE82 0%,#B98266 100%);position:relative;">
+                      <div style="position:absolute;inset:0;background:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Cpath fill=\'%23FFF\' opacity=\'0.3\' d=\'M12 21c-5 0-9-4-9-9 0-1 .5-2 1-3 .5-3 4-6 8-6s7.5 3 8 6c.5 1 1 2 1 3 0 5-4 9-9 9z\'/%3E%3C/svg%3E') center/24px no-repeat;"></div>
+                    </div>
+                    <div style="flex:1;min-width:0;">
+                      <div style="display:flex;align-items:center;gap:5px;">
+                        <span class="mp-stars" style="font-size:9px;">★★★★★</span>
+                        <span style="font-size:8px;color:rgba(0,0,0,0.32);">·</span>
+                        <span style="font-size:9px;color:#FF6F8B;font-weight:700;background:rgba(255,111,139,0.1);padding:1px 5px;border-radius:99px;">订婚妆</span>
+                      </div>
+                      <div style="font-size:10px;color:#17151A;line-height:1.45;margin-top:4px;">"比预期还惊艳，闺蜜都说好看！"</div>
+                      <div style="font-size:8px;color:rgba(0,0,0,0.32);margin-top:3px;">— Anna · 6 月</div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tag cloud (simplified, no counts except hot) -->
+                <div class="mp-card" style="background:rgba(201,169,110,0.05);box-shadow:none;padding:9px 10px;">
+                  <div style="display:flex;align-items:center;gap:5px;margin-bottom:6px;">
+                    <span style="font-size:14px;color:#C9A96E;font-weight:700;line-height:1;">❝</span>
+                    <span style="font-size:9px;letter-spacing:0.5px;color:rgba(0,0,0,0.32);">大家这样说</span>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:4px;">
+                    <span style="background:linear-gradient(135deg,#C9A96E,#DDBE82);color:#FFF;font-size:9px;font-weight:700;padding:3px 8px;border-radius:99px;">手法专业 <span style="opacity:0.85;font-weight:500;">48</span></span>
+                    <span style="background:rgba(201,169,110,0.16);font-size:9px;padding:3px 7px;border-radius:99px;">妆面自然</span>
+                    <span style="background:rgba(201,169,110,0.08);font-size:9px;padding:3px 7px;border-radius:99px;">准时</span>
+                    <span style="background:rgba(201,169,110,0.08);font-size:9px;padding:3px 7px;border-radius:99px;">态度好</span>
+                  </div>
+                </div>
+
+                <!-- CTA stack (hierarchy preserved from v1) -->
+                <div style="position:absolute;bottom:14px;left:14px;right:14px;display:flex;flex-direction:column;gap:6px;">
+                  <div style="height:38px;background:linear-gradient(135deg,#FF6F8B,#E85575);color:#FFF;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:0 6px 16px rgba(232,85,117,0.34);">立即预约化妆</div>
+                  <div style="height:26px;background:#FFF;color:#17151A;border-radius:8px;border:1px solid rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;">微信联系（先问问）</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Annotation column -->
+      <div class="annot-list">
+        <div class="annot-item">
+          <div class="annot-num">1</div>
+          <div class="annot-body">
+            <div class="annot-title">评分分布条 — 比"4.8 / 5.0"更有说服力</div>
+            <div class="annot-text">
+              一个数字 4.8 看起来漂亮但不可信（5 分制容易虚高）。分布条直接告诉客户：
+              <strong>"126 条里 102 条是 5★"（81%）</strong>——这是无法造假的证据。
+              权重 5★ 用金色渐变，4★ 中度，3★ 弱化。
+            </div>
+            <div class="annot-meta">数据来源：reviews 集合 rating 字段聚合，云函数已有</div>
+          </div>
+        </div>
+
+        <div class="annot-item">
+          <div class="annot-num gold">2</div>
+          <div class="annot-body">
+            <div class="annot-title">作品缩略图 + 评价 = 化妆师独有的可信度</div>
+            <div class="annot-text">
+              每条 featured review 旁配 <strong>对应作品的缩略图</strong>（48×48 圆角方块）。
+              客户点缩略图可跳到作品详情——形成"看作品→看口碑→看作品→预约"的闭环。
+              <br/><br/>
+              餐厅评价只能配菜品图（菜品 ≠ 厨师手艺）；化妆师的"作品"就是手艺本身，这是品类独占的杠杆。
+            </div>
+            <div class="annot-meta red">实现：review 文档已有 booking_id → booking.service_id → service.works 关联，1 跳查询</div>
+          </div>
+        </div>
+
+        <div class="annot-item">
+          <div class="annot-num">3</div>
+          <div class="annot-body">
+            <div class="annot-title">服务品类徽章 — 给评价加场景</div>
+            <div class="annot-text">
+              "新娘妆 / 订婚妆 / 日常妆"小徽章紧贴星级。客户做的是订婚妆时，会优先看订婚妆的评价。
+              这是<strong>场景化匹配</strong>，比笼统的"4.8 ★"更精准地解决"这个化妆师适合我的场合吗"。
+            </div>
+          </div>
+        </div>
+
+        <div class="annot-item">
+          <div class="annot-num gold">4</div>
+          <div class="annot-body">
+            <div class="annot-title">只显示 2 条 featured + 查看全部</div>
+            <div class="annot-text">
+              v1 想做横滑 2-3 条但没说服力。v2 只显示 2 条 featured（带作品图的），
+              剩余 124 条通过 <code>查看全部 126 条 ›</code> 跳到独立列表页。
+              <strong>用稀缺性换冲击力</strong>——两条精选 &gt; 五条平庸。
+            </div>
+            <div class="annot-meta">需要新增：reviews 列表页（独立于 admin 后台），简单列表+筛选</div>
+          </div>
+        </div>
+
+        <div class="annot-item">
+          <div class="annot-num dark">5</div>
+          <div class="annot-body">
+            <div class="annot-title">CTA 主次保留 v1 方案</div>
+            <div class="annot-text">
+              预约按钮（主）38px 渐变 + 阴影；微信联系（次）26px outline + "（先问问）"暗示 fallback。
+              这部分 v1 已经做对了，v2 不动。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trade-off -->
+    <div class="tradeoff">
+      <div class="tradeoff-title">Trade-off · v1 vs v2</div>
+      <div class="tradeoff-grid">
+        <div class="tradeoff-col">
+          <div class="tradeoff-col-head v1">v1 横滑评价卡</div>
+          <div class="tradeoff-col-body">
+            <strong>+</strong> 实现成本极低，纯前端<br/>
+            <strong>+</strong> 可显示更多条评价（3-5）<br/><br/>
+            <strong>−</strong> 和其他小程序评价区无差异<br/>
+            <strong>−</strong> 评价是孤立文字，缺视觉锚<br/>
+            <strong>−</strong> "4.8 分"仍然只是个数字
+          </div>
+        </div>
+        <div class="tradeoff-col">
+          <div class="tradeoff-col-head v2">v2 作品×评价联动</div>
+          <div class="tradeoff-col-body">
+            <strong>+</strong> <strong>化妆师品类独占</strong>，竞品抄不走<br/>
+            <strong>+</strong> 评分分布条提供不可造假证据<br/>
+            <strong>+</strong> 形成"作品→口碑→作品"闭环<br/><br/>
+            <strong>−</strong> 需要云函数 join reviews↔works（~30min）<br/>
+            <strong>−</strong> 只显示 2 条 featured，需独立"查看全部"页
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASE 04 v2 ============ -->
+<section class="case">
+  <div class="wrap">
+    <header class="case-header">
+      <div class="case-num">04<span class="ring">R2</span></div>
+      <div class="case-title-block">
+        <div class="case-locus">化妆师后台 · 客户管理</div>
+        <h2 class="case-title">经营视图 — 让"风险"主动浮起来</h2>
+        <p class="case-summary">
+          客户列表 v1 是数据库式：所有客户平铺，靠化妆师自己翻找问题。
+          v2 改成 CRM 视图：系统主动算出"需要关注"的三类客户（过敏/流失/新客），
+          置顶成 section；普通列表降级为底层索引。
+        </p>
+      </div>
+    </header>
+
+    <div class="pivot">
+      <div class="pivot-label">Direction Pivot · v1 → v2</div>
+      <div class="pivot-text">
+        v1 做"加搜索 + 卡片加徽章"——化妆师仍要主动浏览找问题。
+        <strong>v2 换思路：系统主动把风险浮起来</strong>
+        <span class="pivot-arrow">→</span>
+        「需要关注」section 自动聚合：有过敏史的（红）/ 60+ 天未到店的（金）/ 14 天内新客（蓝）。
+        化妆师打开页面第一眼看到的不是"全部 55 个客户"，而是"今天该回访的 3 个"。
+      </div>
+    </div>
+
+    <div class="studio">
+      <!-- Phone mockup -->
+      <div class="studio-frame">
+        <div class="frame-label">
+          <div class="frame-tag">v2 · 新方向</div>
+          <div class="frame-name">经营视图 · 风险优先</div>
+        </div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="mp-page" style="padding-top:8px;">
+
+                <!-- Header / search -->
+                <div style="padding:0 2px 10px;">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;">
+                    <div style="font-size:15px;font-weight:800;">客户</div>
+                    <div style="font-size:9px;color:rgba(0,0,0,0.4);">共 55 位</div>
+                  </div>
+                  <div style="background:#FFFFFF;border-radius:99px;padding:7px 12px;display:flex;align-items:center;gap:7px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+                    <span style="color:rgba(0,0,0,0.3);font-size:12px;">⌕</span>
+                    <span style="font-size:10px;color:rgba(0,0,0,0.32);">搜索昵称 / 备注 / 服务</span>
+                  </div>
+                </div>
+
+                <!-- 需要关注 section -->
+                <div style="padding:4px 2px 6px;">
+                  <div style="display:flex;align-items:baseline;gap:6px;">
+                    <span style="font-size:10px;font-weight:800;color:#E85575;letter-spacing:1px;">需要关注</span>
+                    <span style="font-size:8px;background:#FF6F8B;color:#FFF;padding:1px 6px;border-radius:99px;font-weight:700;line-height:1.4;">3</span>
+                  </div>
+                </div>
+
+                <!-- Allergy alert (RED - highest priority) -->
+                <div style="background:rgba(196,84,74,0.06);border:1px solid rgba(196,84,74,0.22);border-radius:10px;padding:9px 10px;margin-bottom:6px;display:flex;gap:8px;align-items:center;">
+                  <div style="width:22px;height:22px;border-radius:50%;background:#C4544A;color:#FFF;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;">!</div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:baseline;gap:5px;">
+                      <span style="font-size:11px;font-weight:700;color:#17151A;">小红</span>
+                      <span style="font-size:8px;color:#C4544A;font-weight:700;">酒精、香料过敏</span>
+                    </div>
+                    <div style="font-size:9px;color:rgba(0,0,0,0.5);margin-top:1px;">最近：新娘妆 · 3 天前 · 已完成 3 次</div>
+                  </div>
+                  <div style="font-size:9px;color:#C4544A;font-weight:700;">查看 ›</div>
+                </div>
+
+                <!-- Churn risk (GOLD - medium priority) -->
+                <div style="background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.28);border-radius:10px;padding:9px 10px;margin-bottom:6px;display:flex;gap:8px;align-items:center;">
+                  <div style="width:22px;height:22px;border-radius:50%;background:#C9A96E;color:#FFF;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;">↻</div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:baseline;gap:5px;">
+                      <span style="font-size:11px;font-weight:700;color:#17151A;">Linda</span>
+                      <span style="font-size:8px;color:#A78247;font-weight:700;">95 天未到店</span>
+                    </div>
+                    <div style="font-size:9px;color:rgba(0,0,0,0.5);margin-top:1px;">最近：日常妆 · 3 月前 · 曾完成 5 次</div>
+                  </div>
+                  <div style="font-size:9px;color:#A78247;font-weight:700;">回访 ›</div>
+                </div>
+
+                <!-- New customer (BLUE - welcome flow) -->
+                <div style="background:rgba(90,127,160,0.07);border:1px solid rgba(90,127,160,0.22);border-radius:10px;padding:9px 10px;margin-bottom:10px;display:flex;gap:8px;align-items:center;">
+                  <div style="width:22px;height:22px;border-radius:50%;background:#5A7FA0;color:#FFF;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;">✦</div>
+                  <div style="flex:1;min-width:0;">
+                    <div style="display:flex;align-items:baseline;gap:5px;">
+                      <span style="font-size:11px;font-weight:700;color:#17151A;">Lily</span>
+                      <span style="font-size:8px;color:#5A7FA0;font-weight:700;">新客户 · 7 天前首单</span>
+                    </div>
+                    <div style="font-size:9px;color:rgba(0,0,0,0.5);margin-top:1px;">最近：日常妆 · 1 周前 · 适合推会员卡</div>
+                  </div>
+                  <div style="font-size:9px;color:#5A7FA0;font-weight:700;">欢迎 ›</div>
+                </div>
+
+                <!-- Filter segments (compact pill row) -->
+                <div style="display:flex;gap:4px;padding:0 2px 8px;overflow:hidden;">
+                  <span style="background:#FF6F8B;color:#FFF;border-radius:99px;padding:3px 9px;font-size:9px;font-weight:700;">全部 55</span>
+                  <span style="background:#FFFFFF;color:rgba(0,0,0,0.6);border-radius:99px;padding:3px 9px;font-size:9px;">VIP 12</span>
+                  <span style="background:#FFFFFF;color:rgba(0,0,0,0.6);border-radius:99px;padding:3px 9px;font-size:9px;">回头 38</span>
+                  <span style="background:#FFFFFF;color:rgba(0,0,0,0.6);border-radius:99px;padding:3px 9px;font-size:9px;">新客 5</span>
+                </div>
+
+                <!-- All customers list (compact) -->
+                <div class="mp-card" style="padding:8px 10px;">
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#DDBE82,#C9A96E);color:#FFF;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">A</div>
+                    <div style="flex:1;min-width:0;">
+                      <div style="display:flex;align-items:baseline;gap:4px;">
+                        <span style="font-size:10px;font-weight:700;">Anna</span>
+                        <span style="font-size:7px;background:rgba(212,175,55,0.14);color:#A78247;padding:1px 4px;border-radius:99px;font-weight:600;">VIP</span>
+                      </div>
+                      <div style="font-size:8px;color:rgba(0,0,0,0.45);margin-top:1px;">订婚妆 · 上周</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:11px;font-weight:800;color:#17151A;line-height:1;">8</div>
+                      <div style="font-size:7px;color:rgba(0,0,0,0.32);">次</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mp-card" style="padding:8px 10px;">
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#DFA0AA,#B98266);color:#FFF;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">红</div>
+                    <div style="flex:1;min-width:0;">
+                      <div style="display:flex;align-items:baseline;gap:4px;">
+                        <span style="font-size:10px;font-weight:700;">小红</span>
+                        <span style="font-size:7px;background:rgba(90,127,160,0.1);color:#5A7FA0;padding:1px 4px;border-radius:99px;font-weight:600;">回头客</span>
+                        <span style="font-size:7px;color:#C4544A;font-weight:700;">⚠</span>
+                      </div>
+                      <div style="font-size:8px;color:rgba(0,0,0,0.45);margin-top:1px;">新娘妆 · 3 天前</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:11px;font-weight:800;color:#17151A;line-height:1;">3</div>
+                      <div style="font-size:7px;color:rgba(0,0,0,0.32);">次</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mp-card" style="padding:8px 10px;">
+                  <div style="display:flex;gap:8px;align-items:center;">
+                    <div style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#8B6FA0,#5A7FA0);color:#FFF;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;">L</div>
+                    <div style="flex:1;min-width:0;">
+                      <div style="display:flex;align-items:baseline;gap:4px;">
+                        <span style="font-size:10px;font-weight:700;">Linda</span>
+                        <span style="font-size:7px;background:rgba(90,127,160,0.1);color:#5A7FA0;padding:1px 4px;border-radius:99px;font-weight:600;">回头客</span>
+                        <span style="font-size:7px;color:#A78247;font-weight:700;">↻</span>
+                      </div>
+                      <div style="font-size:8px;color:rgba(0,0,0,0.45);margin-top:1px;">日常妆 · 3 月前</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:11px;font-weight:800;color:#17151A;line-height:1;">5</div>
+                      <div style="font-size:7px;color:rgba(0,0,0,0.32);">次</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Annotation column -->
+      <div class="annot-list">
+        <div class="annot-item">
+          <div class="annot-num">1</div>
+          <div class="annot-body">
+            <div class="annot-title">「需要关注」section — 把数据库变成助手</div>
+            <div class="annot-text">
+              v1 的列表是被动数据库：化妆师要自己翻找"今天该联系谁"。
+              v2 顶部置顶 <strong>3 类需要主动行动的客户</strong>（过敏/流失/新客），
+              每张卡是一句话+一个动作。化妆师打开页面第一眼就看到"今天该做什么"。
+            </div>
+            <div class="annot-meta">类比：邮箱的"重要"标签 vs 全部收件箱</div>
+          </div>
+        </div>
+
+        <div class="annot-item">
+          <div class="annot-num red">2</div>
+          <div class="annot-body">
+            <div class="annot-title">过敏 alert（红）— 安全闸门前置</div>
+            <div class="annot-text">
+              有过敏备注的客户 <strong>始终置顶</strong>，红色边框+图标。
+              化妆师即便不点开详情，也知道"接这个客户单前要再确认过敏"。
+              这是 v1 完全缺失的安全层（v1 把过敏埋在卡片第二行徽章里）。
+            </div>
+            <div class="annot-meta red">实现：customer_notes.allergy 字段非空 → 触发置顶</div>
+          </div>
+        </div>
+
+        <div class="annot-item">
+          <div class="annot-num gold">3</div>
+          <div class="annot-body">
+            <div class="annot-title">流失风险（金）— 复购唤醒</div>
+            <div class="annot-text">
+              "95 天未到店 + 曾完成 5 次"是高价值流失客户。系统自动按
+              <code>days_since_last &gt; 60 AND completed_count &gt;= 2</code> 聚合。
+              化妆师点 <code>回访 ›</code> 可直接发订阅消息或微信联系。
+              <br/><br/>
+              <strong>这是 v2 的核心商业价值</strong>——客户档案的最终目的是复购，不是档案本身。
+            </div>
+            <div class="annot-meta">数据源：bookings 完成时间 + customers.completed_count</div>
+          </div>
+        </div>
+
+        <div class="annot-item">
+          <div class="annot-num">4</div>
+          <div class="annot-body">
+            <div class="annot-title">新客欢迎（蓝）— 转化为回头客</div>
+            <div class="annot-text">
+              "首单 7 天内 + 仅 1 次完成"是新客。
+              化妆师点 <code>欢迎 ›</code> 可主动发"第二次预约享 9 折"等激活消息。
+              把"新客 → 回头客"的转化做成显式动作。
+            </div>
+            <div class="annot-meta">注：PROJECT.md 写"客户管理/会员系统 out of scope"，但欢迎话术≠会员系统</div>
+          </div>
+        </div>
+
+        <div class="annot-item">
+          <div class="annot-num dark">5</div>
+          <div class="annot-body">
+            <div class="annot-title">普通列表 — 降级为底层索引</div>
+            <div class="annot-text">
+              需要关注 section 下面才是「全部客户」普通列表。
+              v1 把所有客户平铺——化妆师要自己找。v2 让普通列表只承担"按图索骥"的功能：
+              已知客户名时通过搜索找；不知道时通过「需要关注」主动发现。
+            </div>
+          </div>
+        </div>
+
+        <div class="annot-item">
+          <div class="annot-num dark">6</div>
+          <div class="annot-body">
+            <div class="annot-title">列表卡片 — 极简化、信息密度优先</div>
+            <div class="annot-text">
+              单卡只显示 4 件事：头像 / 昵称+标签 / 最近服务+时间 / 完成次数。
+              过敏客户加红色 ⚠ 角标，流失客户加金色 ↻ 角标——
+              <strong>列表里也能看到风险状态</strong>，不用切回 section。
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trade-off -->
+    <div class="tradeoff">
+      <div class="tradeoff-title">Trade-off · v1 vs v2</div>
+      <div class="tradeoff-grid">
+        <div class="tradeoff-col">
+          <div class="tradeoff-col-head v1">v1 搜索 + 卡片加徽章</div>
+          <div class="tradeoff-col-body">
+            <strong>+</strong> 实现成本极低（1.5h）<br/>
+            <strong>+</strong> 不需要新计算逻辑<br/><br/>
+            <strong>−</strong> 仍是被动数据库<br/>
+            <strong>−</strong> 化妆师要主动找问题<br/>
+            <strong>−</strong> 过敏只在卡片里，不抢眼<br/>
+            <strong>−</strong> 没用上客户档案的复购价值
+          </div>
+        </div>
+        <div class="tradeoff-col">
+          <div class="tradeoff-col-head v2">v2 经营视图 · 风险优先</div>
+          <div class="tradeoff-col-body">
+            <strong>+</strong> <strong>主动浮风险</strong>，化妆师第一眼看到该做什么<br/>
+            <strong>+</strong> 过敏安全前置<br/>
+            <strong>+</strong> 把客户档案变成复购工具<br/>
+            <strong>+</strong> 列表里也能看风险角标<br/><br/>
+            <strong>−</strong> 需新增云函数聚合（~2h）<br/>
+            <strong>−</strong> 三类规则需手动调（60天/14天阈值）
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SUMMARY ============ -->
+<section>
+  <div class="wrap">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:start;">
+      <div>
+        <div style="font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:#A78247;font-weight:700;margin-bottom:14px;">Round 2 Verdict</div>
+        <h2 style="font-size:36px;line-height:1.15;font-weight:800;letter-spacing:-1px;margin-bottom:20px;">
+          这两个新方向<br/>都<em style="color:#E85575;font-style:italic;font-family:'STSong',serif;">用上了</em>项目独有的资产
+        </h2>
+        <p style="font-size:16px;color:rgba(23,21,26,0.7);line-height:1.7;">
+          v1 的方向是"补丁"——任何小程序都能做。
+          v2 让首页用上"作品图"这个独占资产（餐厅抄不走），
+          让后台用上"客户档案"的真正价值（复购唤醒而不是档案本身）。
+        </p>
+      </div>
+
+      <div style="background:#FFFFFF;padding:28px 32px;border-radius:14px;border:1px solid rgba(23,21,26,0.06);">
+        <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:rgba(23,21,26,0.5);font-weight:700;margin-bottom:18px;">实现成本估算</div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:baseline;padding-bottom:14px;border-bottom:1px solid rgba(23,21,26,0.06);">
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#17151A;">Case 01 v2</div>
+              <div style="font-size:13px;color:rgba(23,21,26,0.6);margin-top:3px;">作品×评价联动 + 分布条</div>
+            </div>
+            <div style="font-size:18px;font-weight:800;color:#E85575;">~3h</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:baseline;padding-bottom:14px;border-bottom:1px solid rgba(23,21,26,0.06);">
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#17151A;">Case 04 v2</div>
+              <div style="font-size:13px;color:rgba(23,21,26,0.6);margin-top:3px;">经营视图 + 风险聚合</div>
+            </div>
+            <div style="font-size:18px;font-weight:800;color:#E85575;">~5h</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:16px;align-items:baseline;">
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#17151A;">总计</div>
+              <div style="font-size:13px;color:rgba(23,21,26,0.6);margin-top:3px;">含云函数 + WXML/WXSS + 1 个新页面（reviews 全部）</div>
+            </div>
+            <div style="font-size:22px;font-weight:800;color:#17151A;">~8h</div>
+          </div>
+        </div>
+        <div style="margin-top:20px;padding:14px 16px;background:rgba(201,169,110,0.08);border-radius:8px;font-size:13px;color:#A78247;line-height:1.55;">
+          建议：作为 <strong style="color:#17151A;">v2.4 第一个 phase</strong>（"客户经营 v2"）单独立项，
+          与 v2.3 已发的客户档案/评价增强形成闭环。
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="serif">v2.3 UI/UX Round 2 · Cases 01 & 04</div>
+      <div class="meta" style="margin-top:8px;">2026-07-21 · 范式重置，非 v1 延伸 · self-contained HTML</div>
+    </div>
+    <div class="meta">
+      Direction B · 与 v1 互补，可同时打开对比
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
