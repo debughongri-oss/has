@@ -10,6 +10,9 @@ Page({
     booking: null,
     rating: 0,
     ratingLabel: '',
+    // v2.3-r2: 情绪化两段式 label
+    ratingTitle: '',
+    ratingSubtext: '',
     stars: [1, 2, 3, 4, 5],
     content: '',
     contentLength: 0,
@@ -21,7 +24,11 @@ Page({
     images: [],                  // 本地临时图片路径
     maxImages: 3,
     isAnonymous: false,
-    uploading: false
+    uploading: false,
+    // v2.3-r2: 提交按钮状态提示
+    canSubmit: false,
+    statusHint: '',
+    statusHintTone: 'warn'       // 'warn' | 'ready' | 'busy'
   },
 
   onLoad: function (options) {
@@ -32,6 +39,8 @@ Page({
     }
     this.setData({ bookingId: options.booking_id })
     this.loadBooking(options.booking_id)
+    // 初始 status hint
+    this._updateStatusHint()
   },
 
   /**
@@ -62,11 +71,48 @@ Page({
 
   /**
    * t-rate bind:change — 评分变化 per D-06
+   * v2.3-r2: 情绪化两段式 label（title 大字 + subtext 具象解释）
    */
   onRateStar: function (e) {
     var v = e.currentTarget.dataset.value
-    var LABELS = ['', '不满意', '一般', '还可以', '满意', '非常满意']
-    this.setData({ rating: v, ratingLabel: LABELS[v] || '' })
+    // v2.3-r2: 每档配具象解释，降低用户"打分焦虑"
+    var LABELS = [
+      '',
+      { label: '不满意', title: '有点失望', sub: '和预期差距较大，会私下反馈' },
+      { label: '一般',   title: '还可以',   sub: '基本满足期待，没惊喜' },
+      { label: '还可以', title: '还不错',   sub: '整体满意，会再来' },
+      { label: '满意',   title: '真的很满意', sub: '体验超出预期，会推荐给朋友' },
+      { label: '非常满意', title: '惊喜！强烈推荐', sub: '让你忍不住安利给所有闺蜜' }
+    ]
+    var entry = LABELS[v] || { label: '', title: '', sub: '' }
+    this.setData({
+      rating: v,
+      ratingLabel: entry.label,
+      ratingTitle: entry.title,
+      ratingSubtext: entry.sub
+    })
+    this._updateStatusHint()
+  },
+
+  /**
+   * v2.3-r2: 计算提交按钮状态提示
+   *   rating === 0            → '请先打分' (warn)
+   *   rating > 0 && idle      → '✓ 已就绪，可以提交' (ready)
+   *   submitting && uploading → '上传图片中...' (busy)
+   *   submitting && !uploading→ '提交中...' (busy)
+   */
+  _updateStatusHint: function () {
+    var d = this.data
+    if (d.submitting) {
+      var hint = d.uploading ? '上传图片中...' : '提交中...'
+      this.setData({ statusHint: hint, statusHintTone: 'busy', canSubmit: false })
+      return
+    }
+    if (d.rating < 1) {
+      this.setData({ statusHint: '请先打分', statusHintTone: 'warn', canSubmit: false })
+      return
+    }
+    this.setData({ statusHint: '✓ 已就绪，可以提交', statusHintTone: 'ready', canSubmit: true })
   },
 
   /**
@@ -149,6 +195,7 @@ Page({
     }
 
     this.setData({ submitting: true, uploading: this.data.images.length > 0 })
+    this._updateStatusHint()
 
     // 截断200字
     var content = (this.data.content || '').slice(0, 200)
@@ -165,10 +212,12 @@ Page({
         console.error('图片上传失败:', upErr)
         wx.showToast({ title: '图片上传失败，请重试', icon: 'none', duration: 2000 })
         this.setData({ submitting: false, uploading: false })
+        this._updateStatusHint()
         return
       }
     }
     this.setData({ uploading: false })
+    this._updateStatusHint()
 
     // REVW-10: 把 selectedTagKeys 映射回完整标签对象，服务端按 key 白名单过滤
     var selectedTags = REVIEW_TAGS.filter((t) => this.data.selectedTagKeys.indexOf(t.key) >= 0)
@@ -189,6 +238,7 @@ Page({
         console.error('提交评价失败:', err)
         wx.showToast({ title: err.message || '提交失败', icon: 'none', duration: 2000 })
         this.setData({ submitting: false, uploading: false })
+        this._updateStatusHint()
       }.bind(this))
   }
 })

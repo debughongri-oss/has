@@ -20,7 +20,12 @@
         >★</text>
       </view>
     </view>
-    <text class="rate-feedback {{rating ? 'rate-feedback--on' : ''}}">{{rating ? ratingLabel : '轻触星星打分'}}</text>
+    <!-- v2.3-r2: 情绪化两段式 label（title 大字 + subtext 具象解释） -->
+    <block wx:if="{{ratingTitle}}">
+      <text class="rate-emotion-title">{{ratingTitle}}</text>
+      <text class="rate-emotion-sub">{{ratingSubtext}}</text>
+    </block>
+    <text class="rate-feedback" wx:else>轻触星星打分</text>
   </view>
 
   <!-- 服务标签（低门槛 · 前置，提升完成率） -->
@@ -87,9 +92,10 @@
     </view>
   </view>
 
-  <!-- 固定底部提交条（拇指可达） -->
+  <!-- 固定底部提交条（拇指可达 · v2.3-r2: 加状态提示） -->
   <view class="submit-bar">
-    <button class="submit-btn" bindtap="onSubmit" disabled="{{submitting || rating === 0}}">
+    <text class="submit-hint submit-hint--{{statusHintTone}}">{{statusHint}}</text>
+    <button class="submit-btn" bindtap="onSubmit" disabled="{{!canSubmit}}">
       {{submitting ? (uploading ? '上传图片中...' : '提交中...') : '提交评价'}}
     </button>
   </view>

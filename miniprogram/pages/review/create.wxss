@@ -104,6 +104,24 @@
   font-weight: 700;
 }
 
+/* v2.3-r2: 情绪化两段式 label */
+.rate-emotion-title {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #B0883F;
+  line-height: 1.2;
+  letter-spacing: 0.5rpx;
+}
+
+.rate-emotion-sub {
+  display: block;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-top: 6rpx;
+  line-height: 1.4;
+}
+
 /* ===== 文字评价 ===== */
 .ta {
   width: 100%;
@@ -263,11 +281,33 @@
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 18rpx var(--page-pad) calc(18rpx + env(safe-area-inset-bottom));
+  padding: 12rpx var(--page-pad) calc(12rpx + env(safe-area-inset-bottom));
   background-color: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12rpx);
   border-top: 1rpx solid var(--separator);
   z-index: 50;
+}
+
+/* v2.3-r2: 状态提示 — warn 红色 / ready 绿色 / busy 灰色 */
+.submit-hint {
+  display: block;
+  text-align: center;
+  font-size: 22rpx;
+  font-weight: 600;
+  margin-bottom: 8rpx;
+  line-height: 1.3;
+}
+
+.submit-hint--warn {
+  color: var(--accent-dark);
+}
+
+.submit-hint--ready {
+  color: var(--green);
+}
+
+.submit-hint--busy {
+  color: var(--text-tertiary);
 }
 
 .submit-btn {
