@@ -10,7 +10,8 @@
     "pages/booking/reschedule",
     "pages/profile/index",
     "pages/profile/history",
-    "pages/review/create"
+    "pages/review/create",
+    "pages/review/list"
   ],
   "window": {
     "backgroundTextStyle": "dark",

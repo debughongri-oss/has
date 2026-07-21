@@ -1,0 +1,312 @@
+.page-reviews {
+  min-height: 100vh;
+  background-color: var(--bg);
+  padding: 16rpx var(--page-pad) calc(40rpx + env(safe-area-inset-bottom));
+}
+
+/* ===== 概览卡 ===== */
+.stats-card {
+  background-color: var(--bg-elevated);
+  border-radius: 24rpx;
+  padding: 28rpx 28rpx 24rpx;
+  box-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.05);
+}
+
+.stats-top {
+  display: flex;
+  align-items: center;
+  gap: 22rpx;
+}
+
+.stats-score {
+  display: flex;
+  align-items: baseline;
+  flex-shrink: 0;
+}
+
+.stats-avg {
+  font-size: 64rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -1rpx;
+}
+
+.stats-max {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-left: 4rpx;
+}
+
+.stats-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.stats-total {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+}
+
+/* ===== 分布条（与 index.wxss 同模式） ===== */
+.dist {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-top: 22rpx;
+  padding-top: 22rpx;
+  border-top: 1rpx solid var(--separator);
+}
+
+.dist-row {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+}
+
+.dist-star {
+  width: 56rpx;
+  font-size: 21rpx;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.dist-track {
+  flex: 1;
+  height: 10rpx;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 999rpx;
+  overflow: hidden;
+}
+
+.dist-fill {
+  height: 100%;
+  border-radius: 999rpx;
+}
+
+.dist-fill--5 { background: linear-gradient(to right, var(--gold), #DDBE82); }
+.dist-fill--4 { background: rgba(201, 169, 110, 0.55); }
+.dist-fill--3 { background: rgba(201, 169, 110, 0.32); }
+.dist-fill--2,
+.dist-fill--1 { background: rgba(0, 0, 0, 0.18); }
+
+.dist-count {
+  width: 56rpx;
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== 排序条 ===== */
+.sort-bar {
+  display: flex;
+  gap: 32rpx;
+  padding: 22rpx 4rpx 14rpx;
+}
+
+.sort-opt {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  padding: 6rpx 0;
+}
+
+.sort-opt--on {
+  color: var(--accent);
+  font-weight: 700;
+  border-bottom: 3rpx solid var(--accent);
+}
+
+/* ===== 评价列表 ===== */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.card {
+  background-color: var(--bg-elevated);
+  border-radius: 22rpx;
+  padding: 24rpx 26rpx;
+  box-shadow: 0 6rpx 18rpx rgba(0, 0, 0, 0.05);
+}
+
+.rtop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14rpx;
+}
+
+.ruser {
+  display: flex;
+  align-items: center;
+  gap: 14rpx;
+  flex: 1;
+  min-width: 0;
+}
+
+.ravatar {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: var(--accent-soft);
+}
+
+.ravatar-img {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.ravatar-ph {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #DFA0AA, #B98266);
+  color: #FFFFFF;
+  font-size: 26rpx;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ruser-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.rname {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.rtime {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+.rstars {
+  position: relative;
+  display: inline-block;
+  font-size: 24rpx;
+  line-height: 1;
+  letter-spacing: 2rpx;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* 服务徽章 */
+.rsvc-row {
+  margin-top: 14rpx;
+}
+
+.rsvc {
+  display: inline-block;
+  font-size: 20rpx;
+  font-weight: 700;
+  color: var(--accent);
+  background-color: var(--accent-soft);
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+}
+
+/* 标签 */
+.rtags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 14rpx;
+}
+
+.rtag {
+  font-size: 20rpx;
+  color: var(--text-secondary);
+  background-color: var(--fill-primary);
+  border: 1rpx solid var(--separator);
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+  line-height: 1.5;
+}
+
+.rcontent {
+  display: block;
+  font-size: 27rpx;
+  color: var(--text-primary);
+  line-height: 1.7;
+  margin-top: 14rpx;
+}
+
+/* 图片缩略 */
+.rthumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 14rpx;
+}
+
+.rthumb {
+  width: 150rpx;
+  height: 150rpx;
+  border-radius: 10rpx;
+  background-color: var(--bg);
+}
+
+/* 化妆师回复 */
+.rreply {
+  margin-top: 16rpx;
+  padding: 16rpx 18rpx;
+  background-color: var(--fill-primary);
+  border-left: 4rpx solid var(--accent);
+  border-radius: var(--radius-sm);
+}
+
+.rreply-label {
+  display: block;
+  font-size: 20rpx;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 6rpx;
+}
+
+.rreply-text {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* 加载更多 / 列表结束 */
+.load-more {
+  display: flex;
+  justify-content: center;
+  padding: 20rpx 0;
+}
+
+.list-end {
+  text-align: center;
+  padding: 24rpx 0 0;
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+}
+
+/* 复用 app.wxss 的 stars-bg / stars-fg（这里仅在 rstars 里用，靠 app 全局提供颜色） */
+.stars-bg { color: rgba(0, 0, 0, 0.12); }
+.stars-fg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--gold);
+  overflow: hidden;
+  white-space: nowrap;
+}

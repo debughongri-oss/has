@@ -1,0 +1,116 @@
+<view class="page-reviews">
+  <!-- 概览：平均分 + 分布条 -->
+  <view class="stats-card" wx:if="{{stats}}">
+    <view class="stats-top">
+      <view class="stats-score">
+        <text class="stats-avg">{{stats.average}}</text>
+        <text class="stats-max">/ 5.0</text>
+      </view>
+      <view class="stats-meta">
+        <view class="stars">
+          <text class="stars-bg">★★★★★</text>
+          <text class="stars-fg" style="width:{{stats.average / 5 * 100}}%">★★★★★</text>
+        </view>
+        <text class="stats-total">{{stats.total}} 条真实评价</text>
+      </view>
+    </view>
+
+    <view class="dist" wx:if="{{stats.distribution && stats.distribution.length}}">
+      <view class="dist-row" wx:for="{{stats.distribution}}" wx:key="star">
+        <text class="dist-star">{{item.star}}★</text>
+        <view class="dist-track">
+          <view class="dist-fill dist-fill--{{item.star}}" style="width:{{item.percent}}%"></view>
+        </view>
+        <text class="dist-count">{{item.count}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 排序条 -->
+  <view class="sort-bar">
+    <view
+      class="sort-opt tappable {{currentSort === item.key ? 'sort-opt--on' : ''}}"
+      wx:for="{{sortOptions}}"
+      wx:key="key"
+      bindtap="onSortChange"
+      data-key="{{item.key}}"
+    >{{item.label}}</view>
+  </view>
+
+  <!-- 评价列表 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="circular" size="80rpx" text="加载中..." />
+  </view>
+
+  <view class="list" wx:if="{{!loading && reviews.length}}">
+    <view class="card" wx:for="{{reviews}}" wx:key="_id">
+      <!-- 头部：头像 + 昵称 + 时间 -->
+      <view class="rtop">
+        <view class="ruser">
+          <view class="ravatar">
+            <image wx:if="{{item.avatar_url}}" class="ravatar-img" src="{{item.avatar_url}}" mode="aspectFill" />
+            <view wx:else class="ravatar-ph">{{item.avatarInitial}}</view>
+          </view>
+          <view class="ruser-text">
+            <text class="rname">{{item.nickname}}</text>
+            <text class="rtime">{{item.createdLabel}}</text>
+          </view>
+        </view>
+        <view class="rstars">
+          <text class="stars-bg">★★★★★</text>
+          <text class="stars-fg" style="width:{{item.rating / 5 * 100}}%">★★★★★</text>
+        </view>
+      </view>
+
+      <!-- 服务名徽章 -->
+      <view class="rsvc-row" wx:if="{{item.service_name}}">
+        <text class="rsvc">{{item.service_name}}</text>
+      </view>
+
+      <!-- 标签 -->
+      <view class="rtags" wx:if="{{item.tagLabels.length}}">
+        <text class="rtag" wx:for="{{item.tagLabels}}" wx:for-item="tl" wx:key="*this">{{tl}}</text>
+      </view>
+
+      <!-- 内容 -->
+      <text class="rcontent" wx:if="{{item.content}}">{{item.content}}</text>
+
+      <!-- 图片 -->
+      <view class="rthumbs" wx:if="{{item.images.length}}">
+        <image
+          class="rthumb"
+          wx:for="{{item.images}}"
+          wx:for-item="img"
+          wx:key="*this"
+          src="{{img}}"
+          mode="aspectFill"
+          bindtap="onPreviewImage"
+          data-url="{{img}}"
+          data-id="{{item._id}}"
+        />
+      </view>
+
+      <!-- 化妆师回复 -->
+      <view class="rreply" wx:if="{{item.artist_reply}}">
+        <text class="rreply-label">化妆师回复</text>
+        <text class="rreply-text">{{item.artist_reply}}</text>
+      </view>
+    </view>
+
+    <!-- 加载更多 -->
+    <view class="load-more" wx:if="{{loadingMore}}">
+      <t-loading theme="circular" size="36rpx" />
+    </view>
+    <view class="list-end" wx:elif="{{!hasMore && reviews.length > 3}}">
+      <text>已展示全部评价</text>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-container" wx:if="{{!loading && !reviews.length}}">
+    <view class="empty">
+      <view class="empty-icon"></view>
+      <text class="empty-text">暂无评价</text>
+    </view>
+  </view>
+</view>

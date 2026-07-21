@@ -191,6 +191,13 @@ Page({
     wx.switchTab({ url: '/pages/services/list' })
   },
 
+  /**
+   * v2.3-r2: 跳转到公开评价列表页（"查看全部 N 条评价" 目的地）
+   */
+  goToAllReviews: function () {
+    wx.navigateTo({ url: '/pages/review/list' })
+  },
+
   goToBooking: function () {
     wx.switchTab({ url: '/pages/booking/create' })
   },

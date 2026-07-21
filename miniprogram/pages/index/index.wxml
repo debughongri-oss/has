@@ -135,6 +135,10 @@
           <text class="section-label">客户评价</text>
           <view class="section-rule"></view>
         </view>
+        <view class="section-more tappable" bindtap="goToAllReviews">
+          <text>查看全部 {{reviewStats.total}} 条</text>
+          <view class="section-more-arrow"></view>
+        </view>
       </view>
 
       <!-- v2.3-r2: 评分概览 + 分布条（不可造假的证据） -->
