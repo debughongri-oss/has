@@ -27,10 +27,69 @@
   padding: 6rpx 20rpx; background-color: var(--accent-soft); border-radius: 999rpx;
 }
 
+/* ===== v2.3-r2 DTL-01: 过敏 banner（顶部，red-bg + ⚠ 图标，无法忽略） ===== */
+.allergy-banner {
+  display: flex;
+  gap: 16rpx;
+  align-items: flex-start;
+  margin: 24rpx var(--page-pad) 0;
+  padding: 22rpx 24rpx;
+  background-color: var(--red-bg);
+  border: 1rpx solid rgba(196, 84, 74, 0.25);
+  border-radius: 18rpx;
+}
+
+.allergy-icon {
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 50%;
+  background-color: var(--red);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.allergy-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.allergy-title {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 800;
+  color: var(--red);
+  line-height: 1.3;
+}
+
+.allergy-text {
+  display: block;
+  font-size: 24rpx;
+  color: var(--text-primary);
+  line-height: 1.55;
+  margin-top: 6rpx;
+}
+
 /* ===== Profile header ===== */
 .pinfo { display: flex; gap: 24rpx; align-items: center; }
 .pavatar { width: 120rpx; height: 120rpx; flex-shrink: 0; border-radius: 50%; overflow: hidden; background-color: var(--accent-soft); }
 .pavatar-img { width: 100%; height: 100%; display: block; }
+/* v2.3-r2: 头像 fallback 用 nickname[0] + 渐变（与 index/list 一致） */
+.pavatar-ph--initial {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #DFA0AA, #B98266);
+  color: #FFFFFF;
+  font-size: 48rpx;
+  font-weight: 700;
+  line-height: 1;
+}
 .pavatar-ph {
   width: 100%; height: 100%; background-color: var(--accent-soft);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='8' r='4' fill='%23FF6F8B'/%3E%3Cpath d='M4 20c0-4 4-7 8-7s8 3 8 7' fill='%23FF6F8B'/%3E%3C/svg%3E");
@@ -42,8 +101,32 @@
 .ptag { font-size: 20rpx; font-weight: 600; padding: 5rpx 18rpx; border-radius: 999rpx; }
 .ptag--vip { background-color: rgba(212,175,55,0.12); color: var(--gold); }
 .ptag--new { background-color: var(--accent-soft); color: var(--accent); }
-.ptag--returning { background-color: var(--fill-primary); color: var(--text-secondary); }
+.ptag--returning { background-color: var(--blue-bg); color: var(--blue); }
 .pcount { display: block; font-size: 24rpx; color: var(--text-secondary); margin-top: 8rpx; }
+
+/* v2.3-r2 DTL-02: 富化 meta（member-since + 联系方式脱敏） */
+.pmeta {
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+  margin-top: 10rpx;
+}
+.pmeta-row { display: flex; gap: 10rpx; align-items: baseline; }
+.pmeta-key {
+  font-size: 20rpx;
+  color: var(--text-tertiary);
+  width: 56rpx;
+  flex-shrink: 0;
+}
+.pmeta-val {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+.pmeta-val.mono {
+  font-family: 'SF Mono', 'JetBrains Mono', monospace;
+  letter-spacing: 0.5rpx;
+}
 
 /* ===== Detail fields (copied from bookings/detail) ===== */
 .dfield { display: flex; gap: 20rpx; padding: 20rpx 0; border-bottom: 1rpx solid var(--separator); }

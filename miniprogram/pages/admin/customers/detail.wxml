@@ -4,12 +4,21 @@
   </view>
 
   <block wx:if="{{!loading && customer}}">
+    <!-- v2.3-r2 DTL-01: 过敏 banner（最危险信息，置顶抢眼，无法忽略） -->
+    <view class="allergy-banner" wx:if="{{note && note.allergy}}">
+      <view class="allergy-icon">!</view>
+      <view class="allergy-body">
+        <text class="allergy-title">过敏史 · 接单前必读</text>
+        <text class="allergy-text">{{note.allergy}}</text>
+      </view>
+    </view>
+
     <!-- 客户头部 -->
     <view class="card profile-header">
       <view class="pinfo">
         <view class="pavatar">
           <image wx:if="{{customer.avatar_url}}" class="pavatar-img" src="{{customer.avatar_url}}" mode="aspectFill" />
-          <view wx:else class="pavatar-ph"></view>
+          <view wx:else class="pavatar-ph pavatar-ph--initial">{{customer.avatarInitial}}</view>
         </view>
         <view class="ptext">
           <view class="ptop">
@@ -17,11 +26,26 @@
             <text class="ptag ptag--{{customer.tag}}">{{customer.tagLabel}}</text>
           </view>
           <text class="pcount">已完成 {{customer.completed_count}} 次预约</text>
+          <!-- v2.3-r2 DTL-02: 富化信息（member-since + 联系方式脱敏） -->
+          <view class="pmeta" wx:if="{{customer.memberSince || customer.contactPhoneMasked}}">
+            <view class="pmeta-row" wx:if="{{customer.memberSince}}">
+              <text class="pmeta-key">客户于</text>
+              <text class="pmeta-val">{{customer.memberSince}}</text>
+            </view>
+            <view class="pmeta-row" wx:if="{{customer.contactPhoneMasked}}">
+              <text class="pmeta-key">电话</text>
+              <text class="pmeta-val mono">{{customer.contactPhoneMasked}}</text>
+            </view>
+            <view class="pmeta-row" wx:if="{{customer.contactWechat}}">
+              <text class="pmeta-key">微信</text>
+              <text class="pmeta-val">{{customer.contactWechat}}</text>
+            </view>
+          </view>
         </view>
       </view>
     </view>
 
-    <!-- 备注区 (Task 2 will add edit functionality; this is the display skeleton) -->
+    <!-- 备注区（过敏字段已上移到顶部 banner，这里只保留其他备注） -->
     <view class="card">
       <view class="section-head">
         <text class="card-title">客户备注</text>
@@ -37,7 +61,7 @@
           <text class="dfield-val">{{note.preference}}</text>
         </view>
         <view class="dfield" wx:if="{{note.allergy}}">
-          <text class="dfield-key">过敏史</text>
+          <text class="dfield-key">过敏</text>
           <text class="dfield-val note-allergy">{{note.allergy}}</text>
         </view>
         <view class="dfield" wx:if="{{note.custom_notes}}">

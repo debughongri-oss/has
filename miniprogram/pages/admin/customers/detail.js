@@ -10,6 +10,19 @@ const formatDate = (dateStr) => {
   return parts.length === 3 ? `${Number(parts[1])}月${Number(parts[2])}日` : dateStr
 }
 
+// "2026-06-25" → "2024 年 3 月"（用于 member-since 显示）
+const formatMemberSince = (dateStr) => {
+  if (!dateStr) return ''
+  const parts = String(dateStr).split('-')
+  return parts.length === 3 ? `${parts[0]} 年 ${Number(parts[1])} 月` : ''
+}
+
+// 联系电话脱敏："13812345678" → "138 **** 5678"
+const maskPhone = (phone) => {
+  if (!phone || phone.length < 7) return phone || ''
+  return phone.slice(0, 3) + ' **** ' + phone.slice(-4)
+}
+
 // Booking status labels (subset of bookings.js getStatusLabel)
 const STATUS_LABELS = {
   pending: '待确认', accepted: '已确认', rejected: '已拒绝',
@@ -86,13 +99,37 @@ Page({
           ...r,
           dateLabel: formatReviewDate(r.created_at)
         }))
+
+        // v2.3-r2 DTL-02: 计算 member-since（最早 booking 的日期）+ 联系方式（最新 booking 的）
+        // bookings 已按 booking_date 倒序，最早 = 最后一个；最新 = 第一个
+        let memberSince = ''
+        let contactPhone = ''
+        let contactWechat = ''
+        if (bookings.length > 0) {
+          const latest = bookings[0] || {}
+          contactPhone = latest.contact_phone || ''
+          contactWechat = latest.contact_wechat || ''
+          // 找最早的 booking_date
+          const allDates = bookings
+            .map(b => b.booking_date)
+            .filter(Boolean)
+            .sort()
+          if (allDates.length > 0) {
+            memberSince = formatMemberSince(allDates[0])
+          }
+        }
+
         this.setData({
           customer: {
             nickname: data.nickname || '微信用户',
             avatar_url: data.avatar_url || '',
+            avatarInitial: ((data.nickname || '?').charAt(0)),
             completed_count: data.completed_count || 0,
             tag: data.tag,
-            tagLabel: TAG_LABELS[data.tag] || data.tag
+            tagLabel: TAG_LABELS[data.tag] || data.tag,
+            memberSince: memberSince,
+            contactPhoneMasked: maskPhone(contactPhone),
+            contactWechat: contactWechat
           },
           bookings,
           bookingsPreview: bookings.slice(0, HISTORY_PREVIEW_COUNT),
