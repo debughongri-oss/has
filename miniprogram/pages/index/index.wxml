@@ -160,11 +160,14 @@
         </view>
       </view>
 
-      <!-- REVW-10/D-04: 大家这样说 — 高频标签聚合（口碑转化） -->
+      <!-- REVW-10/D-04: 大家这样说 — 高频标签聚合（口碑转化 · 按热度分级） -->
       <view class="tag-cloud" wx:if="{{reviewStats.topTags && reviewStats.topTags.length}}">
-        <text class="tag-cloud-title">大家这样说</text>
+        <view class="tag-cloud-head">
+          <text class="tag-cloud-quote">❝</text>
+          <text class="tag-cloud-title">大家这样说</text>
+        </view>
         <view class="tag-cloud-list">
-          <view class="cloud-chip" wx:for="{{reviewStats.topTags}}" wx:key="key">
+          <view class="cloud-chip cloud-chip--{{item.tier}}" wx:for="{{reviewStats.topTags}}" wx:key="key">
             <text class="cloud-chip-label">{{item.label}}</text>
             <text class="cloud-chip-count">×{{item.count}}</text>
           </view>

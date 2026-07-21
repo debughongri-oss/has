@@ -130,8 +130,10 @@ Page({
           displayNickname: r.is_anonymous ? '匿名客户' : (r.user_nickname || '匿名客户')
         }))
 
-        // REVW-10/D-04: 高频标签 top 5
-        const topTags = (data.topTags || []).slice(0, 5)
+        // REVW-10/D-04: 高频标签 top 5 — 按热度分级渲染（hot/warm/normal）
+        const topTags = (data.topTags || []).slice(0, 5).map((t, i) => Object.assign({}, t, {
+          tier: i === 0 ? 'hot' : (i <= 1 ? 'warm' : 'normal')
+        }))
 
         this.setData({
           reviewStats: { average: avg, total: total, recent: recent, topTags: topTags }
