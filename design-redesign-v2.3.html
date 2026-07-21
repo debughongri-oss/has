@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>v2.3 UI/UX 重设计提案 — 化妆师小程序</title>
+<style>
+  /* ===== Reset & Base ===== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background-color: #F5F1EB;
+    color: #17151A;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "tnum" 1;
+  }
+  .serif { font-family: 'STSong', 'Songti SC', 'Source Han Serif SC', 'Noto Serif CJK SC', Georgia, serif; }
+
+  /* ===== Layout ===== */
+  .wrap { max-width: 1280px; margin: 0 auto; padding: 0 48px; }
+  section { padding: 96px 0; border-bottom: 1px solid rgba(23, 21, 26, 0.08); }
+  section:last-child { border-bottom: none; }
+
+  /* ===== Cover ===== */
+  .cover { padding: 140px 0 100px; background-color: #F5F1EB; position: relative; overflow: hidden; }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201, 169, 110, 0.18), transparent 70%);
+    pointer-events: none;
+  }
+  .cover-meta {
+    font-size: 13px; letter-spacing: 4px; text-transform: uppercase;
+    color: #A78247; font-weight: 700; margin-bottom: 32px;
+  }
+  .cover h1 {
+    font-size: clamp(48px, 7vw, 88px); line-height: 1.04; font-weight: 800;
+    letter-spacing: -2px; max-width: 900px; margin-bottom: 40px;
+  }
+  .cover h1 em {
+    font-style: italic; font-weight: 400; color: #C9A96E;
+    font-family: 'STSong', 'Songti SC', Georgia, serif;
+  }
+  .cover-lead {
+    font-size: 19px; max-width: 680px; color: rgba(23, 21, 26, 0.68);
+    line-height: 1.65; margin-bottom: 72px;
+  }
+  .cover-stats { display: flex; gap: 64px; flex-wrap: wrap; }
+  .cover-stat { display: flex; flex-direction: column; gap: 8px; }
+  .cover-stat-num {
+    font-size: 64px; font-weight: 800; line-height: 1;
+    color: #17151A; letter-spacing: -2px;
+  }
+  .cover-stat-num.accent { color: #E85575; }
+  .cover-stat-num.gold { color: #C9A96E; }
+  .cover-stat-label {
+    font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: rgba(23, 21, 26, 0.5); font-weight: 600;
+  }
+  .cover-toc {
+    margin-top: 96px; padding-top: 40px;
+    border-top: 1px solid rgba(23, 21, 26, 0.1);
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;
+  }
+  .cover-toc a {
+    color: rgba(23, 21, 26, 0.7); text-decoration: none; font-size: 15px;
+    display: flex; align-items: baseline; gap: 12px;
+    transition: color 0.15s;
+  }
+  .cover-toc a:hover { color: #E85575; }
+  .cover-toc-num {
+    font-family: 'STSong', Georgia, serif; font-style: italic;
+    color: #C9A96E; font-size: 17px; font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ===== Tokens Section ===== */
+  .tokens { background-color: #FFFFFF; }
+  .section-head { margin-bottom: 56px; }
+  .section-eyebrow {
+    font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
+    color: #A78247; font-weight: 700; margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: clamp(34px, 4.5vw, 52px); line-height: 1.1; font-weight: 800;
+    letter-spacing: -1.5px; margin-bottom: 20px;
+  }
+  .section-lead { font-size: 17px; color: rgba(23, 21, 26, 0.65); max-width: 720px; }
+
+  .tokens-grid {
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 56px;
+  }
+  .token-card {
+    background: #FAF7F2; border-radius: 16px; padding: 32px;
+    border: 1px solid rgba(23, 21, 26, 0.05);
+  }
+  .token-card h3 {
+    font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(23, 21, 26, 0.5); font-weight: 700; margin-bottom: 24px;
+  }
+  .swatch-row { display: flex; gap: 14px; margin-bottom: 16px; flex-wrap: wrap; }
+  .swatch { display: flex; flex-direction: column; gap: 8px; }
+  .swatch-chip {
+    width: 64px; height: 64px; border-radius: 12px;
+    border: 1px solid rgba(23, 21, 26, 0.08);
+  }
+  .swatch-name { font-size: 12px; color: rgba(23, 21, 26, 0.7); font-weight: 600; }
+  .swatch-hex { font-size: 11px; color: rgba(23, 21, 26, 0.45); font-family: 'SF Mono', monospace; }
+  .type-row { display: flex; flex-direction: column; gap: 16px; }
+  .type-sample { padding: 16px 0; border-bottom: 1px solid rgba(23, 21, 26, 0.06); }
+  .type-sample:last-child { border-bottom: none; }
+  .type-meta { font-size: 11px; color: rgba(23, 21, 26, 0.45); font-family: 'SF Mono', monospace; letter-spacing: 0.5px; }
+
+  /* ===== Case Section ===== */
+  .case { background-color: #FFFFFF; }
+  .case:nth-child(even) { background-color: #FAF7F2; }
+
+  .case-header {
+    display: grid; grid-template-columns: 80px 1fr; gap: 24px;
+    align-items: baseline; margin-bottom: 40px;
+  }
+  .case-num {
+    font-family: 'STSong', Georgia, serif; font-style: italic;
+    font-size: 56px; font-weight: 700; color: #C9A96E; line-height: 1;
+  }
+  .case-title-block { display: flex; flex-direction: column; gap: 12px; }
+  .case-locus {
+    font-size: 12px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: rgba(23, 21, 26, 0.45); font-weight: 700;
+  }
+  .case-title {
+    font-size: clamp(28px, 3.4vw, 40px); line-height: 1.15; font-weight: 800;
+    letter-spacing: -1px;
+  }
+  .case-summary {
+    font-size: 17px; color: rgba(23, 21, 26, 0.65); max-width: 760px;
+    line-height: 1.65; margin-top: 8px;
+  }
+
+  /* ===== Issues Table ===== */
+  .issues {
+    margin: 48px 0; padding: 32px; background: #FFFFFF;
+    border-radius: 12px; border: 1px solid rgba(23, 21, 26, 0.06);
+  }
+  .case:nth-child(even) .issues { background: #FFFFFF; }
+  .issues-title {
+    font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    color: rgba(23, 21, 26, 0.5); font-weight: 700; margin-bottom: 20px;
+  }
+  .issue-row {
+    display: grid; grid-template-columns: 60px 1fr 100px; gap: 20px;
+    padding: 14px 0; border-bottom: 1px solid rgba(23, 21, 26, 0.05);
+    align-items: baseline;
+  }
+  .issue-row:last-child { border-bottom: none; }
+  .issue-id { font-family: 'SF Mono', monospace; font-size: 12px; color: rgba(23, 21, 26, 0.4); }
+  .issue-text { font-size: 15px; color: #17151A; line-height: 1.55; }
+  .issue-sev {
+    font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+    padding: 4px 10px; border-radius: 4px; text-align: center; justify-self: end;
+  }
+  .issue-sev--p0 { background: #FFE5E5; color: #C4544A; }
+  .issue-sev--p1 { background: #FFEFE0; color: #D4864A; }
+  .issue-sev--p2 { background: #F0EBE0; color: #A78247; }
+
+  /* ===== Mockup Frames ===== */
+  .mockups {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 56px;
+    margin: 56px 0; align-items: start;
+  }
+  .mockup { display: flex; flex-direction: column; gap: 16px; }
+  .mockup-label {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding-bottom: 12px; border-bottom: 1px solid rgba(23, 21, 26, 0.1);
+  }
+  .mockup-tag {
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 700;
+  }
+  .mockup-tag--before { color: rgba(23, 21, 26, 0.4); }
+  .mockup-tag--after { color: #E85575; }
+  .mockup-name { font-size: 13px; color: rgba(23, 21, 26, 0.55); }
+
+  /* iPhone frame */
+  .phone {
+    width: 100%; max-width: 340px; aspect-ratio: 9 / 19.5;
+    background: #17151A; border-radius: 38px; padding: 8px;
+    margin: 0 auto; box-shadow: 0 24px 48px rgba(23, 21, 26, 0.18);
+    position: relative;
+  }
+  .phone-screen {
+    width: 100%; height: 100%; background: #F4F2F4;
+    border-radius: 30px; overflow: hidden; position: relative;
+    font-size: 11px; line-height: 1.5;
+  }
+  .phone-notch {
+    position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+    width: 90px; height: 22px; background: #17151A; border-radius: 12px;
+    z-index: 100;
+  }
+  .phone-content {
+    width: 100%; height: 100%; overflow: hidden;
+    padding-top: 44px;
+  }
+
+  /* ===== Mockup Content (mini-program simulated) ===== */
+  .mp-page { padding: 12px 12px calc(12px + env(safe-area-inset-bottom)); height: 100%; overflow: hidden; }
+  .mp-card {
+    background: #FFFFFF; border-radius: 10px; padding: 10px;
+    margin-bottom: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+  }
+  .mp-card-title { font-size: 10px; font-weight: 700; color: rgba(0,0,0,0.5); letter-spacing: 0.5px; margin-bottom: 6px; }
+  .mp-row { display: flex; align-items: center; gap: 6px; }
+  .mp-text { font-size: 10px; color: #17151A; }
+  .mp-text-mute { color: rgba(0,0,0,0.5); }
+  .mp-text-faint { color: rgba(0,0,0,0.32); font-size: 9px; }
+  .mp-stars { color: #C9A96E; font-size: 10px; letter-spacing: 1px; }
+  .mp-stars-bg { color: rgba(0,0,0,0.12); }
+
+  /* annotation callout */
+  .annot {
+    position: absolute; z-index: 50;
+    background: #E85575; color: #FFF; font-size: 9px; font-weight: 700;
+    padding: 3px 7px; border-radius: 10px; white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(232, 85, 117, 0.4);
+  }
+  .annot--gold { background: #C9A96E; box-shadow: 0 4px 12px rgba(201, 169, 110, 0.4); }
+  .annot--num {
+    width: 18px; height: 18px; padding: 0; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+  }
+
+  /* ===== Rationale ===== */
+  .rationale {
+    margin-top: 48px; padding: 32px; background: #FAF7F2;
+    border-radius: 12px; border-left: 4px solid #C9A96E;
+  }
+  .rationale-title {
+    font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+    color: #A78247; font-weight: 700; margin-bottom: 20px;
+  }
+  .rationale-points { display: flex; flex-direction: column; gap: 16px; }
+  .rationale-point {
+    display: grid; grid-template-columns: 28px 1fr; gap: 16px;
+    align-items: baseline;
+  }
+  .rationale-num {
+    font-family: 'STSong', Georgia, serif; font-style: italic;
+    color: #C9A96E; font-size: 22px; font-weight: 700; line-height: 1;
+  }
+  .rationale-text { font-size: 15px; color: #17151A; line-height: 1.65; }
+  .rationale-text strong { color: #17151A; font-weight: 700; }
+
+  /* ===== Priority Matrix ===== */
+  .matrix-table {
+    width: 100%; margin-top: 32px;
+    border-collapse: collapse; background: #FFFFFF;
+    border-radius: 12px; overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+  }
+  .matrix-table th, .matrix-table td {
+    padding: 16px 20px; text-align: left;
+    border-bottom: 1px solid rgba(23, 21, 26, 0.06);
+    font-size: 14px;
+  }
+  .matrix-table th {
+    background: #FAF7F2; font-size: 11px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: rgba(23, 21, 26, 0.5); font-weight: 700;
+  }
+  .matrix-table tr:last-child td { border-bottom: none; }
+  .matrix-id { font-family: 'SF Mono', monospace; font-size: 12px; color: rgba(23, 21, 26, 0.4); }
+  .matrix-pill {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.5px;
+  }
+  .matrix-pill--do { background: #E0F0E5; color: #5A9E6F; }
+  .matrix-pill--defer { background: #F0EBE0; color: #A78247; }
+  .matrix-pill--skip { background: rgba(0,0,0,0.05); color: rgba(23, 21, 26, 0.4); }
+
+  /* ===== Footer ===== */
+  footer {
+    padding: 64px 0 48px; background: #17151A; color: rgba(255,255,255,0.6);
+  }
+  footer .wrap { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 24px; }
+  footer .serif { color: rgba(255,255,255,0.9); font-size: 20px; }
+  footer .meta { font-size: 13px; }
+
+  /* ===== Responsive ===== */
+  @media (max-width: 880px) {
+    .wrap { padding: 0 24px; }
+    .cover { padding: 80px 0 60px; }
+    .cover-stats { gap: 32px; }
+    .cover-stat-num { font-size: 44px; }
+    .tokens-grid { grid-template-columns: 1fr; gap: 32px; }
+    .mockups { grid-template-columns: 1fr; gap: 40px; }
+    .case-header { grid-template-columns: 1fr; gap: 8px; }
+    .case-num { font-size: 40px; }
+    section { padding: 64px 0; }
+    .issue-row { grid-template-columns: 50px 1fr; }
+    .issue-row .issue-sev { grid-column: 2; justify-self: start; margin-top: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ COVER ============ -->
+<section class="cover">
+  <div class="wrap">
+    <div class="cover-meta">UI/UX Audit · Redesign Proposal · 2026-07-21</div>
+    <h1>把"看到作品"<br/>真正变成 <em>"我要预约"</em><br/>的体验重构</h1>
+    <p class="cover-lead">
+      针对 v2.3 客户经营 & 口碑增强里程碑引入的 5 个核心页面，做了一次系统性的 UI/UX 审计。
+      发现 17 处可优化点（9 项 P1 / 8 项 P2），下面是 5 套重设计方案，按"对核心价值路径影响"排序。
+    </p>
+    <div class="cover-stats">
+      <div class="cover-stat">
+        <div class="cover-stat-num">5</div>
+        <div class="cover-stat-label">审计页面</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-num accent">9</div>
+        <div class="cover-stat-label">P1 关键问题</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-num gold">5</div>
+        <div class="cover-stat-label">重设计方案</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-num">17</div>
+        <div class="cover-stat-label">总优化点</div>
+      </div>
+    </div>
+
+    <nav class="cover-toc">
+      <a href="#case-1"><span class="cover-toc-num">01</span>首页 · 客户评价模块</a>
+      <a href="#case-2"><span class="cover-toc-num">02</span>评价表单 · 提交路径</a>
+      <a href="#case-3"><span class="cover-toc-num">03</span>后台 · 评价管理列表</a>
+      <a href="#case-4"><span class="cover-toc-num">04</span>后台 · 客户列表</a>
+      <a href="#case-5"><span class="cover-toc-num">05</span>后台 · 客户详情</a>
+      <a href="#matrix"><span class="cover-toc-num">06</span>优先级矩阵</a>
+    </nav>
+  </div>
+</section>
+
+<!-- ============ DESIGN TOKENS ============ -->
+<section class="tokens">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-eyebrow">Design Foundation</div>
+      <h2 class="section-title">复用已有的品牌语言</h2>
+      <p class="section-lead">
+        重设计不引入新色板、新字号、新组件——把现有 token 用对、用一致、用到极致。
+      </p>
+    </div>
+
+    <div class="tokens-grid">
+      <div class="token-card">
+        <h3>Color Tokens</h3>
+        <div class="swatch-row">
+          <div class="swatch">
+            <div class="swatch-chip" style="background:#FF6F8B"></div>
+            <div class="swatch-name">accent</div>
+            <div class="swatch-hex">#FF6F8B</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background:#E85575"></div>
+            <div class="swatch-name">accent-dark</div>
+            <div class="swatch-hex">#E85575</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background:#C9A96E"></div>
+            <div class="swatch-name">gold</div>
+            <div class="swatch-hex">#C9A96E</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background:#C4544A"></div>
+            <div class="swatch-name">red (alert)</div>
+            <div class="swatch-hex">#C4544A</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background:#5A9E6F"></div>
+            <div class="swatch-name">green (ok)</div>
+            <div class="swatch-hex">#5A9E6F</div>
+          </div>
+          <div class="swatch">
+            <div class="swatch-chip" style="background:#17151A"></div>
+            <div class="swatch-name">text-primary</div>
+            <div class="swatch-hex">#17151A</div>
+          </div>
+        </div>
+        <div style="font-size:13px; color:rgba(23,21,26,0.6); margin-top:16px; line-height:1.6;">
+          所有重设计严格走 token。Case 03 的 <code style="background:rgba(0,0,0,0.05); padding:1px 5px; border-radius:3px; font-family:'SF Mono',monospace; font-size:12px;">#D9534F</code> 硬编码删除按钮 → <code style="background:rgba(0,0,0,0.05); padding:1px 5px; border-radius:3px; font-family:'SF Mono',monospace; font-size:12px;">var(--red)</code>。
+        </div>
+      </div>
+
+      <div class="token-card">
+        <h3>Typography Scale</h3>
+        <div class="type-row">
+          <div class="type-sample">
+            <div style="font-size:32px; font-weight:800; letter-spacing:-1px; line-height:1.1;">Display 32</div>
+            <div class="type-meta">--fs-xl · hero / 数字</div>
+          </div>
+          <div class="type-sample">
+            <div style="font-size:24px; font-weight:700; line-height:1.2;">Heading 24</div>
+            <div class="type-meta">--fs-lg · 章节标题</div>
+          </div>
+          <div class="type-sample">
+            <div style="font-size:16px; font-weight:600;">Body Semibold 16</div>
+            <div class="type-meta">--fs-base · CTA</div>
+          </div>
+          <div class="type-sample">
+            <div style="font-size:13px;">Caption Regular 13</div>
+            <div class="type-meta">--fs-sm · 正文</div>
+          </div>
+          <div class="type-sample">
+            <div style="font-size:11px; color:rgba(23,21,26,0.5);">Meta 11</div>
+            <div class="type-meta">--fs-xs · 辅助</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASE 1: INDEX ============ -->
+<section class="case" id="case-1">
+  <div class="wrap">
+    <header class="case-header">
+      <div class="case-num">01</div>
+      <div class="case-title-block">
+        <div class="case-locus">客户侧 · 首页 · 客户评价模块</div>
+        <h2 class="case-title">单条引用撑不起"口碑"两个字</h2>
+        <p class="case-summary">
+          首页评价区只有一条 latest review quote。客户在做"要不要预约"决策时，单条评价的说服力远不如 2–3 条横滑 +
+          「大家这样说」标签云组合拳。同时底部 CTA 主次不分，预约按钮没拿到应有的视觉权重。
+        </p>
+      </div>
+    </header>
+
+    <div class="issues">
+      <div class="issues-title">Issues Found</div>
+      <div class="issue-row">
+        <div class="issue-id">IDX-01</div>
+        <div class="issue-text">评价区只有 1 条 latest review quote，social proof 太薄</div>
+        <div class="issue-sev issue-sev--p1">P1</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">IDX-02</div>
+        <div class="issue-text">CTA bar 预约/联系按钮 50/50 平分，缺乏主次</div>
+        <div class="issue-sev issue-sev--p1">P1</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">IDX-03</div>
+        <div class="issue-text">标签云 <code style="background:rgba(0,0,0,0.05);padding:1px 5px;border-radius:3px;font-family:'SF Mono',monospace;font-size:11px;">×N</code> 计数太"数据化"，破坏温度</div>
+        <div class="issue-sev issue-sev--p2">P2</div>
+      </div>
+    </div>
+
+    <div class="mockups">
+      <!-- BEFORE -->
+      <div class="mockup">
+        <div class="mockup-label">
+          <div class="mockup-tag mockup-tag--before">Before · 当前</div>
+          <div class="mockup-name">单卡 + 平分 CTA</div>
+        </div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="mp-page">
+                <!-- Hero mini -->
+                <div class="mp-card">
+                  <div class="mp-row" style="gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#DFA0AA,#B98266);"></div>
+                    <div style="flex:1;">
+                      <div class="mp-text" style="font-weight:800;font-size:12px;">陈化妆师</div>
+                      <div class="mp-text-faint" style="font-size:8px;">Makeup Artist</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Section label -->
+                <div style="padding:8px 4px;">
+                  <div class="mp-text" style="font-weight:800;font-size:14px;">客户评价</div>
+                  <div style="width:18px;height:1.5px;background:#C9A96E;margin-top:4px;"></div>
+                </div>
+                <!-- Single review card -->
+                <div class="mp-card" style="position:relative;padding-top:10px;">
+                  <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,#C9A96E,#FF6F8B);"></div>
+                  <div class="mp-row" style="gap:8px;">
+                    <div style="font-size:22px;font-weight:800;line-height:1;">4.8</div>
+                    <div style="font-size:8px;color:rgba(0,0,0,0.3);">/ 5.0</div>
+                    <div style="flex:1;text-align:right;">
+                      <div class="mp-stars">★★★★★</div>
+                    </div>
+                  </div>
+                  <div class="mp-text-faint" style="margin-top:4px;">126 条真实评价</div>
+                  <div style="margin-top:8px;padding-left:8px;border-left:2px solid #C9A96E;">
+                    <div class="mp-text" style="font-size:10px;line-height:1.5;">手法很温柔，整个过程很舒服，妆面也很自然，强烈推荐！</div>
+                    <div class="mp-text-faint" style="margin-top:4px;">— 小红</div>
+                  </div>
+                </div>
+                <!-- Tag cloud -->
+                <div class="mp-card" style="background:rgba(201,169,110,0.05);box-shadow:none;">
+                  <div class="mp-row" style="gap:4px;margin-bottom:6px;">
+                    <span style="font-size:14px;color:#C9A96E;font-weight:700;line-height:1;">❝</span>
+                    <span class="mp-text-faint" style="font-size:9px;letter-spacing:0.5px;">大家这样说</span>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:5px;">
+                    <span style="background:linear-gradient(135deg,#C9A96E,#DDBE82);color:#FFF;font-size:9px;font-weight:700;padding:4px 9px;border-radius:99px;">手法专业 ×48</span>
+                    <span style="background:rgba(201,169,110,0.16);font-size:9px;padding:3px 7px;border-radius:99px;">妆面自然 ×32</span>
+                    <span style="background:rgba(201,169,110,0.08);font-size:9px;padding:3px 7px;border-radius:99px;">准时 ×18</span>
+                  </div>
+                </div>
+                <!-- CTA bar -->
+                <div style="position:absolute;bottom:12px;left:12px;right:12px;display:flex;height:36px;background:#FFFFFF;border-radius:0;border:1px solid rgba(0,0,0,0.08);overflow:hidden;">
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#17151A;">微信联系</div>
+                  <div style="flex:1;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;background:linear-gradient(135deg,#FF6F8B,#E85575);color:#FFF;">预约化妆</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AFTER -->
+      <div class="mockup">
+        <div class="mockup-label">
+          <div class="mockup-tag mockup-tag--after">After · 重设计</div>
+          <div class="mockup-name">横滑 + CTA 主次</div>
+        </div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="mp-page">
+                <div class="mp-card">
+                  <div class="mp-row" style="gap:8px;">
+                    <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#DFA0AA,#B98266);"></div>
+                    <div style="flex:1;">
+                      <div class="mp-text" style="font-weight:800;font-size:12px;">陈化妆师</div>
+                      <div class="mp-text-faint" style="font-size:8px;">Makeup Artist</div>
+                    </div>
+                  </div>
+                </div>
+                <div style="padding:8px 4px;display:flex;justify-content:space-between;align-items:baseline;">
+                  <div>
+                    <div class="mp-text" style="font-weight:800;font-size:14px;">客户评价</div>
+                    <div style="width:18px;height:1.5px;background:#C9A96E;margin-top:4px;"></div>
+                  </div>
+                  <div class="mp-text-faint" style="font-size:9px;color:#E85575;font-weight:700;">查看全部 126 条 ›</div>
+                </div>
+                <!-- Stats + horizontal scroll of reviews -->
+                <div class="mp-card" style="position:relative;padding:10px;">
+                  <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(to right,#C9A96E,#FF6F8B);"></div>
+                  <div class="mp-row" style="gap:6px;">
+                    <div style="font-size:24px;font-weight:800;line-height:1;letter-spacing:-0.5px;">4.8</div>
+                    <div style="font-size:8px;color:rgba(0,0,0,0.3);">/ 5.0</div>
+                    <div style="flex:1;text-align:right;">
+                      <div class="mp-stars">★★★★★</div>
+                    </div>
+                  </div>
+                  <div class="mp-text-faint" style="margin-top:3px;font-size:9px;">126 条真实评价</div>
+                </div>
+                <!-- Horizontal scroll cards -->
+                <div style="display:flex;gap:6px;overflow:hidden;padding-bottom:4px;">
+                  <div style="flex:1;background:#FFF;border-radius:8px;padding:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04);border-left:2px solid #C9A96E;min-width:0;">
+                    <div class="mp-row" style="gap:4px;margin-bottom:4px;">
+                      <span class="mp-stars" style="font-size:8px;">★★★★★</span>
+                    </div>
+                    <div class="mp-text" style="font-size:9px;line-height:1.4;">手法温柔，妆面自然，强烈推荐！</div>
+                    <div class="mp-text-faint" style="font-size:8px;margin-top:3px;">小红 · 新娘妆</div>
+                  </div>
+                  <div style="flex:1;background:#FFF;border-radius:8px;padding:8px;box-shadow:0 2px 6px rgba(0,0,0,0.04);border-left:2px solid #C9A96E;min-width:0;">
+                    <div class="mp-row" style="gap:4px;margin-bottom:4px;">
+                      <span class="mp-stars" style="font-size:8px;">★★★★★</span>
+                    </div>
+                    <div class="mp-text" style="font-size:9px;line-height:1.4;">比预期还惊艳，闺蜜都说好看。</div>
+                    <div class="mp-text-faint" style="font-size:8px;margin-top:3px;">Anna · 订婚妆</div>
+                  </div>
+                </div>
+                <!-- Tag cloud simplified -->
+                <div class="mp-card" style="background:rgba(201,169,110,0.05);box-shadow:none;margin-top:6px;">
+                  <div class="mp-row" style="gap:4px;margin-bottom:6px;">
+                    <span style="font-size:14px;color:#C9A96E;font-weight:700;line-height:1;">❝</span>
+                    <span class="mp-text-faint" style="font-size:9px;letter-spacing:0.5px;">大家这样说</span>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:5px;">
+                    <span style="background:linear-gradient(135deg,#C9A96E,#DDBE82);color:#FFF;font-size:9px;font-weight:700;padding:4px 9px;border-radius:99px;">手法专业 <span style="opacity:0.85;">48</span></span>
+                    <span style="background:rgba(201,169,110,0.16);font-size:9px;padding:3px 7px;border-radius:99px;">妆面自然</span>
+                    <span style="background:rgba(201,169,110,0.08);font-size:9px;padding:3px 7px;border-radius:99px;">准时</span>
+                  </div>
+                </div>
+                <!-- New CTA stack: book dominant, contact secondary -->
+                <div style="position:absolute;bottom:12px;left:12px;right:12px;display:flex;flex-direction:column;gap:6px;">
+                  <div style="height:40px;background:linear-gradient(135deg,#FF6F8B,#E85575);color:#FFF;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;letter-spacing:1px;box-shadow:0 6px 16px rgba(232,85,117,0.34);">立即预约化妆</div>
+                  <div style="height:28px;background:#FFF;color:#17151A;border-radius:8px;border:1px solid rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;">微信联系（先问问）</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rationale">
+      <div class="rationale-title">Design Rationale</div>
+      <div class="rationale-points">
+        <div class="rationale-point">
+          <div class="rationale-num">i</div>
+          <div class="rationale-text">
+            <strong>横滑双卡 = 2× social proof，零成本。</strong>
+            复用现有 <code style="background:rgba(0,0,0,0.05);padding:1px 5px;border-radius:3px;font-family:'SF Mono',monospace;font-size:12px;">recent[0..2]</code> 数据（云函数已返回），WXML 加一层 <code style="background:rgba(0,0,0,0.05);padding:1px 5px;border-radius:3px;font-family:'SF Mono',monospace;font-size:12px;">scroll-view scroll-x</code> 即可。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">ii</div>
+          <div class="rationale-text">
+            <strong>CTA 主次分明。</strong>
+            预约按钮（主行动）高 40rpx + 渐变 + 阴影；联系按钮（次行动）压扁为 28rpx outline 风格，文案加"（先问问）"暗示是 fallback。预约转化率可观察提升。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">iii</div>
+          <div class="rationale-text">
+            <strong>标签云去计数化。</strong>
+            仅 hot chip 显示数字（且去掉 ×号，改为透明度区分）；warm/normal 不显示数字，让视觉聚焦在标签本身而不是"算法感"。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">iv</div>
+          <div class="rationale-text">
+            <strong>「查看全部 126 条」入口。</strong>
+            即使暂时链接到一个 stub 列表页，也比没有入口强——告诉客户"我们透明、可验证"。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASE 2: REVIEW CREATE ============ -->
+<section class="case" id="case-2">
+  <div class="wrap">
+    <header class="case-header">
+      <div class="case-num">02</div>
+      <div class="case-title-block">
+        <div class="case-locus">客户侧 · 评价表单 · 提交路径</div>
+        <h2 class="case-title">把"打分"变成情绪，把"为什么不能点"说清楚</h2>
+        <p class="case-summary">
+          表单已经做过一轮 polish（hero 卡 / 重排字段 / 品牌开关 / 固定底栏），但还有两个硬伤：
+          提交按钮 disabled 时用户不知道为什么；星级反馈 label 太小、不够情绪化。
+          这两个直接影响完成率。
+        </p>
+      </div>
+    </header>
+
+    <div class="issues">
+      <div class="issues-title">Issues Found</div>
+      <div class="issue-row">
+        <div class="issue-id">RVW-01</div>
+        <div class="issue-text">Submit disabled 时仅 opacity 0.45，无原因提示（rating=0 才是常见状态）</div>
+        <div class="issue-sev issue-sev--p1">P1</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">RVW-02</div>
+        <div class="issue-text">星级反馈 label（"轻触星星打分" / ratingLabel）字号偏小、无情绪感染</div>
+        <div class="issue-sev issue-sev--p1">P1</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">RVW-03</div>
+        <div class="issue-text">图片删除按钮 36rpx 触控区太小（苹果 HIG 推荐 ≥ 44pt）</div>
+        <div class="issue-sev issue-sev--p2">P2</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">RVW-04</div>
+        <div class="issue-text">标签未展示"高频"提示，客户不知道选哪个有用</div>
+        <div class="issue-sev issue-sev--p2">P2</div>
+      </div>
+    </div>
+
+    <div class="mockups">
+      <!-- BEFORE -->
+      <div class="mockup">
+        <div class="mockup-label">
+          <div class="mockup-tag mockup-tag--before">Before · 当前</div>
+          <div class="mockup-name">disabled 无提示</div>
+        </div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="mp-page">
+                <!-- Hero rate card -->
+                <div class="mp-card" style="background:radial-gradient(circle at 50% 22%, #FFF0F2, #FFFFFF 70%);text-align:center;padding:14px 10px;">
+                  <div class="mp-text" style="font-weight:700;font-size:11px;">服务评分</div>
+                  <div style="margin:10px 0 8px;font-size:30px;letter-spacing:6px;color:rgba(201,169,110,0.24);">★★★★★</div>
+                  <div class="mp-text-faint" style="font-size:10px;">轻触星星打分</div>
+                </div>
+                <!-- Tags -->
+                <div class="mp-card">
+                  <div class="mp-row" style="justify-content:space-between;margin-bottom:6px;">
+                    <span class="mp-text" style="font-weight:700;font-size:11px;">服务标签</span>
+                    <span class="mp-text-faint" style="font-size:9px;">可多选 · 0/5</span>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:4px;">
+                    <span style="font-size:9px;border:1px solid rgba(255,111,139,0.18);padding:4px 9px;border-radius:99px;color:rgba(0,0,0,0.5);">手法专业</span>
+                    <span style="font-size:9px;border:1px solid rgba(255,111,139,0.18);padding:4px 9px;border-radius:99px;color:rgba(0,0,0,0.5);">妆面自然</span>
+                    <span style="font-size:9px;border:1px solid rgba(255,111,139,0.18);padding:4px 9px;border-radius:99px;color:rgba(0,0,0,0.5);">准时</span>
+                  </div>
+                </div>
+                <!-- Image grid -->
+                <div class="mp-card">
+                  <div class="mp-row" style="justify-content:space-between;margin-bottom:6px;">
+                    <span class="mp-text" style="font-weight:700;font-size:11px;">添加图片</span>
+                    <span class="mp-text-faint" style="font-size:9px;">0/3</span>
+                  </div>
+                  <div style="display:flex;gap:6px;">
+                    <div style="width:50px;height:50px;border:1px dashed #C9A96E;background:rgba(201,169,110,0.08);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                      <span style="font-size:18px;color:#C9A96E;line-height:1;">+</span>
+                      <span class="mp-text-faint" style="font-size:7px;margin-top:1px;">添加</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Submit bar -->
+                <div style="position:absolute;bottom:0;left:0;right:0;padding:6px 10px 8px;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);border-top:1px solid rgba(0,0,0,0.06);">
+                  <div style="height:30px;background:linear-gradient(135deg,#FF6F8B,#E85575);color:#FFF;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;letter-spacing:1.5px;opacity:0.45;">提交评价</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AFTER -->
+      <div class="mockup">
+        <div class="mockup-label">
+          <div class="mockup-tag mockup-tag--after">After · 重设计</div>
+          <div class="mockup-name">情绪化 + 状态提示</div>
+        </div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="mp-page">
+                <!-- Hero rate card -->
+                <div class="mp-card" style="background:radial-gradient(circle at 50% 22%, #FFF0F2, #FFFFFF 70%);text-align:center;padding:14px 10px;">
+                  <div class="mp-text" style="font-weight:700;font-size:11px;">服务评分</div>
+                  <div style="margin:12px 0 8px;font-size:34px;letter-spacing:6px;color:#C9A96E;text-shadow:0 2px 7px rgba(201,169,110,0.4);">★★★★★</div>
+                  <!-- Bigger emotional label -->
+                  <div style="font-size:14px;font-weight:700;color:#B0883F;line-height:1.2;">惊喜！强烈推荐</div>
+                  <div class="mp-text-faint" style="font-size:8px;margin-top:2px;">5 颗星 = 让你忍不住安利给闺蜜</div>
+                </div>
+                <!-- Tags with popularity hint -->
+                <div class="mp-card">
+                  <div class="mp-row" style="justify-content:space-between;margin-bottom:6px;">
+                    <span class="mp-text" style="font-weight:700;font-size:11px;">服务标签</span>
+                    <span class="mp-text-faint" style="font-size:9px;">可多选 · 0/5</span>
+                  </div>
+                  <div style="display:flex;flex-wrap:wrap;gap:4px;">
+                    <span style="position:relative;font-size:9px;border:1px solid rgba(255,111,139,0.18);padding:4px 9px;border-radius:99px;color:rgba(0,0,0,0.5);">
+                      手法专业
+                      <span style="position:absolute;top:-4px;right:-4px;background:#C9A96E;color:#FFF;font-size:6px;padding:1px 3px;border-radius:99px;line-height:1.2;font-weight:700;">HOT</span>
+                    </span>
+                    <span style="position:relative;font-size:9px;border:1px solid rgba(255,111,139,0.18);padding:4px 9px;border-radius:99px;color:rgba(0,0,0,0.5);">
+                      妆面自然
+                      <span style="position:absolute;top:-4px;right:-4px;background:#C9A96E;color:#FFF;font-size:6px;padding:1px 3px;border-radius:99px;line-height:1.2;font-weight:700;">HOT</span>
+                    </span>
+                    <span style="font-size:9px;border:1px solid rgba(255,111,139,0.18);padding:4px 9px;border-radius:99px;color:rgba(0,0,0,0.5);">准时</span>
+                  </div>
+                </div>
+                <!-- Image grid with larger remove -->
+                <div class="mp-card">
+                  <div class="mp-row" style="justify-content:space-between;margin-bottom:6px;">
+                    <span class="mp-text" style="font-weight:700;font-size:11px;">添加图片</span>
+                    <span class="mp-text-faint" style="font-size:9px;">1/3</span>
+                  </div>
+                  <div style="display:flex;gap:6px;">
+                    <div style="position:relative;width:50px;height:50px;border-radius:6px;overflow:hidden;background:linear-gradient(135deg,#FF6F8B,#E85575);">
+                      <!-- bigger remove hit area -->
+                      <div style="position:absolute;top:0;right:0;width:18px;height:18px;background:rgba(0,0,0,0.55);border-bottom-left-radius:6px;display:flex;align-items:center;justify-content:center;color:#FFF;font-size:11px;line-height:1;">×</div>
+                    </div>
+                    <div style="width:50px;height:50px;border:1px dashed #C9A96E;background:rgba(201,169,110,0.08);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+                      <span style="font-size:18px;color:#C9A96E;line-height:1;">+</span>
+                      <span class="mp-text-faint" style="font-size:7px;margin-top:1px;">添加</span>
+                    </div>
+                  </div>
+                </div>
+                <!-- Submit bar WITH status hint -->
+                <div style="position:absolute;bottom:0;left:0;right:0;padding:6px 10px 8px;background:rgba(255,255,255,0.92);backdrop-filter:blur(6px);border-top:1px solid rgba(0,0,0,0.06);">
+                  <div style="text-align:center;font-size:9px;color:rgba(0,0,0,0.5);margin-bottom:5px;height:11px;">✓ 已就绪，可以提交</div>
+                  <div style="height:30px;background:linear-gradient(135deg,#FF6F8B,#E85575);color:#FFF;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;letter-spacing:1.5px;box-shadow:0 5px 12px rgba(232,85,117,0.34);">提交评价</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rationale">
+      <div class="rationale-title">Design Rationale</div>
+      <div class="rationale-points">
+        <div class="rationale-point">
+          <div class="rationale-num">i</div>
+          <div class="rationale-text">
+            <strong>Status hint 是廉价转化率提升。</strong>
+            底栏顶部加一行 11px 状态：<code style="background:rgba(0,0,0,0.05);padding:1px 5px;border-radius:3px;font-family:'SF Mono',monospace;font-size:12px;">"请先打分"</code> (灰) / <code style="background:rgba(0,0,0,0.05);padding:1px 5px;border-radius:3px;font-family:'SF Mono',monospace;font-size:12px;">"✓ 已就绪"</code> (绿)。一行 WXML + 一个 computed。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">ii</div>
+          <div class="rationale-text">
+            <strong>星级 label 加大并加情绪副标。</strong>
+            <code style="background:rgba(0,0,0,0.05);padding:1px 5px;border-radius:3px;font-family:'SF Mono',monospace;font-size:12px;">"惊喜！强烈推荐"</code> 14px粗体 + 副标 <code style="background:rgba(0,0,0,0.05);padding:1px 5px;border-radius:3px;font-family:'SF Mono',monospace;font-size:12px;">"5 颗星 = 让你忍不住安利给闺蜜"</code>，每档星级都配一句具象解释。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">iii</div>
+          <div class="rationale-text">
+            <strong>删除按钮扩大到 48rpx + 半角贴边。</strong>
+            36→48rpx，去掉圆形改为右上角小色块（视觉一致性更高），触控区从 ~14pt 升到 ~17pt。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">iv</div>
+          <div class="rationale-text">
+            <strong>"HOT" 微章章引出 top tags。</strong>
+            复用首页 topTags 数据（云函数已聚合），前 3 名加角标，降低客户选择成本。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASE 3: ADMIN REVIEWS ============ -->
+<section class="case" id="case-3">
+  <div class="wrap">
+    <header class="case-header">
+      <div class="case-num">03</div>
+      <div class="case-title-block">
+        <div class="case-locus">化妆师后台 · 评价管理</div>
+        <h2 class="case-title">让化妆师一眼扫到「该回的、该救的」</h2>
+        <p class="case-summary">
+          已经做过 polish（概览统计 / 分组筛选 / 评分色条 / 待回复徽标），但仍有两个硬伤：
+          3 行筛选吸顶占太多竖向空间压缩列表；回复编辑器的"提交/删除切换"文字游戏让人困惑。
+        </p>
+      </div>
+    </header>
+
+    <div class="issues">
+      <div class="issues-title">Issues Found</div>
+      <div class="issue-row">
+        <div class="issue-id">ADM-01</div>
+        <div class="issue-text">吸顶筛选区 3 行控制（评分+标签+排序），列表可见区被压缩 30%+</div>
+        <div class="issue-sev issue-sev--p1">P1</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">ADM-02</div>
+        <div class="issue-text">回复按钮文字游戏："提交回复"/"删除回复"切换不直观</div>
+        <div class="issue-sev issue-sev--p1">P1</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">ADM-03</div>
+        <div class="issue-text">删除按钮 <code style="background:rgba(0,0,0,0.05);padding:1px 5px;border-radius:3px;font-family:'SF Mono',monospace;font-size:11px;">#D9534F</code> 硬编码，未走 design token</div>
+        <div class="issue-sev issue-sev--p1">P1</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">ADM-04</div>
+        <div class="issue-text">Stats bar 平均分/总数视觉权重对等，缺乏主次</div>
+        <div class="issue-sev issue-sev--p2">P2</div>
+      </div>
+    </div>
+
+    <div class="mockups">
+      <!-- BEFORE -->
+      <div class="mockup">
+        <div class="mockup-label">
+          <div class="mockup-tag mockup-tag--before">Before · 当前</div>
+          <div class="mockup-name">3 行筛选 + 文字游戏</div>
+        </div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="mp-page" style="padding-top:6px;">
+                <!-- Stats bar -->
+                <div class="mp-card" style="display:flex;align-items:center;padding:10px 12px;">
+                  <div style="flex:1;">
+                    <div class="mp-row" style="gap:3px;align-items:baseline;">
+                      <span style="font-size:22px;font-weight:800;line-height:1;letter-spacing:-0.5px;">4.8</span>
+                      <span style="font-size:8px;color:rgba(0,0,0,0.3);">/ 5.0</span>
+                    </div>
+                    <div class="mp-stars" style="font-size:9px;margin-top:3px;">★★★★★</div>
+                    <div class="mp-text-faint" style="font-size:8px;margin-top:3px;">平均评分</div>
+                  </div>
+                  <div style="width:1px;height:32px;background:rgba(0,0,0,0.1);margin:0 12px;"></div>
+                  <div style="flex:1;text-align:right;">
+                    <div style="font-size:19px;font-weight:800;line-height:1;letter-spacing:-0.5px;">126</div>
+                    <div class="mp-text-faint" style="font-size:8px;margin-top:3px;">条客户评价</div>
+                  </div>
+                </div>
+                <!-- 3-row filter bar (sticky-ish mockup) -->
+                <div style="background:rgba(255,255,255,0.94);padding:6px 12px;border-bottom:1px solid rgba(0,0,0,0.06);">
+                  <div class="mp-row" style="gap:6px;margin-bottom:4px;">
+                    <span style="font-size:8px;font-weight:700;color:rgba(0,0,0,0.3);letter-spacing:0.5px;width:18px;">评分</span>
+                    <div style="display:flex;gap:4px;">
+                      <span style="font-size:8px;background:rgba(0,0,0,0.04);padding:3px 7px;border-radius:99px;">全部</span>
+                      <span style="font-size:8px;background:#FF6F8B;padding:3px 7px;border-radius:99px;color:#FFF;">5 ★</span>
+                      <span style="font-size:8px;background:rgba(0,0,0,0.04);padding:3px 7px;border-radius:99px;">4 ★</span>
+                      <span style="font-size:8px;background:rgba(0,0,0,0.04);padding:3px 7px;border-radius:99px;">差评</span>
+                    </div>
+                  </div>
+                  <div class="mp-row" style="gap:6px;margin-bottom:4px;">
+                    <span style="font-size:8px;font-weight:700;color:rgba(0,0,0,0.3);letter-spacing:0.5px;width:18px;">标签</span>
+                    <div style="display:flex;gap:4px;">
+                      <span style="font-size:8px;background:rgba(0,0,0,0.04);padding:3px 7px;border-radius:99px;">全部</span>
+                      <span style="font-size:8px;background:rgba(0,0,0,0.04);padding:3px 7px;border-radius:99px;">手法</span>
+                      <span style="font-size:8px;background:rgba(0,0,0,0.04);padding:3px 7px;border-radius:99px;">准时</span>
+                    </div>
+                  </div>
+                  <div class="mp-row" style="gap:6px;">
+                    <span style="font-size:8px;font-weight:700;color:rgba(0,0,0,0.3);letter-spacing:0.5px;width:18px;">排序</span>
+                    <span style="font-size:8px;color:#FF6F8B;font-weight:700;border-bottom:1.5px solid #FF6F8B;padding-bottom:1px;">最新</span>
+                    <span style="font-size:8px;color:rgba(0,0,0,0.5);">最高</span>
+                    <span style="font-size:8px;color:rgba(0,0,0,0.5);">最低</span>
+                  </div>
+                </div>
+                <!-- Review card -->
+                <div class="mp-card" style="position:relative;padding-left:13px;margin-top:6px;">
+                  <div style="position:absolute;left:0;top:14px;bottom:14px;width:2px;background:#5A9E6F;border-radius:0 2px 2px 0;"></div>
+                  <div class="mp-row" style="justify-content:space-between;">
+                    <div class="mp-row" style="gap:4px;">
+                      <span class="mp-text" style="font-weight:700;font-size:11px;">小红</span>
+                      <span style="font-size:7px;background:#FFEFE0;color:#E85575;padding:1px 4px;border-radius:99px;">待回复</span>
+                    </div>
+                    <span class="mp-text-faint" style="font-size:8px;">2 天前</span>
+                  </div>
+                  <div class="mp-row" style="gap:4px;margin-top:3px;">
+                    <span class="mp-stars" style="font-size:9px;">★★★★★</span>
+                  </div>
+                  <div class="mp-text" style="font-size:10px;margin-top:4px;line-height:1.4;">手法温柔，妆面自然，强烈推荐！</div>
+                  <div style="display:flex;justify-content:space-between;margin-top:6px;padding-top:5px;border-top:1px solid rgba(0,0,0,0.06);">
+                    <span style="font-size:9px;color:#FF6F8B;">回复</span>
+                    <span style="font-size:9px;color:#D9534F;">删除</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AFTER -->
+      <div class="mockup">
+        <div class="mockup-label">
+          <div class="mockup-tag mockup-tag--after">After · 重设计</div>
+          <div class="mockup-name">单行筛选 + 显式按钮</div>
+        </div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="mp-page" style="padding-top:6px;">
+                <!-- Stats bar - clearer hierarchy -->
+                <div class="mp-card" style="padding:12px;">
+                  <div class="mp-row" style="align-items:baseline;gap:4px;">
+                    <span style="font-size:32px;font-weight:800;line-height:1;letter-spacing:-1px;">4.8</span>
+                    <span style="font-size:10px;color:rgba(0,0,0,0.3);">/ 5.0</span>
+                    <div style="flex:1;text-align:right;">
+                      <span class="mp-stars" style="font-size:10px;">★★★★★</span>
+                    </div>
+                  </div>
+                  <div class="mp-text-faint" style="font-size:9px;margin-top:4px;">126 条客户评价 · 平均分</div>
+                </div>
+                <!-- Single-row filter bar -->
+                <div style="background:rgba(255,255,255,0.94);padding:6px 12px;border-bottom:1px solid rgba(0,0,0,0.06);">
+                  <div class="mp-row" style="gap:4px;">
+                    <span style="font-size:8px;background:#FF6F8B;padding:3px 7px;border-radius:99px;color:#FFF;">全部</span>
+                    <span style="font-size:8px;background:rgba(0,0,0,0.04);padding:3px 7px;border-radius:99px;">待回复 <span style="color:#E85575;font-weight:700;">·8</span></span>
+                    <span style="font-size:8px;background:rgba(0,0,0,0.04);padding:3px 7px;border-radius:99px;">5 ★</span>
+                    <span style="font-size:8px;background:rgba(0,0,0,0.04);padding:3px 7px;border-radius:99px;">差评 <span style="color:#C4544A;font-weight:700;">·2</span></span>
+                    <span style="font-size:8px;background:rgba(0,0,0,0.04);padding:3px 7px;border-radius:99px;margin-left:auto;">筛选 ⌄</span>
+                  </div>
+                </div>
+                <!-- Review card with explicit actions -->
+                <div class="mp-card" style="position:relative;padding-left:13px;margin-top:6px;">
+                  <div style="position:absolute;left:0;top:14px;bottom:14px;width:2px;background:#5A9E6F;border-radius:0 2px 2px 0;"></div>
+                  <div class="mp-row" style="justify-content:space-between;">
+                    <div class="mp-row" style="gap:4px;">
+                      <span class="mp-text" style="font-weight:700;font-size:11px;">小红</span>
+                      <span style="font-size:7px;background:#FFEFE0;color:#E85575;padding:1px 4px;border-radius:99px;">待回复</span>
+                    </div>
+                    <span class="mp-text-faint" style="font-size:8px;">2 天前</span>
+                  </div>
+                  <div class="mp-row" style="gap:4px;margin-top:3px;">
+                    <span class="mp-stars" style="font-size:9px;">★★★★★</span>
+                  </div>
+                  <div class="mp-text" style="font-size:10px;margin-top:4px;line-height:1.4;">手法温柔，妆面自然，强烈推荐！</div>
+                  <!-- Explicit action buttons -->
+                  <div style="display:flex;gap:5px;margin-top:6px;padding-top:5px;border-top:1px solid rgba(0,0,0,0.06);">
+                    <div style="flex:1;background:rgba(255,111,139,0.1);color:#E85575;text-align:center;padding:5px 0;border-radius:6px;font-size:9px;font-weight:700;">写回复</div>
+                    <div style="background:rgba(196,84,74,0.08);color:#C4544A;text-align:center;padding:5px 8px;border-radius:6px;font-size:9px;font-weight:600;">删除</div>
+                  </div>
+                </div>
+                <!-- Second card with reply editor open -->
+                <div class="mp-card" style="position:relative;padding-left:13px;">
+                  <div style="position:absolute;left:0;top:14px;bottom:14px;width:2px;background:#5A9E6F;border-radius:0 2px 2px 0;"></div>
+                  <div class="mp-row" style="justify-content:space-between;">
+                    <span class="mp-text" style="font-weight:700;font-size:11px;">Anna</span>
+                    <span class="mp-text-faint" style="font-size:8px;">5 天前</span>
+                  </div>
+                  <div class="mp-text" style="font-size:10px;margin-top:4px;">比预期还惊艳！</div>
+                  <!-- Editor with TWO explicit buttons -->
+                  <div style="margin-top:5px;background:rgba(0,0,0,0.04);border-radius:6px;padding:6px 7px;">
+                    <div style="font-size:9px;color:rgba(0,0,0,0.4);">谢谢 Anna 的信任！下次再为你设计...</div>
+                    <div style="display:flex;gap:5px;margin-top:5px;">
+                      <div style="flex:1;background:#FF6F8B;color:#FFF;text-align:center;padding:5px 0;border-radius:5px;font-size:9px;font-weight:700;">保存回复</div>
+                      <div style="background:rgba(0,0,0,0.05);color:rgba(0,0,0,0.45);text-align:center;padding:5px 8px;border-radius:5px;font-size:9px;">取消</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rationale">
+      <div class="rationale-title">Design Rationale</div>
+      <div class="rationale-points">
+        <div class="rationale-point">
+          <div class="rationale-num">i</div>
+          <div class="rationale-text">
+            <strong>默认只显示一行筛选，标签/排序收进 "筛选 ⌄"。</strong>
+            默认段：「全部 / 待回复 ·8 / 5★ / 差评 ·2」——把化妆师最关心的两种状态（待回复、差评）做成快捷段，并带计数。其他维度折叠。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">ii</div>
+          <div class="rationale-text">
+            <strong>回复/删除独立成按钮，触控区 80+rpx。</strong>
+            原"文字链接"风格触控区只有 ~30rpx。新方案：写回复（粉底）+ 删除（red-bg）显式双按钮，"删除"用 <code style="background:rgba(0,0,0,0.05);padding:1px 5px;border-radius:3px;font-family:'SF Mono',monospace;font-size:12px;">var(--red)</code> token，统一警告色。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">iii</div>
+          <div class="rationale-text">
+            <strong>编辑器拆成 "保存回复 / 取消"，删除走二次确认。</strong>
+            旧设计靠"输入框为空 = 删除"做隐式逻辑，10 个化妆师 9 个发现不了。新设计显式按钮 + 删除走 dialog 二次确认。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">iv</div>
+          <div class="rationale-text">
+            <strong>Stats bar 主次分明。</strong>
+            平均分 32px 为主，总数合并进副标 "126 条客户评价 · 平均分"。一行清楚表达，比左右双 zone 更易扫。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASE 4: ADMIN CUSTOMERS LIST ============ -->
+<section class="case" id="case-4">
+  <div class="wrap">
+    <header class="case-header">
+      <div class="case-num">04</div>
+      <div class="case-title-block">
+        <div class="case-locus">化妆师后台 · 客户列表</div>
+        <h2 class="case-title">"记住客户"从列表就开始，不是点进详情才记</h2>
+        <p class="case-summary">
+          现列表卡片只有"昵称 + 标签 + 完成次数 + 最近日期"。
+          化妆师最容易关心的"客户上次做了什么 / 有没有过敏备注"全部要点进详情才知道——列表本身没在帮化妆师记忆。
+        </p>
+      </div>
+    </header>
+
+    <div class="issues">
+      <div class="issues-title">Issues Found</div>
+      <div class="issue-row">
+        <div class="issue-id">CST-01</div>
+        <div class="issue-text">无搜索框，客户超过 30 人后基本找不到</div>
+        <div class="issue-sev issue-sev--p1">P1</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">CST-02</div>
+        <div class="issue-text">卡片缺关键上下文：最近服务名、过敏风险提示</div>
+        <div class="issue-sev issue-sev--p1">P1</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">CST-03</div>
+        <div class="issue-text">头像 fallback 用通用 silhouette，与 index 页 first-character 模式不一致</div>
+        <div class="issue-sev issue-sev--p2">P2</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">CST-04</div>
+        <div class="issue-text">returning 标签用灰色（fill-primary），视觉上像禁用状态</div>
+        <div class="issue-sev issue-sev--p2">P2</div>
+      </div>
+    </div>
+
+    <div class="mockups">
+      <!-- BEFORE -->
+      <div class="mockup">
+        <div class="mockup-label">
+          <div class="mockup-tag mockup-tag--before">Before · 当前</div>
+          <div class="mockup-name">信息薄 · 无搜索</div>
+        </div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="mp-page" style="padding-top:6px;">
+                <!-- Tag filter -->
+                <div style="display:flex;gap:4px;padding:6px 12px;">
+                  <div style="flex:1;background:#FFF;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:7px 4px;text-align:center;">
+                    <div style="font-size:14px;font-weight:800;line-height:1;">12</div>
+                    <div style="font-size:7px;color:rgba(0,0,0,0.5);margin-top:2px;">VIP</div>
+                  </div>
+                  <div style="flex:1;background:#FF6F8B;border:1px solid #FF6F8B;border-radius:8px;padding:7px 4px;text-align:center;">
+                    <div style="font-size:14px;font-weight:800;line-height:1;color:#FFF;">38</div>
+                    <div style="font-size:7px;color:#FFF;margin-top:2px;opacity:0.85;">回头客</div>
+                  </div>
+                  <div style="flex:1;background:#FFF;border:1px solid rgba(0,0,0,0.06);border-radius:8px;padding:7px 4px;text-align:center;">
+                    <div style="font-size:14px;font-weight:800;line-height:1;">5</div>
+                    <div style="font-size:7px;color:rgba(0,0,0,0.5);margin-top:2px;">新客</div>
+                  </div>
+                </div>
+                <!-- Customer card minimal -->
+                <div class="mp-card" style="display:flex;gap:8px;align-items:center;">
+                  <div style="width:30px;height:30px;border-radius:50%;background:rgba(255,111,139,0.1);background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Ccircle cx=\'12\' cy=\'8\' r=\'4\' fill=\'%23FF6F8B\'/%3E%3Cpath d=\'M4 20c0-4 4-7 8-7s8 3 8 7\' fill=\'%23FF6F8B\'/%3E%3C/svg%3E');background-size:18px 18px;background-repeat:no-repeat;background-position:center;flex-shrink:0;"></div>
+                  <div style="flex:1;min-width:0;">
+                    <div class="mp-row" style="gap:5px;">
+                      <span class="mp-text" style="font-weight:700;font-size:11px;">小红</span>
+                      <span style="font-size:7px;background:rgba(0,0,0,0.04);color:rgba(0,0,0,0.5);padding:1px 5px;border-radius:99px;">回头客</span>
+                    </div>
+                    <div class="mp-row" style="gap:6px;margin-top:3px;">
+                      <span style="font-size:9px;color:#FF6F8B;font-weight:700;">已完成 3 次</span>
+                      <span style="font-size:8px;color:rgba(0,0,0,0.32);">最近：3 天前</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="mp-card" style="display:flex;gap:8px;align-items:center;">
+                  <div style="width:30px;height:30px;border-radius:50%;background:rgba(255,111,139,0.1);background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Ccircle cx=\'12\' cy=\'8\' r=\'4\' fill=\'%23FF6F8B\'/%3E%3Cpath d=\'M4 20c0-4 4-7 8-7s8 3 8 7\' fill=\'%23FF6F8B\'/%3E%3C/svg%3E');background-size:18px 18px;background-repeat:no-repeat;background-position:center;flex-shrink:0;"></div>
+                  <div style="flex:1;min-width:0;">
+                    <div class="mp-row" style="gap:5px;">
+                      <span class="mp-text" style="font-weight:700;font-size:11px;">Anna</span>
+                      <span style="font-size:7px;background:rgba(212,175,55,0.12);color:#C9A96E;padding:1px 5px;border-radius:99px;">VIP</span>
+                    </div>
+                    <div class="mp-row" style="gap:6px;margin-top:3px;">
+                      <span style="font-size:9px;color:#FF6F8B;font-weight:700;">已完成 8 次</span>
+                      <span style="font-size:8px;color:rgba(0,0,0,0.32);">最近：上周</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AFTER -->
+      <div class="mockup">
+        <div class="mockup-label">
+          <div class="mockup-tag mockup-tag--after">After · 重设计</div>
+          <div class="mockup-name">搜索 + 风险提示 + 内容上下文</div>
+        </div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="mp-page" style="padding-top:6px;">
+                <!-- Search bar -->
+                <div style="padding:6px 12px;">
+                  <div style="background:#FFFFFF;border-radius:99px;padding:6px 12px;display:flex;align-items:center;gap:6px;box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+                    <span style="color:rgba(0,0,0,0.3);font-size:11px;">⌕</span>
+                    <span style="font-size:10px;color:rgba(0,0,0,0.3);">搜索昵称 / 备注 / 服务名</span>
+                  </div>
+                </div>
+                <!-- Tag filter compact -->
+                <div style="display:flex;gap:4px;padding:0 12px 6px;">
+                  <div style="background:rgba(212,175,55,0.12);color:#C9A96E;border-radius:99px;padding:3px 9px;font-size:8px;font-weight:700;">VIP 12</div>
+                  <div style="background:#FF6F8B;color:#FFF;border-radius:99px;padding:3px 9px;font-size:8px;font-weight:700;">全部 55</div>
+                  <div style="background:rgba(0,0,0,0.04);color:rgba(0,0,0,0.6);border-radius:99px;padding:3px 9px;font-size:8px;">回头 38</div>
+                  <div style="background:rgba(0,0,0,0.04);color:rgba(0,0,0,0.6);border-radius:99px;padding:3px 9px;font-size:8px;">新客 5</div>
+                </div>
+                <!-- Customer card with rich context -->
+                <div class="mp-card" style="padding:9px 10px;">
+                  <div class="mp-row" style="gap:7px;">
+                    <!-- Avatar fallback: first character -->
+                    <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#DFA0AA,#B98266);color:#FFF;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">红</div>
+                    <div style="flex:1;min-width:0;">
+                      <div class="mp-row" style="gap:5px;">
+                        <span class="mp-text" style="font-weight:700;font-size:11px;">小红</span>
+                        <span style="font-size:7px;background:rgba(90,127,160,0.1);color:#5A7FA0;padding:1px 5px;border-radius:99px;">回头客</span>
+                        <span style="font-size:7px;background:rgba(196,84,74,0.1);color:#C4544A;padding:1px 5px;border-radius:99px;font-weight:700;">⚠ 过敏</span>
+                      </div>
+                      <div class="mp-text-faint" style="font-size:8px;margin-top:3px;">最近：新娘妆 · 3 天前</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:13px;font-weight:800;color:#17151A;line-height:1;">3</div>
+                      <div style="font-size:7px;color:rgba(0,0,0,0.32);">次</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mp-card" style="padding:9px 10px;">
+                  <div class="mp-row" style="gap:7px;">
+                    <div style="width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#DDBE82,#C9A96E);color:#FFF;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;">A</div>
+                    <div style="flex:1;min-width:0;">
+                      <div class="mp-row" style="gap:5px;">
+                        <span class="mp-text" style="font-weight:700;font-size:11px;">Anna</span>
+                        <span style="font-size:7px;background:rgba(212,175,55,0.12);color:#C9A96E;padding:1px 5px;border-radius:99px;">VIP</span>
+                      </div>
+                      <div class="mp-text-faint" style="font-size:8px;margin-top:3px;">最近：订婚妆 · 上周</div>
+                    </div>
+                    <div style="text-align:right;">
+                      <div style="font-size:13px;font-weight:800;color:#17151A;line-height:1;">8</div>
+                      <div style="font-size:7px;color:rgba(0,0,0,0.32);">次</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rationale">
+      <div class="rationale-title">Design Rationale</div>
+      <div class="rationale-points">
+        <div class="rationale-point">
+          <div class="rationale-num">i</div>
+          <div class="rationale-text">
+            <strong>顶部搜索框是化妆师的"找客户"刚需。</strong>
+            防抖 300ms，搜昵称/备注/服务名。客户超过 30 人后，这是 0→1 的体验提升。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">ii</div>
+          <div class="rationale-text">
+            <strong>过敏徽章前置到列表卡。</strong>
+            "⚠ 过敏" red-bg 微章直接出现在卡片第二行。化妆师扫一眼就知道接单时要谨慎——这才是"系统记忆"的价值。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">iii</div>
+          <div class="rationale-text">
+            <strong>"最近：新娘妆 · 3 天前" 替代孤零零的 "3 天前"。</strong>
+            服务名比时间更重要——化妆师记客户是"那个做新娘妆的"，不是"那个 3 天前的"。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">iv</div>
+          <div class="rationale-text">
+            <strong>头像 fallback 用 nickname[0] + 渐变。</strong>
+            与 index 页 profile-avatar-fallback 一致。"红/A"比通用 silhouette 更人性化、更有辨识度。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">v</div>
+          <div class="rationale-text">
+            <strong>returning 标签改用 blue 系。</strong>
+            原灰色像禁用；改用 <code style="background:rgba(0,0,0,0.05);padding:1px 5px;border-radius:3px;font-family:'SF Mono',monospace;font-size:12px;">var(--blue)</code> bg，与 VIP(gold) / 新客(accent) 形成三角辨识。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASE 5: ADMIN CUSTOMERS DETAIL ============ -->
+<section class="case" id="case-5">
+  <div class="wrap">
+    <header class="case-header">
+      <div class="case-num">05</div>
+      <div class="case-title-block">
+        <div class="case-locus">化妆师后台 · 客户详情</div>
+        <h2 class="case-title">把"过敏"从一行字升级为安全闸门</h2>
+        <p class="case-summary">
+          过敏信息现在是普通 dfield 行（只是 text 变红色），化妆师在快速翻阅时极容易漏看。
+          这是最危险的可访问性失败——化妆品过敏可能直接造成医疗事件。必须升级为顶部 banner 抢眼提示。
+        </p>
+      </div>
+    </header>
+
+    <div class="issues">
+      <div class="issues-title">Issues Found</div>
+      <div class="issue-row">
+        <div class="issue-id">DTL-01</div>
+        <div class="issue-text">过敏信息埋在 dfield 行内，仅靠 red text 区分，扫视时易漏</div>
+        <div class="issue-sev issue-sev--p1">P1</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">DTL-02</div>
+        <div class="issue-text">Profile header 信息薄：无联系方式、无 member-since、无客户标签细分</div>
+        <div class="issue-sev issue-sev--p1">P1</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">DTL-03</div>
+        <div class="issue-text">评价列表无标签/图片/回复状态，比 admin/reviews 列表浅</div>
+        <div class="issue-sev issue-sev--p2">P2</div>
+      </div>
+      <div class="issue-row">
+        <div class="issue-id">DTL-04</div>
+        <div class="issue-text">历史预约项无价格、无备注，信息密度低于实际可用价值</div>
+        <div class="issue-sev issue-sev--p2">P2</div>
+      </div>
+    </div>
+
+    <div class="mockups">
+      <!-- BEFORE -->
+      <div class="mockup">
+        <div class="mockup-label">
+          <div class="mockup-tag mockup-tag--before">Before · 当前</div>
+          <div class="mockup-name">过敏埋行内</div>
+        </div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="mp-page" style="padding-top:6px;">
+                <!-- Profile header minimal -->
+                <div class="mp-card" style="display:flex;gap:10px;align-items:center;">
+                  <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,111,139,0.1);background-image:url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'24\' height=\'24\' viewBox=\'0 0 24 24\'%3E%3Ccircle cx=\'12\' cy=\'8\' r=\'4\' fill=\'%23FF6F8B\'/%3E%3Cpath d=\'M4 20c0-4 4-7 8-7s8 3 8 7\' fill=\'%23FF6F8B\'/%3E%3C/svg%3E');background-size:22px 22px;background-repeat:no-repeat;background-position:center;flex-shrink:0;"></div>
+                  <div style="flex:1;">
+                    <div class="mp-row" style="gap:5px;">
+                      <span class="mp-text" style="font-weight:800;font-size:12px;">小红</span>
+                      <span style="font-size:7px;background:rgba(0,0,0,0.04);color:rgba(0,0,0,0.5);padding:1px 5px;border-radius:99px;">回头客</span>
+                    </div>
+                    <div class="mp-text-faint" style="font-size:8px;margin-top:2px;">已完成 3 次预约</div>
+                  </div>
+                </div>
+                <!-- Notes - allergy buried -->
+                <div class="mp-card">
+                  <div class="mp-text" style="font-size:9px;font-weight:700;color:rgba(0,0,0,0.4);letter-spacing:0.5px;margin-bottom:5px;">客户备注</div>
+                  <div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,0.05);">
+                    <span style="font-size:9px;color:rgba(0,0,0,0.5);width:28px;flex-shrink:0;">肤质</span>
+                    <span class="mp-text" style="font-size:9px;">混合偏干</span>
+                  </div>
+                  <div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid rgba(0,0,0,0.05);">
+                    <span style="font-size:9px;color:rgba(0,0,0,0.5);width:28px;flex-shrink:0;">偏好</span>
+                    <span class="mp-text" style="font-size:9px;">自然妆感</span>
+                  </div>
+                  <div style="display:flex;gap:8px;padding:5px 0;">
+                    <span style="font-size:9px;color:rgba(0,0,0,0.5);width:28px;flex-shrink:0;">过敏</span>
+                    <span style="font-size:9px;color:#C4544A;font-weight:600;">酒精、香料</span>
+                  </div>
+                </div>
+                <!-- History -->
+                <div class="mp-card">
+                  <div class="mp-text" style="font-size:9px;font-weight:700;color:rgba(0,0,0,0.4);letter-spacing:0.5px;margin-bottom:5px;">历史预约（3）</div>
+                  <div style="padding:5px 0;border-bottom:1px solid rgba(0,0,0,0.05);">
+                    <div class="mp-row" style="justify-content:space-between;">
+                      <span class="mp-text" style="font-size:10px;font-weight:700;">新娘妆</span>
+                      <span style="font-size:7px;background:rgba(139,111,160,0.08);color:#8B6FA0;padding:1px 4px;border-radius:99px;">已完成</span>
+                    </div>
+                    <div class="mp-text-faint" style="font-size:8px;margin-top:2px;">2026-07-18 · 10:00</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AFTER -->
+      <div class="mockup">
+        <div class="mockup-label">
+          <div class="mockup-tag mockup-tag--after">After · 重设计</div>
+          <div class="mockup-name">安全 banner + 信息富化</div>
+        </div>
+        <div class="phone">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <div class="phone-content">
+              <div class="mp-page" style="padding-top:6px;">
+                <!-- ALLERGY BANNER (P0 - first thing artist sees) -->
+                <div style="background:rgba(196,84,74,0.08);border:1px solid rgba(196,84,74,0.25);border-radius:10px;padding:9px 10px;display:flex;gap:7px;align-items:flex-start;margin-bottom:6px;">
+                  <div style="width:18px;height:18px;border-radius:50%;background:#C4544A;color:#FFF;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;line-height:1;flex-shrink:0;">!</div>
+                  <div style="flex:1;">
+                    <div style="font-size:10px;font-weight:700;color:#C4544A;line-height:1.2;">过敏史 · 接单前必读</div>
+                    <div style="font-size:9px;color:#17151A;margin-top:2px;line-height:1.4;">对酒精、香料过敏</div>
+                  </div>
+                </div>
+                <!-- Profile header rich -->
+                <div class="mp-card" style="padding:9px 10px;">
+                  <div class="mp-row" style="gap:8px;">
+                    <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#DFA0AA,#B98266);color:#FFF;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;">红</div>
+                    <div style="flex:1;min-width:0;">
+                      <div class="mp-row" style="gap:5px;">
+                        <span class="mp-text" style="font-weight:800;font-size:12px;">小红</span>
+                        <span style="font-size:7px;background:rgba(90,127,160,0.1);color:#5A7FA0;padding:1px 5px;border-radius:99px;">回头客</span>
+                      </div>
+                      <div class="mp-text-faint" style="font-size:8px;margin-top:2px;">客户于 2024-03 · 已完成 3 次</div>
+                      <div class="mp-text-faint" style="font-size:8px;margin-top:1px;">联系：138 **** 1234</div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Other notes -->
+                <div class="mp-card">
+                  <div class="mp-row" style="justify-content:space-between;margin-bottom:5px;">
+                    <span class="mp-text" style="font-size:9px;font-weight:700;color:rgba(0,0,0,0.4);letter-spacing:0.5px;">其他备注</span>
+                    <span style="font-size:8px;color:#FF6F8B;background:rgba(255,111,139,0.1);padding:1px 5px;border-radius:99px;font-weight:600;">编辑</span>
+                  </div>
+                  <div style="display:flex;gap:8px;padding:4px 0;">
+                    <span style="font-size:9px;color:rgba(0,0,0,0.5);width:28px;flex-shrink:0;">肤质</span>
+                    <span class="mp-text" style="font-size:9px;">混合偏干</span>
+                  </div>
+                  <div style="display:flex;gap:8px;padding:4px 0;">
+                    <span style="font-size:9px;color:rgba(0,0,0,0.5);width:28px;flex-shrink:0;">偏好</span>
+                    <span class="mp-text" style="font-size:9px;">自然妆感、偏爱 Charlotte Tilbury</span>
+                  </div>
+                </div>
+                <!-- History with price -->
+                <div class="mp-card">
+                  <div class="mp-text" style="font-size:9px;font-weight:700;color:rgba(0,0,0,0.4);letter-spacing:0.5px;margin-bottom:5px;">历史预约（3）</div>
+                  <div style="padding:5px 0;border-bottom:1px solid rgba(0,0,0,0.05);">
+                    <div class="mp-row" style="justify-content:space-between;">
+                      <span class="mp-text" style="font-size:10px;font-weight:700;">新娘妆</span>
+                      <span class="mp-text" style="font-size:10px;font-weight:700;color:#17151A;">¥1280</span>
+                    </div>
+                    <div class="mp-row" style="justify-content:space-between;margin-top:2px;">
+                      <span class="mp-text-faint" style="font-size:8px;">2026-07-18 · 10:00</span>
+                      <span style="font-size:7px;background:rgba(139,111,160,0.08);color:#8B6FA0;padding:1px 4px;border-radius:99px;">已完成</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="rationale">
+      <div class="rationale-title">Design Rationale</div>
+      <div class="rationale-points">
+        <div class="rationale-point">
+          <div class="rationale-num">i</div>
+          <div class="rationale-text">
+            <strong>过敏升级为顶部 banner，P0 抢眼。</strong>
+            red-bg + ⚠ 图标 + "接单前必读" 文案。视觉权重压过 profile header。这是安全设计——化妆品过敏可能导致医疗事件，必须做到"无法忽略"。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">ii</div>
+          <div class="rationale-text">
+            <strong>Profile header 信息富化。</strong>
+            加 "客户于 2024-03"（member-since）+ 联系电话（脱敏）。化妆师接单前想知道"这是老客户吗 / 怎么联系"，原 header 都给不到答案。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">iii</div>
+          <div class="rationale-text">
+            <strong>历史预约加价格、备注联动。</strong>
+            ¥1280 + 服务名 + 状态 + 日期。让化妆师看到"客户上次花了多少、做的是什么"，决策"这次推荐什么升级"。
+          </div>
+        </div>
+        <div class="rationale-point">
+          <div class="rationale-num">iv</div>
+          <div class="rationale-text">
+            <strong>过敏以外的备注降权为"其他备注"。</strong>
+            肤质/偏好保持普通行式，因为它们不影响安全。banner 留给真正重要的风险信息。
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRIORITY MATRIX ============ -->
+<section id="matrix">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-eyebrow">Decision Matrix</div>
+      <h2 class="section-title">优先级建议</h2>
+      <p class="section-lead">
+        按"对核心价值路径的影响 × 实现成本"两维排序。建议落地顺序：先做 5 个 P1 高价值项，P2 按顺手程度穿插。
+      </p>
+    </div>
+
+    <table class="matrix-table">
+      <thead>
+        <tr>
+          <th style="width:80px;">ID</th>
+          <th>重设计项</th>
+          <th style="width:120px;">影响面</th>
+          <th style="width:120px;">成本</th>
+          <th style="width:120px;">建议</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="matrix-id">DTL-01</td>
+          <td>过敏升级为顶部 banner</td>
+          <td>安全 / 法律</td>
+          <td>0.5h</td>
+          <td><span class="matrix-pill matrix-pill--do">立即做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">IDX-01</td>
+          <td>首页评价横滑 + 查看全部</td>
+          <td>转化率</td>
+          <td>1h</td>
+          <td><span class="matrix-pill matrix-pill--do">立即做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">ADM-01</td>
+          <td>后台筛选折叠 + 待回复/差评快捷段</td>
+          <td>化妆师效率</td>
+          <td>1h</td>
+          <td><span class="matrix-pill matrix-pill--do">立即做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">ADM-02</td>
+          <td>回复/删除按钮独立 + 删除二次确认</td>
+          <td>化妆师效率</td>
+          <td>0.5h</td>
+          <td><span class="matrix-pill matrix-pill--do">立即做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">CST-01</td>
+          <td>客户列表搜索框</td>
+          <td>化妆师效率</td>
+          <td>1.5h</td>
+          <td><span class="matrix-pill matrix-pill--do">立即做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">CST-02</td>
+          <td>客户卡片加过敏徽章 + 最近服务名</td>
+          <td>化妆师记忆</td>
+          <td>1h</td>
+          <td><span class="matrix-pill matrix-pill--do">立即做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">IDX-02</td>
+          <td>CTA 主次分明（预约 dominant）</td>
+          <td>转化率</td>
+          <td>0.5h</td>
+          <td><span class="matrix-pill matrix-pill--do">立即做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">RVW-01</td>
+          <td>评价表单 submit status hint</td>
+          <td>评价完成率</td>
+          <td>0.5h</td>
+          <td><span class="matrix-pill matrix-pill--do">立即做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">RVW-02</td>
+          <td>星级 label 情绪化</td>
+          <td>评价完成率</td>
+          <td>0.5h</td>
+          <td><span class="matrix-pill matrix-pill--do">立即做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">DTL-02</td>
+          <td>客户详情 profile 信息富化</td>
+          <td>化妆师记忆</td>
+          <td>1h</td>
+          <td><span class="matrix-pill matrix-pill--defer">v2.4 早</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">ADM-03</td>
+          <td>删除按钮 token 化</td>
+          <td>代码质量</td>
+          <td>5min</td>
+          <td><span class="matrix-pill matrix-pill--do">顺手做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">IDX-03</td>
+          <td>标签云去计数化</td>
+          <td>视觉温度</td>
+          <td>10min</td>
+          <td><span class="matrix-pill matrix-pill--do">顺手做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">RVW-03</td>
+          <td>图片删除按钮扩大</td>
+          <td>触控</td>
+          <td>5min</td>
+          <td><span class="matrix-pill matrix-pill--do">顺手做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">CST-03</td>
+          <td>头像 fallback first-character</td>
+          <td>一致性</td>
+          <td>15min</td>
+          <td><span class="matrix-pill matrix-pill--do">顺手做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">CST-04</td>
+          <td>returning 标签 blue 系</td>
+          <td>辨识度</td>
+          <td>5min</td>
+          <td><span class="matrix-pill matrix-pill--do">顺手做</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">ADM-04</td>
+          <td>stats bar 主次分明</td>
+          <td>视觉</td>
+          <td>15min</td>
+          <td><span class="matrix-pill matrix-pill--defer">v2.4 早</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">RVW-04</td>
+          <td>标签 HOT 微章章</td>
+          <td>引导</td>
+          <td>30min</td>
+          <td><span class="matrix-pill matrix-pill--defer">v2.4 早</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">DTL-03</td>
+          <td>详情评价项对齐 admin/reviews 深度</td>
+          <td>一致性</td>
+          <td>1.5h</td>
+          <td><span class="matrix-pill matrix-pill--defer">v2.4 早</span></td>
+        </tr>
+        <tr>
+          <td class="matrix-id">DTL-04</td>
+          <td>历史预约加价格</td>
+          <td>信息密度</td>
+          <td>1h</td>
+          <td><span class="matrix-pill matrix-pill--defer">v2.4 早</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:48px;padding:32px;background:#FFFFFF;border-radius:12px;border-left:4px solid #E85575;">
+      <div style="font-size:13px;letter-spacing:2px;text-transform:uppercase;color:#E85575;font-weight:700;margin-bottom:16px;">Summary</div>
+      <p style="font-size:16px;line-height:1.7;color:#17151A;">
+        <strong>10 个 "立即做" 加起来约 7 小时实现</strong>，覆盖了所有 9 个 P1 问题。建议作为 v2.3.1（patch release）或者 v2.4 第一个 phase 一次性 ship——全部是已建成页面的 WXML/WXSS 改动，无新页面、无云函数改动、无新依赖。
+      </p>
+      <p style="font-size:14px;line-height:1.7;color:rgba(23,21,26,0.65);margin-top:16px;">
+        5 个 "顺手做" 总成本 < 1h，建议跟 P1 同 commit 一起带掉（都属于"代码质量 + 视觉一致性"）。剩余 5 个 P2 留作 v2.4 早期能力补齐。
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="serif">化妆师小程序 · v2.3 UI/UX 重设计提案</div>
+      <div class="meta" style="margin-top:8px;">2026-07-21 · 5 pages audited · 17 issues · self-contained HTML</div>
+    </div>
+    <div class="meta">
+      Open in browser · No dependencies · Print-friendly
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
