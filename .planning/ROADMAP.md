@@ -8,12 +8,12 @@
 - ✅ **v2.0 评价互动 & 预约智能化** — Phases 14-15 (shipped 2026-07-02)
 - ✅ **v2.1 经营工具 & 转化优化** — Phases 16-18 (shipped 2026-07-02)
 - ✅ **v2.2 预约体验增强** — Phase 19 (shipped 2026-07-10)
-- 🚧 **v2.3 客户经营 & 口碑增强** — Phases 20-21 (in progress)
+- ✅ **v2.3 客户经营 & 口碑增强** — Phases 20-21 (shipped 2026-07-16, polish 2026-07-21)
 
 ## Archived Milestones
 
 <details>
-<summary>✅ v1.0–v2.2 (SHIPPED)</summary>
+<summary>✅ v1.0–v2.3 (SHIPPED)</summary>
 
 - v1.0 (Phases 1-5): MVP — Foundation, Portfolio, Services, Booking, Sharing
 - v1.1 (Phases 6-10): 品牌升级 — Data Extensions, Slider, Notifications, Reviews, QR Poster
@@ -21,15 +21,17 @@
 - v2.0 (Phases 14-15): 评价互动 — Review Reply, Duration Conflict Detection
 - v2.1 (Phases 16-18): 经营工具 — Dashboard, Availability Blocks, Conversion Quick Wins
 - v2.2 (Phase 19): 预约体验增强 — 营收修复, 新预约提醒, No-show 追踪, 客户自助改期, 工作时间配置
+- v2.3 (Phases 20-21): 客户经营 & 口碑增强 — 客户档案, 评价增强(标签/带图/匿名/筛选排序/avg_rating 冗余/评价推送); post-milestone UI polish on review/index/admin-reviews pages
 
 </details>
 
-### 🚧 v2.3 客户经营 & 口碑增强 (In Progress)
+### ✅ v2.3 客户经营 & 口碑增强 (Shipped 2026-07-16)
 
 **Milestone Goal:** 让化妆师记住每位客户、让评价更有说服力，提升复购和转化
 
 - [x] **Phase 20: 客户档案** — 客户列表 + 详情页 + 备注管理 + 预约详情联动 (CUST-01~04) ✓ Complete 2026-07-16
-- [x] **Phase 21: 评价增强** — 标签/带图/匿名 + 后台筛选排序 + avg_rating 冗余 + 评价推送 (REVW-10~15) (completed 2026-07-16)
+- [x] **Phase 21: 评价增强** — 标签/带图/匿名 + 后台筛选排序 + avg_rating 冗余 + 评价推送 (REVW-10~15) ✓ Complete 2026-07-16
+- [x] **Post-milestone polish** — review/create 表单重设计, admin/reviews 概览+分级色条+待回复徽标, index 标签云热度分级, booking 联系字段去重 (2026-07-21)
 
 ## Phase Details
 
@@ -70,4 +72,8 @@
 | Phase | Milestone | Plans Complete | Status | Completed |
 |-------|-----------|----------------|--------|-----------|
 | 20. 客户档案 | v2.3 | 4/4 | ✓ Complete | 2026-07-16 |
-| 21. 评价增强 | v2.3 | 4/4 | Complete    | 2026-07-16 |
+| 21. 评价增强 | v2.3 | 4/4 | ✓ Complete | 2026-07-16 |
+
+## Next: v2.4 (Undefined)
+
+No v2.4 milestone defined yet. Awaiting product direction.
