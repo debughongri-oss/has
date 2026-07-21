@@ -4,18 +4,109 @@
   padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
 }
 
-/* ===== REVW-13: 筛选 + 排序控制条 ===== */
-.filter-bar {
-  padding: 16rpx var(--page-pad) 0;
+/* ===== 概览统计 ===== */
+.stats-bar {
+  display: flex;
+  align-items: center;
+  margin: 24rpx var(--page-pad) 4rpx;
+  padding: 28rpx 32rpx;
   background-color: var(--bg-elevated);
+  border-radius: 24rpx;
+  box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
+}
+
+.stats-zone {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.stats-zone--count {
+  align-items: flex-end;
+}
+
+.stats-numrow {
+  display: flex;
+  align-items: baseline;
+}
+
+.stats-avg {
+  font-size: 60rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -1rpx;
+}
+
+.stats-max {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-left: 6rpx;
+}
+
+.stats-total {
+  font-size: 52rpx;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1;
+  letter-spacing: -1rpx;
+}
+
+.stats-sub {
+  font-size: 22rpx;
+  color: var(--text-tertiary);
+  margin-top: 12rpx;
+}
+
+.stats-divider {
+  width: 1rpx;
+  height: 64rpx;
+  background-color: var(--separator-opaque);
+  margin: 0 36rpx;
+}
+
+.stats-stars {
+  position: relative;
+  display: inline-block;
+  font-size: 26rpx;
+  line-height: 1;
+  letter-spacing: 4rpx;
+  margin-top: 14rpx;
+  white-space: nowrap;
+}
+
+/* ===== REVW-13: 筛选 + 排序控制条（吸顶） ===== */
+.filter-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 8rpx var(--page-pad) 12rpx;
+  background-color: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12rpx);
   border-bottom: 1rpx solid var(--separator);
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 8rpx 0;
+}
+
+.filter-label {
+  flex-shrink: 0;
+  width: 56rpx;
+  font-size: 22rpx;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  letter-spacing: 1rpx;
 }
 
 .segs {
   display: flex;
   white-space: nowrap;
-  padding: 12rpx 0;
   gap: 12rpx;
+  flex: 1;
 }
 
 .seg {
@@ -45,12 +136,14 @@
   display: flex;
   align-items: center;
   gap: 20rpx;
-  padding: 12rpx 0 16rpx;
+  padding: 12rpx 0 4rpx;
 }
 
 .sort-label {
   font-size: 22rpx;
+  font-weight: 700;
   color: var(--text-tertiary);
+  letter-spacing: 1rpx;
 }
 
 .sort-opt {
@@ -73,10 +166,35 @@
 }
 
 .card {
+  position: relative;
   background-color: var(--bg-elevated);
   border-radius: 24rpx;
   padding: 26rpx;
   box-shadow: 0 8rpx 22rpx rgba(0, 0, 0, 0.05);
+}
+
+/* 情感分级左色条：good 绿 / mid 金 / low 红 — 一眼扫到需关注的差评 */
+.card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 28rpx;
+  bottom: 28rpx;
+  width: 6rpx;
+  border-radius: 0 6rpx 6rpx 0;
+  background-color: var(--separator-opaque);
+}
+
+.card--good::before {
+  background-color: var(--green);
+}
+
+.card--mid::before {
+  background-color: var(--gold);
+}
+
+.card--low::before {
+  background-color: var(--red);
 }
 
 .rtop {
@@ -107,6 +225,17 @@
   font-size: 18rpx;
   color: var(--gold);
   background-color: var(--gold-bg);
+  padding: 3rpx 10rpx;
+  border-radius: 999rpx;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+/* 待回复：引导优先处理未回复评价 */
+.pending-mark {
+  font-size: 18rpx;
+  color: var(--accent-dark);
+  background-color: var(--accent-soft);
   padding: 3rpx 10rpx;
   border-radius: 999rpx;
   flex-shrink: 0;
@@ -183,7 +312,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 14rpx;
+  margin-top: 18rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--separator);
 }
 
 /* 化妆师回复展示 (REVW-09) */

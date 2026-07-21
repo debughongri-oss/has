@@ -3,31 +3,57 @@
     <t-loading theme="circular" size="80rpx" text="加载中..." />
   </view>
 
-  <!-- REVW-13: 筛选 + 排序控制条 -->
-  <view class="filter-bar" wx:if="{{!loading}}">
-    <scroll-view class="segs" scroll-x enable-flex>
-      <view
-        class="seg tappable {{currentRating === item.key ? 'seg--on' : ''}}"
-        wx:for="{{ratingSegs}}"
-        wx:key="key"
-        bindtap="onRatingSeg"
-        data-key="{{item.key}}"
-      >
-        <text class="seg-label">{{item.label}}</text>
+  <!-- 概览统计：平均分 + 总数 -->
+  <view class="stats-bar" wx:if="{{!loading && stats}}">
+    <view class="stats-zone">
+      <view class="stats-numrow">
+        <text class="stats-avg">{{stats.average}}</text>
+        <text class="stats-max">/ 5.0</text>
       </view>
-    </scroll-view>
+      <view class="stats-stars">
+        <text class="stars-bg">★★★★★</text>
+        <text class="stars-fg" style="width:{{stats.average / 5 * 100}}%">★★★★★</text>
+      </view>
+      <text class="stats-sub">平均评分</text>
+    </view>
+    <view class="stats-divider"></view>
+    <view class="stats-zone stats-zone--count">
+      <text class="stats-total">{{stats.total}}</text>
+      <text class="stats-sub">条客户评价</text>
+    </view>
+  </view>
 
-    <scroll-view class="segs" scroll-x enable-flex>
-      <view
-        class="seg tappable {{currentTag === item.key ? 'seg--on' : ''}}"
-        wx:for="{{tagSegs}}"
-        wx:key="key"
-        bindtap="onTagSeg"
-        data-key="{{item.key}}"
-      >
-        <text class="seg-label">{{item.label}}</text>
-      </view>
-    </scroll-view>
+  <!-- REVW-13: 筛选 + 排序控制条（吸顶 · 带分组标签） -->
+  <view class="filter-bar" wx:if="{{!loading}}">
+    <view class="filter-group">
+      <text class="filter-label">评分</text>
+      <scroll-view class="segs" scroll-x enable-flex>
+        <view
+          class="seg tappable {{currentRating === item.key ? 'seg--on' : ''}}"
+          wx:for="{{ratingSegs}}"
+          wx:key="key"
+          bindtap="onRatingSeg"
+          data-key="{{item.key}}"
+        >
+          <text class="seg-label">{{item.label}}</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="filter-group">
+      <text class="filter-label">标签</text>
+      <scroll-view class="segs" scroll-x enable-flex>
+        <view
+          class="seg tappable {{currentTag === item.key ? 'seg--on' : ''}}"
+          wx:for="{{tagSegs}}"
+          wx:key="key"
+          bindtap="onTagSeg"
+          data-key="{{item.key}}"
+        >
+          <text class="seg-label">{{item.label}}</text>
+        </view>
+      </scroll-view>
+    </view>
 
     <view class="sort-row">
       <text class="sort-label">排序</text>
@@ -42,12 +68,14 @@
   </view>
 
   <view class="list" wx:if="{{!loading && reviews.length}}">
-    <view class="card" wx:for="{{reviews}}" wx:key="_id">
+    <view class="card card--{{item.ratingTier}}" wx:for="{{reviews}}" wx:key="_id">
       <view class="rtop">
         <view class="rname-wrap">
           <text class="rname">{{item.user_nickname || '匿名用户'}}</text>
           <!-- REVW-12/D-12: 后台仍显示真实昵称，但加「匿名」徽标提示该评价对客户侧匿名 -->
           <text class="anon-mark" wx:if="{{item.isAnonymous}}">匿名</text>
+          <!-- 待回复：引导化妆师优先处理未回复评价 -->
+          <text class="pending-mark" wx:if="{{!item.artist_reply}}">待回复</text>
         </view>
         <text class="rtime">{{item.timeLabel}}</text>
       </view>

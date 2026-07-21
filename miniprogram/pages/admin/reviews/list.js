@@ -8,6 +8,7 @@ Page({
     loading: true,
     hasMore: true,
     page: 1,
+    stats: null,
     // REVW-08: 回复编辑器状态
     replyingId: '',
     replyText: '',
@@ -52,6 +53,24 @@ Page({
     this.requestSubscribeAuthorization()
 
     this.loadReviews()
+    this.loadStats()
+  },
+
+  /**
+   * 概览统计：平均分 + 总数（非阻塞，失败不影响列表）
+   */
+  loadStats: function () {
+    var self = this
+    reviewsService.getReviewStats()
+      .then(function (data) {
+        self.setData({
+          stats: {
+            average: Number(data.average || 0).toFixed(1),
+            total: data.total || 0
+          }
+        })
+      })
+      .catch(function () { /* 概览为增强项，失败静默 */ })
   },
 
   /**
@@ -110,7 +129,9 @@ Page({
             thumb: (r.images && r.images[0]) || '',
             imageCount: (r.images && r.images.length) || 0,
             // REVW-12: 匿名标记（后台仍显示真实昵称，加「匿名」徽标）
-            isAnonymous: !!r.is_anonymous
+            isAnonymous: !!r.is_anonymous,
+            // 情感分级（左侧色条）：4-5 好 / 3 中 / 1-2 差
+            ratingTier: r.rating >= 4 ? 'good' : (r.rating === 3 ? 'mid' : 'low')
           })
         })
         self.setData({
